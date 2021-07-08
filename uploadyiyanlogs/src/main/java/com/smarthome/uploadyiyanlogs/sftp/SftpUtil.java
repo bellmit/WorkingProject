@@ -170,7 +170,7 @@ public class SftpUtil {
     }
 
     /**
-     * 载单个文件
+     * 下载单个文件
      *
      * @param directory      ：远程下载目录(以路径符号结束)
      * @param remoteFileName FTP服务器文件名称 如：xxx.txt ||xxx.txt.zip

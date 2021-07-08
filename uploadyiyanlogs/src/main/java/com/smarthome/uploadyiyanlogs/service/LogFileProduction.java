@@ -1,13 +1,17 @@
 package com.smarthome.uploadyiyanlogs.service;
 
+import com.jcraft.jsch.JSchException;
 import com.smarthome.uploadyiyanlogs.config.BaseConfig;
 import com.smarthome.uploadyiyanlogs.es.EsLogList;
 import com.smarthome.uploadyiyanlogs.es.EsSearch;
+import com.smarthome.uploadyiyanlogs.sftp.SftpUtil;
 import com.smarthome.uploadyiyanlogs.sql.mapper.LogMapper;
 import com.smarthome.uploadyiyanlogs.pojo.OperationLog;
 import com.smarthome.uploadyiyanlogs.util.CalendarUtils;
 import com.smarthome.uploadyiyanlogs.util.GZUtil;
 import com.smarthome.uploadyiyanlogs.util.ValCheckUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,7 +23,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +37,7 @@ import java.util.List;
 @Component// 2.开启定时任务
 public class LogFileProduction {
 
+    private static final Logger logger = LoggerFactory.getLogger(LogFileProduction.class);
     private final static String EOL = System.getProperty("line.separator");
 
     @Autowired
@@ -54,7 +58,7 @@ public class LogFileProduction {
         List<OperationLog> searchLogList = esLogList.getSearchLogList();
         //获取登录日志List
         List<OperationLog> loginLogList = esLogList.getLoginLogList();
-        String fileName = baseConfig.getFilePath()+"/10800_ESURFING_SSOLOG_"+ CalendarUtils.getDate()
+        String fileName = baseConfig.getFilePath()+"10800_ESURFING_SSOLOG_"+ CalendarUtils.getDate()
                 +"_"+CalendarUtils.getLastDayDate()+"_D_"+"00_0001"+".DAT";
         System.out.println(fileName);
         File file = new File(fileName);
@@ -65,6 +69,7 @@ public class LogFileProduction {
                 e.printStackTrace();
             }
         }
+        //写入文件
         writeYiYanLogForLine(file,allOperationLogs,"修改");
         writeYiYanLogForLine(file,searchLogList,"查询");
         writeYiYanLogForLine(file,loginLogList,"登录");
@@ -74,13 +79,27 @@ public class LogFileProduction {
         GZUtil.compresserToGZ(file,baseConfig.getFilePath(),fileName.substring(fileName.lastIndexOf("/")+1));
         file.delete();
         //上传到sftp服务器
-
+        try {
+            SftpUtil sftp = new SftpUtil(baseConfig.getSftpname(),baseConfig.getSftppass(),baseConfig.getSftpip(),Integer.valueOf(baseConfig.getSftpport()));
+            sftp.login();
+            File uploadDir = new File(baseConfig.getFilePath());
+            File[] files = uploadDir.listFiles();
+            if(files != null && files.length != 0 ){
+                for(File f:files){
+                    sftp.upload(baseConfig.getSftpremotedir(),f.getPath());
+                }
+            }
+            sftp.logout();
+        } catch (Exception e) {
+            logger.error("下载文件出错!!!{}",e);
+            e.printStackTrace();
+        }
     }
 
     //生成VAL文件以及CHECK文件
     public void writeValCheck(){
         try {
-            String fileName = baseConfig.getFilePath()+"/10800_ESURFING_SSOLOG_"+ CalendarUtils.getDate()
+            String fileName = baseConfig.getFilePath()+"10800_ESURFING_SSOLOG_"+ CalendarUtils.getDate()
                     +"_"+CalendarUtils.getLastDayDate()+"_D_"+"00_0001"+".DAT";
             File logFile = new File(fileName);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");//注意月份是MM
