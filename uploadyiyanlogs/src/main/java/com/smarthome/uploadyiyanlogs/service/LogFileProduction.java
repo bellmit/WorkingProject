@@ -48,19 +48,13 @@ public class LogFileProduction {
     private EsLogList esLogList;
 
     //@Scheduled(cron = "0/10 * * * * ? ")  //每10秒执行一次
-    //@Scheduled(cron = "0 0/2 * * * ? ")  //每2分钟执行一次
-    @Scheduled(cron = "0 0 05 * * ?")  //每天5点
+    @Scheduled(cron = "0 0/2 * * * ? ")  //每2分钟执行一次
+    //@Scheduled(cron = "0 0 05 * * ?")  //每天5点
     public void producelogFile(){
-        System.out.println("定时任务");
-        //获取操作日志List
-        List<OperationLog> allOperationLogs = logMapper.getOperationLogs();
-        //获取查询日志List
-        List<OperationLog> searchLogList = esLogList.getSearchLogList();
-        //获取登录日志List
-        List<OperationLog> loginLogList = esLogList.getLoginLogList();
+        logger.info("翼眼登录&查询&操作，定时任务开始执行");
         String fileName = baseConfig.getFilePath()+"10800_ESURFING_SSOLOG_"+ CalendarUtils.getDate()
                 +"_"+CalendarUtils.getLastDayDate()+"_D_"+"00_0001"+".DAT";
-        System.out.println(fileName);
+        logger.info("上传日志文件名：{}",fileName);
         File file = new File(fileName);
         if(!file.exists()){
             try {
@@ -69,16 +63,28 @@ public class LogFileProduction {
                 e.printStackTrace();
             }
         }
-        //写入文件
-        writeYiYanLogForLine(file,allOperationLogs,"修改");
-        writeYiYanLogForLine(file,searchLogList,"查询");
-        writeYiYanLogForLine(file,loginLogList,"登录");
+
+        //写入操作日志List
+        List<OperationLog> allOperationLogs = logMapper.getOperationLogs();
+        if(allOperationLogs != null && allOperationLogs.size() != 0){
+            writeYiYanLogForLine(file,allOperationLogs,"修改");
+        }
+        //写入查询日志List
+        List<OperationLog> searchLogList = esLogList.getSearchLogList();
+        if (searchLogList != null && searchLogList.size() != 0) {
+            writeYiYanLogForLine(file,searchLogList,"查询");
+        }
+        //写入登录日志List
+        List<OperationLog> loginLogList = esLogList.getLoginLogList();
+        if (loginLogList != null && loginLogList.size() != 0) {
+            writeYiYanLogForLine(file,loginLogList,"登录");
+        }
         //生成VAL文件以及CHECK文件
         writeValCheck();
         //将DAT文件生成.gz文件
         GZUtil.compresserToGZ(file,baseConfig.getFilePath(),fileName.substring(fileName.lastIndexOf("/")+1));
         file.delete();
-        //上传到sftp服务器
+        /*//上传到sftp服务器
         try {
             SftpUtil sftp = new SftpUtil(baseConfig.getSftpname(),baseConfig.getSftppass(),baseConfig.getSftpip(),Integer.valueOf(baseConfig.getSftpport()));
             sftp.login();
@@ -93,7 +99,7 @@ public class LogFileProduction {
         } catch (Exception e) {
             logger.error("下载文件出错!!!{}",e);
             e.printStackTrace();
-        }
+        }*/
     }
 
     //生成VAL文件以及CHECK文件
@@ -138,13 +144,14 @@ public class LogFileProduction {
                         log.getStartDate()+"\u0005"+
                         authority+"\u0005"+
                         "\u0005";
-                System.out.println(oneLog);
+                logger.info(oneLog);
                 writer.write(oneLog + EOL);//按行写文件，后面追加行分隔符EOL
             }
             //关闭流
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
+            logger.error("翼眼{}日志，写入出错",logType);
         }finally {
             if ( writer != null ) {
                 try {
@@ -155,9 +162,5 @@ public class LogFileProduction {
             }
         }
     }
-
-
-
-
 
 }

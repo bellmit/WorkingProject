@@ -31,10 +31,10 @@ public class EsSearch {
 
 
     /**
-     * 从ES库查询当天的登录日志以及查询日志（默认每天登录日志或者查询日志不超过5000条）
+     * 从ES库查询前一天的登录日志以及查询日志（默认每天登录日志或者查询日志不超过5000条）
      * 2021/7/5
      */
-    public JsonView getIntradayLogs(String logName,String time){
+    public JsonView getLastdayLogs(String logName, String time){
         try {
             JsonView jsonView = new JsonView();
             String url="http://"+baseConfig.getEsAddress()+":"+baseConfig.getEsPort();

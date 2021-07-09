@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.smarthome.uploadyiyanlogs.config.BaseConfig;
 import com.smarthome.uploadyiyanlogs.pojo.OperationLog;
 import com.smarthome.uploadyiyanlogs.sql.mapper.LogMapper;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +30,7 @@ public class EsLogList {
      * 查询ES库的yiyan_user_operation_log表，获取查询操作日志，并封装到list
      */
     public List<OperationLog> getSearchLogList(){
-        JsonView intradayLogs = esSearch.getIntradayLogs(baseConfig.getSearchLogTable(),"access_time");
+        JsonView intradayLogs = esSearch.getLastdayLogs(baseConfig.getSearchLogTable(),"access_time");
         List<JSONObject> esLoglist = intradayLogs.getList();
         List<OperationLog> logList = new ArrayList<>();
         for(JSONObject jo:esLoglist){
@@ -54,7 +53,7 @@ public class EsLogList {
      * 查询ES库的yiyan_login_log表，获取登录操作日志，并封装到list
      */
     public List<OperationLog> getLoginLogList(){
-        JsonView intradayLogs = esSearch.getIntradayLogs(baseConfig.getLoginLogTable(),"login_time");
+        JsonView intradayLogs = esSearch.getLastdayLogs(baseConfig.getLoginLogTable(),"login_time");
         List<JSONObject> esLoglist = intradayLogs.getList();
         List<OperationLog> logList = new ArrayList<>();
         for(JSONObject jo:esLoglist){

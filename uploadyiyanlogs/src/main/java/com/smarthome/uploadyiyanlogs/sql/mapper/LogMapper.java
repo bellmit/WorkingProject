@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @Author:KUN
  * @Data:2021/7/2 14:02
- * @Description:从Mysql获取操作日志
+ * @Description:从Mysql获取前一天操作日志
  * @Version:1.0
  */
 @Mapper

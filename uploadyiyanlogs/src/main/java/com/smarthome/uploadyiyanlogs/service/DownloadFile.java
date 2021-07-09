@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.Date;
 
 /**
- * @Author:KUN
+ * @Author:郑GH
  * @Data:2021/7/7 11:06
  * @Description: 从101上传文件到171服务器
  * @Version:1.0
