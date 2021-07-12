@@ -27,7 +27,6 @@ public interface LogMapper {
             @Result(column = "fk_user_id", property = "fkUserId")
     })
     List<OperationLog> getOperationLogs();
-
     @Select("select name from mh_user where login_name = #{logName}")
     String getName(String logName);
 }

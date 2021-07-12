@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * @Author:郑GH
  * @Data:2021/7/7 11:06
- * @Description: 从101上传文件到171服务器
+ * @Description: 从101上传文件到171服务器（暂时没用到）
  * @Version:1.0
  */
 @RestController
@@ -20,7 +20,6 @@ import java.util.Date;
 public class DownloadFile {
 
     private static final Logger logger = LoggerFactory.getLogger(DownloadFile.class);
-
 
     @RequestMapping("/hello")
     public String aa(){
@@ -54,7 +53,6 @@ public void getfile(String fileName,String type, HttpServletResponse response) {
         String filePathDAT = filePath.substring(0, filePath.indexOf(".CHECK")) + ".DAT";
         String filePathGZ = filePathDAT + ".gz";
         String filePathVAL = filePath.substring(0, filePath.indexOf(".CHECK")) + ".VAL";
-
         String backpath = "/data1/backfiletmp/"+ DateFormatUtil.getDayDate(new Date(), "yyyyMMdd");
         File localDirCache3File = new File(backpath);
         if (!localDirCache3File.exists()) {

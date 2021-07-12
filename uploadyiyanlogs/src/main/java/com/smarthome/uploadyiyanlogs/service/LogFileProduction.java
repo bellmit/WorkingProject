@@ -4,6 +4,7 @@ import com.jcraft.jsch.JSchException;
 import com.smarthome.uploadyiyanlogs.config.BaseConfig;
 import com.smarthome.uploadyiyanlogs.es.EsLogList;
 import com.smarthome.uploadyiyanlogs.es.EsSearch;
+import com.smarthome.uploadyiyanlogs.scp.ScpTransfer;
 import com.smarthome.uploadyiyanlogs.sftp.SftpUtil;
 import com.smarthome.uploadyiyanlogs.sql.mapper.LogMapper;
 import com.smarthome.uploadyiyanlogs.pojo.OperationLog;
@@ -97,9 +98,22 @@ public class LogFileProduction {
             }
             sftp.logout();
         } catch (Exception e) {
-            logger.error("下载文件出错!!!{}",e);
+            logger.error("上传文件出错!!!{}",e);
             e.printStackTrace();
         }*/
+
+        //scp发送日志文件到171服务器，之后再由171服务器发送到sftp服务器
+        File uploadDir = new File(baseConfig.getFilePath());
+        File[] files = uploadDir.listFiles();
+        ScpTransfer scpTransfer = new ScpTransfer();
+        if(files != null && files.length != 0 ){
+            for(File f:files){
+                if (f.getName().contains(CalendarUtils.getLastDayDate()+"_D")){
+                    scpTransfer.scpUpload(f.getPath());
+                }
+            }
+        }
+
     }
 
     //生成VAL文件以及CHECK文件

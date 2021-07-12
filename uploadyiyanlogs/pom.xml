@@ -104,6 +104,14 @@
             <version>3.1</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- scp依赖 -->
+        <dependency>
+            <groupId>ch.ethz.ganymed</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>build210</version>
+        </dependency>
+
     </dependencies>
 
     <build>
