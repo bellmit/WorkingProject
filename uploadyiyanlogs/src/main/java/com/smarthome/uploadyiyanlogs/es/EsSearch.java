@@ -51,8 +51,7 @@ public class EsSearch {
             boolString.put("must", mustString);
             queryRoot.put("sort",sortString);
             queryRoot.put("query",newJSONObject("bool",boolString));
-
-            logger.info("ES查询语句：{}",queryRoot.toJSONString());
+            //logger.info("ES查询语句：{}",queryRoot.toJSONString());
             //发送http请求
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity<JSONObject> entity = new HttpEntity<JSONObject>(queryRoot, headers);

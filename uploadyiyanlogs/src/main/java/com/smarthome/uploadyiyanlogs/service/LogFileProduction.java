@@ -48,14 +48,14 @@ public class LogFileProduction {
     @Autowired
     private EsLogList esLogList;
 
-    //@Scheduled(cron = "0/10 * * * * ? ")  //每10秒执行一次
-    @Scheduled(cron = "0 0/2 * * * ? ")  //每2分钟执行一次
-    //@Scheduled(cron = "0 0 05 * * ?")  //每天5点
+    //@Scheduled(cron = "0/20 * * * * ? ")  //每10秒执行一次
+    @Scheduled(cron = "0 0/3 * * * ? ")  //每2分钟执行一次
+    //@Scheduled(cron = "0 0 01 * * ?")  //每天1点
     public void producelogFile(){
         logger.info("翼眼登录&查询&操作，定时任务开始执行");
         String fileName = baseConfig.getFilePath()+"10800_ESURFING_SSOLOG_"+ CalendarUtils.getDate()
                 +"_"+CalendarUtils.getLastDayDate()+"_D_"+"00_0001"+".DAT";
-        logger.info("上传日志文件名：{}",fileName);
+        //logger.info("上传日志文件名：{}",fileName);
         File file = new File(fileName);
         if(!file.exists()){
             try {
@@ -103,16 +103,8 @@ public class LogFileProduction {
         }*/
 
         //scp发送日志文件到171服务器，之后再由171服务器发送到sftp服务器
-        File uploadDir = new File(baseConfig.getFilePath());
-        File[] files = uploadDir.listFiles();
         ScpTransfer scpTransfer = new ScpTransfer();
-        if(files != null && files.length != 0 ){
-            for(File f:files){
-                if (f.getName().contains(CalendarUtils.getLastDayDate()+"_D")){
-                    scpTransfer.scpUpload(f.getPath());
-                }
-            }
-        }
+        scpTransfer.scpUploadDir(baseConfig.getFilePath());
 
     }
 
@@ -131,8 +123,6 @@ public class LogFileProduction {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     //按行写文件，将操作日志list中的字符串，按行写入file_name文件中
@@ -158,7 +148,7 @@ public class LogFileProduction {
                         log.getStartDate()+"\u0005"+
                         authority+"\u0005"+
                         "\u0005";
-                logger.info(oneLog);
+                //logger.info(oneLog);
                 writer.write(oneLog + EOL);//按行写文件，后面追加行分隔符EOL
             }
             //关闭流

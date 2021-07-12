@@ -1,9 +1,13 @@
 package com.smarthome.uploadyiyanlogs.scp;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.SFTPv3Client;
+import ch.ethz.ssh2.SFTPv3FileAttributes;
+import com.smarthome.uploadyiyanlogs.util.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -26,7 +30,8 @@ public class ScpTransfer {
 
     private static final Logger logger = LoggerFactory.getLogger(ScpTransfer.class);
 
-    public void scpUpload(String localFile){
+    //上传单个文件
+    public void scpUploadFile(String localFile){
         //文件scp到数据服务器
         Connection conn = new Connection(dataServerIp,22);
         logger.info("开始scp文件");
@@ -46,6 +51,38 @@ public class ScpTransfer {
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("文件:{} scp到数据服务器时发生异常",localFile);
+        }
+        logger.info("scp文件结束");
+    }
+
+    //上传翼眼整个日志文件夹内的所有文件（不递归，默认不存在子文件夹）
+    public void scpUploadDir(String localDir){
+        //文件scp到数据服务器
+        Connection conn = new Connection(dataServerIp,22);
+        logger.info("开始scp文件");
+        try {
+            conn.connect();
+            //服务器账号密码
+            boolean isAuthenticated = conn.authenticateWithPassword(dataServerUsername, dataServerPassword);
+            if (isAuthenticated == false){
+                throw new IOException("Authentication failed.文件scp到数据服务器时发生异常");
+            }
+            //创建连接
+            SCPClient client = new SCPClient(conn);
+            File uploadDir = new File(localDir);
+            File[] files = uploadDir.listFiles();
+            if(files != null && files.length != 0 ){
+                for(File f:files){
+                    if (f.getName().contains(CalendarUtils.getLastDayDate()+"_D")){
+                        client.put(f.getPath(), dataServerDestDir); //本地文件scp到远程目录
+                        logger.info("SCP上传{}文件",f.getName());
+                    }
+                }
+            }
+            conn.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error("文件夹:{} scp到数据服务器时发生异常",localDir);
         }
         logger.info("scp文件结束");
     }
