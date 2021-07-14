@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -49,11 +50,11 @@ public class LogFileProduction {
     private EsLogList esLogList;
 
     //@Scheduled(cron = "0/20 * * * * ? ")  //每10秒执行一次
-    @Scheduled(cron = "0 0/3 * * * ? ")  //每2分钟执行一次
-    //@Scheduled(cron = "0 0 01 * * ?")  //每天1点
+    //@Scheduled(cron = "0 0/2 * * * ? ")  //每2分钟执行一次
+    @Scheduled(cron = "0 0 01 * * ?")  //每天1点
     public void producelogFile(){
         logger.info("翼眼登录&查询&操作，定时任务开始执行");
-        String fileName = baseConfig.getFilePath()+"10800_ESURFING_SSOLOG_"+ CalendarUtils.getDate()
+        String fileName = baseConfig.getFilePath()+"10800_GATEWAY_YIYANLOG_"+ CalendarUtils.getDate()
                 +"_"+CalendarUtils.getLastDayDate()+"_D_"+"00_0001"+".DAT";
         //logger.info("上传日志文件名：{}",fileName);
         File file = new File(fileName);
@@ -111,7 +112,7 @@ public class LogFileProduction {
     //生成VAL文件以及CHECK文件
     public void writeValCheck(){
         try {
-            String fileName = baseConfig.getFilePath()+"10800_ESURFING_SSOLOG_"+ CalendarUtils.getDate()
+            String fileName = baseConfig.getFilePath()+"10800_GATEWAY_YIYANLOG_"+ CalendarUtils.getDate()
                     +"_"+CalendarUtils.getLastDayDate()+"_D_"+"00_0001"+".DAT";
             File logFile = new File(fileName);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");//注意月份是MM
@@ -128,6 +129,7 @@ public class LogFileProduction {
     //按行写文件，将操作日志list中的字符串，按行写入file_name文件中
     public static void writeYiYanLogForLine(File file, List<OperationLog> list,String logType)
     {
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(file,true));
@@ -145,7 +147,7 @@ public class LogFileProduction {
                         log.getModule()+"\u0005"+  //操作对象
                         log.getFunction()+"\u0005"+  //操作对象描述
                         "成功"+"\u0005"+
-                        log.getStartDate()+"\u0005"+
+                        sdf.format(log.getStartDate())+"\u0005"+
                         authority+"\u0005"+
                         "\u0005";
                 //logger.info(oneLog);
