@@ -50,14 +50,14 @@ public class LogFileProduction {
     private EsLogList esLogList;
 
     //@Scheduled(cron = "0/20 * * * * ? ")  //每10秒执行一次
-    //@Scheduled(cron = "0 0/2 * * * ? ")  //每2分钟执行一次
-    @Scheduled(cron = "0 0 01 * * ?")  //每天1点
+    @Scheduled(cron = "0 0/1 * * * ? ")  //每1分钟执行一次
+    //@Scheduled(cron = "0 0 01 * * ?")  //每天1点
     public void producelogFile(){
-        logger.info("翼眼登录&查询&操作，定时任务开始执行");
-        String fileName = baseConfig.getFilePath()+"10800_GATEWAY_YIYANLOG_"+ CalendarUtils.getDate()
+        logger.info("翼眼登录&查询&操作日志上传定时任务开始执行");
+        String filePath = baseConfig.getFilePath()+"/10800_GATEWAY_YIYANLOG_"+ CalendarUtils.getDate()
                 +"_"+CalendarUtils.getLastDayDate()+"_D_"+"00_0001"+".DAT";
         //logger.info("上传日志文件名：{}",fileName);
-        File file = new File(fileName);
+        File file = new File(filePath);
         if(!file.exists()){
             try {
                 file.createNewFile();
@@ -82,39 +82,20 @@ public class LogFileProduction {
             writeYiYanLogForLine(file,loginLogList,"登录");
         }
         //生成VAL文件以及CHECK文件
-        writeValCheck();
+        writeValCheck(file);
         //将DAT文件生成.gz文件
-        GZUtil.compresserToGZ(file,baseConfig.getFilePath(),fileName.substring(fileName.lastIndexOf("/")+1));
+        GZUtil.compresserToGZ(file,baseConfig.getFilePath(),file.getName());
         file.delete();
-        /*//上传到sftp服务器
-        try {
-            SftpUtil sftp = new SftpUtil(baseConfig.getSftpname(),baseConfig.getSftppass(),baseConfig.getSftpip(),Integer.valueOf(baseConfig.getSftpport()));
-            sftp.login();
-            File uploadDir = new File(baseConfig.getFilePath());
-            File[] files = uploadDir.listFiles();
-            if(files != null && files.length != 0 ){
-                for(File f:files){
-                    sftp.upload(baseConfig.getSftpremotedir(),f.getPath());
-                }
-            }
-            sftp.logout();
-        } catch (Exception e) {
-            logger.error("上传文件出错!!!{}",e);
-            e.printStackTrace();
-        }*/
 
         //scp发送日志文件到171服务器，之后再由171服务器发送到sftp服务器
-        ScpTransfer scpTransfer = new ScpTransfer();
-        scpTransfer.scpUploadDir(baseConfig.getFilePath());
+        //ScpTransfer scpTransfer = new ScpTransfer();
+        //scpTransfer.scpUploadDir(baseConfig.getFilePath());
 
     }
 
     //生成VAL文件以及CHECK文件
-    public void writeValCheck(){
+    public void writeValCheck(File logFile){
         try {
-            String fileName = baseConfig.getFilePath()+"10800_GATEWAY_YIYANLOG_"+ CalendarUtils.getDate()
-                    +"_"+CalendarUtils.getLastDayDate()+"_D_"+"00_0001"+".DAT";
-            File logFile = new File(fileName);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");//注意月份是MM
             Date dataDate = simpleDateFormat.parse(CalendarUtils.getLastDayDate());
             Date fileHandleDate = simpleDateFormat.parse(CalendarUtils.getDate());
@@ -134,7 +115,7 @@ public class LogFileProduction {
         try {
             writer = new BufferedWriter(new FileWriter(file,true));
             for ( OperationLog log: list ) {
-                String authority = log.getUsername() == "admin" ? "管理员":"普通";
+                String authority = "admin".equals(log.getUsername()) ? "管理员":"普通";
                 String oneLog ="20003"+"\u0005"+
                         "家庭网络连接管理平台(翼眼平台)"+"\u0005"+
                         "10002"+"\u0005"+
@@ -170,3 +151,21 @@ public class LogFileProduction {
     }
 
 }
+
+
+/*//上传到sftp服务器
+        try {
+            SftpUtil sftp = new SftpUtil(baseConfig.getSftpname(),baseConfig.getSftppass(),baseConfig.getSftpip(),Integer.valueOf(baseConfig.getSftpport()));
+            sftp.login();
+            File uploadDir = new File(baseConfig.getFilePath());
+            File[] files = uploadDir.listFiles();
+            if(files != null && files.length != 0 ){
+                for(File f:files){
+                    sftp.upload(baseConfig.getSftpremotedir(),f.getPath());
+                }
+            }
+            sftp.logout();
+        } catch (Exception e) {
+            logger.error("上传文件出错!!!{}",e);
+            e.printStackTrace();
+        }*/

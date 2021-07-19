@@ -1,8 +1,6 @@
 package com.smarthome.uploadyiyanlogs.scp;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.SFTPv3Client;
-import ch.ethz.ssh2.SFTPv3FileAttributes;
 import com.smarthome.uploadyiyanlogs.util.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
