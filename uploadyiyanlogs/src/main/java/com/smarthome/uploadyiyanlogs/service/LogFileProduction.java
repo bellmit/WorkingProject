@@ -50,8 +50,8 @@ public class LogFileProduction {
     private EsLogList esLogList;
 
     //@Scheduled(cron = "0/20 * * * * ? ")  //每10秒执行一次
-    @Scheduled(cron = "0 0/1 * * * ? ")  //每1分钟执行一次
-    //@Scheduled(cron = "0 0 01 * * ?")  //每天1点
+    //@Scheduled(cron = "0 0/1 * * * ? ")  //每1分钟执行一次
+    @Scheduled(cron = "0 0 01 * * ?")  //每天1点
     public void producelogFile(){
         logger.info("翼眼登录&查询&操作日志上传定时任务开始执行");
         String filePath = baseConfig.getFilePath()+"/10800_GATEWAY_YIYANLOG_"+ CalendarUtils.getDate()
@@ -88,8 +88,8 @@ public class LogFileProduction {
         file.delete();
 
         //scp发送日志文件到171服务器，之后再由171服务器发送到sftp服务器
-        //ScpTransfer scpTransfer = new ScpTransfer();
-        //scpTransfer.scpUploadDir(baseConfig.getFilePath());
+        ScpTransfer scpTransfer = new ScpTransfer();
+        scpTransfer.scpUploadDir(baseConfig.getFilePath());
 
     }
 
