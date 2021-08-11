@@ -1,6 +1,8 @@
 package com.ruoyi.homewifi.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.common.annotation.DataScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.homewifi.mapper.DataInstallationListMapper;
@@ -38,6 +40,7 @@ public class DataInstallationListServiceImpl implements IDataInstallationListSer
      * @return 数据湖工单下发
      */
     @Override
+    @DataScope(deptAlias = "d")
     public List<DataInstallationList> selectDataInstallationListList(DataInstallationList dataInstallationList)
     {
         return dataInstallationListMapper.selectDataInstallationListList(dataInstallationList);

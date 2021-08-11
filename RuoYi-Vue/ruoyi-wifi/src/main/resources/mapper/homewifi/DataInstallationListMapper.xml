@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectDataInstallationListVo">
-        select id, work_order_num, day_id, dept_id, city_id, area_id, same_area, effective_report, elink_checked, wifi_checked, share_checked, share_method from data_installation_list
+        select id, work_order_num, day_id, dept_id, city_id, area_id, same_area, effective_report, elink_checked, wifi_checked, share_checked, share_method from data_installation_list d
     </sql>
 
     <select id="selectDataInstallationListList" parameterType="DataInstallationList" resultMap="DataInstallationListResult">
@@ -37,7 +37,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wifiChecked != null "> and wifi_checked = #{wifiChecked}</if>
             <if test="shareChecked != null "> and share_checked = #{shareChecked}</if>
             <if test="shareMethod != null "> and share_method = #{shareMethod}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
         </where>
+
     </select>
     
     <select id="selectDataInstallationListById" parameterType="Long" resultMap="DataInstallationListResult">
