@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homewifi.mapper.DataInstallationListMapper">
+    
+    <resultMap type="DataInstallationList" id="DataInstallationListResult">
+        <result property="id"    column="id"    />
+        <result property="workOrderNum"    column="work_order_num"    />
+        <result property="dayId"    column="day_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="cityId"    column="city_id"    />
+        <result property="areaId"    column="area_id"    />
+        <result property="sameArea"    column="same_area"    />
+        <result property="effectiveReport"    column="effective_report"    />
+        <result property="elinkChecked"    column="elink_checked"    />
+        <result property="wifiChecked"    column="wifi_checked"    />
+        <result property="shareChecked"    column="share_checked"    />
+        <result property="shareMethod"    column="share_method"    />
+    </resultMap>
+
+    <sql id="selectDataInstallationListVo">
+        select id, work_order_num, day_id, dept_id, city_id, area_id, same_area, effective_report, elink_checked, wifi_checked, share_checked, share_method from data_installation_list
+    </sql>
+
+    <select id="selectDataInstallationListList" parameterType="DataInstallationList" resultMap="DataInstallationListResult">
+        <include refid="selectDataInstallationListVo"/>
+        <where>  
+            <if test="workOrderNum != null  and workOrderNum != ''"> and work_order_num = #{workOrderNum}</if>
+            <if test="dayId != null "> and day_id = #{dayId}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="cityId != null "> and city_id = #{cityId}</if>
+            <if test="areaId != null  and areaId != ''"> and area_id = #{areaId}</if>
+            <if test="sameArea != null "> and same_area = #{sameArea}</if>
+            <if test="effectiveReport != null "> and effective_report = #{effectiveReport}</if>
+            <if test="elinkChecked != null "> and elink_checked = #{elinkChecked}</if>
+            <if test="wifiChecked != null "> and wifi_checked = #{wifiChecked}</if>
+            <if test="shareChecked != null "> and share_checked = #{shareChecked}</if>
+            <if test="shareMethod != null "> and share_method = #{shareMethod}</if>
+        </where>
+    </select>
+    
+    <select id="selectDataInstallationListById" parameterType="Long" resultMap="DataInstallationListResult">
+        <include refid="selectDataInstallationListVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertDataInstallationList" parameterType="DataInstallationList" useGeneratedKeys="true" keyProperty="id">
+        insert into data_installation_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workOrderNum != null">work_order_num,</if>
+            <if test="dayId != null">day_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="cityId != null">city_id,</if>
+            <if test="areaId != null">area_id,</if>
+            <if test="sameArea != null">same_area,</if>
+            <if test="effectiveReport != null">effective_report,</if>
+            <if test="elinkChecked != null">elink_checked,</if>
+            <if test="wifiChecked != null">wifi_checked,</if>
+            <if test="shareChecked != null">share_checked,</if>
+            <if test="shareMethod != null">share_method,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="workOrderNum != null">#{workOrderNum},</if>
+            <if test="dayId != null">#{dayId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="cityId != null">#{cityId},</if>
+            <if test="areaId != null">#{areaId},</if>
+            <if test="sameArea != null">#{sameArea},</if>
+            <if test="effectiveReport != null">#{effectiveReport},</if>
+            <if test="elinkChecked != null">#{elinkChecked},</if>
+            <if test="wifiChecked != null">#{wifiChecked},</if>
+            <if test="shareChecked != null">#{shareChecked},</if>
+            <if test="shareMethod != null">#{shareMethod},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDataInstallationList" parameterType="DataInstallationList">
+        update data_installation_list
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workOrderNum != null">work_order_num = #{workOrderNum},</if>
+            <if test="dayId != null">day_id = #{dayId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="cityId != null">city_id = #{cityId},</if>
+            <if test="areaId != null">area_id = #{areaId},</if>
+            <if test="sameArea != null">same_area = #{sameArea},</if>
+            <if test="effectiveReport != null">effective_report = #{effectiveReport},</if>
+            <if test="elinkChecked != null">elink_checked = #{elinkChecked},</if>
+            <if test="wifiChecked != null">wifi_checked = #{wifiChecked},</if>
+            <if test="shareChecked != null">share_checked = #{shareChecked},</if>
+            <if test="shareMethod != null">share_method = #{shareMethod},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDataInstallationListById" parameterType="Long">
+        delete from data_installation_list where id = #{id}
+    </delete>
+
+    <delete id="deleteDataInstallationListByIds" parameterType="String">
+        delete from data_installation_list where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
