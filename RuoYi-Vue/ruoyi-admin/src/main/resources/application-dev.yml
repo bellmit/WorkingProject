@@ -78,3 +78,18 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+
+  #es配置
+#es配置
+  elasticsearch:
+    cluster:
+      name: Test_es_cluster
+    address: localhost
+    zen:
+      discovery:
+        port: 9300
+    port: 9200
+    index:
+      apIndexName: aponline
+    type:
+      apTypeName: messagedb

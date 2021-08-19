@@ -101,3 +101,8 @@ public class DataInstallationListController extends BaseController
         return toAjax(dataInstallationListService.deleteDataInstallationListByIds(ids));
     }
 }
+
+
+
+
+//考虑万维编码和集团编码的转换时候可以考虑一个静态的Map，考虑编码转换成中文可以每次加载时将转换表信息存入redis
