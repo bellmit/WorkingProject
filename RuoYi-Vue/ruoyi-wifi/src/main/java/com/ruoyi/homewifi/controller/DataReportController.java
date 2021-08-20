@@ -43,6 +43,9 @@ public class DataReportController extends BaseController
         startPage();
         List<DataReport> list = dataReportService.selectDataReportList(dataReport);
         return getDataTable(list);
+
+        //TODO：1、连表查、2、补充地名、3、装数据到前端、4、数据权限
+
     }
 
     /**
@@ -61,43 +64,43 @@ public class DataReportController extends BaseController
     /**
      * 获取竣工报告查询详细信息
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:report:query')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:report:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
         return AjaxResult.success(dataReportService.selectDataReportById(id));
-    }
+    }*/
 
     /**
      * 新增竣工报告查询
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:report:add')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:report:add')")
     @Log(title = "竣工报告查询", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody DataReport dataReport)
     {
         return toAjax(dataReportService.insertDataReport(dataReport));
-    }
+    }*/
 
     /**
      * 修改竣工报告查询
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:report:edit')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:report:edit')")
     @Log(title = "竣工报告查询", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody DataReport dataReport)
     {
         return toAjax(dataReportService.updateDataReport(dataReport));
-    }
+    }*/
 
     /**
      * 删除竣工报告查询
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:report:remove')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:report:remove')")
     @Log(title = "竣工报告查询", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(dataReportService.deleteDataReportByIds(ids));
-    }
+    }*/
 }

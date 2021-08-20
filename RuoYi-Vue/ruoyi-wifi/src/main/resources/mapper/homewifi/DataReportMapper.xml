@@ -57,6 +57,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="wifiChecked != null "> and wifi_checked = #{wifiChecked}</if>
         </where>
     </select>
+
+    <select id="selectDataReportListTest" resultMap="DataReportResult">
+        select w.id, w.ww_prov_id, w.ww_city_id, w.ww_area_id, w.orderId, w.orderType, w.engineer_id, w.engineer_name, w.engineer_tel, w.create_time,
+                w.user_account, w.client_signed_speed, w.terminal_mac_list, w.ww_share_checked, w.ww_share_method, w.ww_share_time,
+                d.aaa_pppoe, d.same_area, d.effective_report, d.elink_checked, d.wifi_checked d.dept_id
+            from data_ww_report w
+            left join data_lake_report d
+            on w.ww_prov_id = d.ww_prov_id and w.ww_city_id = d.ww_city_id and w.orderId = d.orderId and DATE(w.create_time) = d.day_id
+            <where>
+                <!-- 数据范围过滤 -->
+                ${params.dataScope}
+            </where>
+    </select>
+
+
     
     <select id="selectDataReportById" parameterType="Long" resultMap="DataReportResult">
         <include refid="selectDataReportVo"/>
