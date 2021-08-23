@@ -1,9 +1,10 @@
 package com.ruoyi.homewifi.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ruoyi.common.annotation.DataScope;
-import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.homewifi.district.DistrictDirc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.homewifi.mapper.DataReportMapper;
@@ -44,7 +45,31 @@ public class DataReportServiceImpl implements IDataReportService
     @DataScope(deptAlias = "d")
     public List<DataReport> selectDataReportList(DataReport dataReport)
     {
-        return dataReportMapper.selectDataReportList(dataReport);
+        List<DataReport> dataReportList = dataReportMapper.selectDataReportList(dataReport);
+        return transforList(dataReportList);
+    }
+
+    public List transforList(List<DataReport> list){
+        List<DataReport> resultList = new ArrayList<>();
+        for(DataReport dr:list){
+            String provCode = dr.getProvName();
+            String cityCode = dr.getCityName();
+            String areaCode = dr.getAreaName();
+            if(provCode != null && !"".equals(provCode)){
+                String provName = DistrictDirc.getDistrict(provCode);
+                dr.setProvName(provName);
+            }
+            if(cityCode != null && !"".equals(cityCode)){
+                String cityName = DistrictDirc.getDistrict(cityCode);
+                dr.setCityName(cityName);
+            }
+            if(areaCode != null && !"".equals(areaCode)){
+                String areaName = DistrictDirc.getDistrict(areaCode);
+                dr.setAreaName(areaName);
+            }
+            resultList.add(dr);
+        }
+        return resultList;
     }
 
     /**

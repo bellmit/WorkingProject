@@ -17,6 +17,19 @@
             <artifactId>ruoyi-common</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.0.28</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.google-collections</groupId>
+            <artifactId>google-collect</artifactId>
+            <version>snapshot-20080530</version>
+        </dependency>
+
+
+
         <!--es-->
         <dependency>
             <groupId>org.elasticsearch.plugin</groupId>
