@@ -1,11 +1,13 @@
 package com.ruoyi.homewifi.domain;
 
-import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+
+import java.sql.Date;
 
 /**
  * 竣工报告查询对象 data_report
@@ -97,7 +99,26 @@ public class DataReport extends BaseEntity
     @Excel(name = "WiFi测速校验")
     private Integer wifiChecked;
 
-    public void setId(Long id) 
+    private Date startDate;
+    private Date endDate;
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -278,7 +299,7 @@ public class DataReport extends BaseEntity
         return wifiChecked;
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
@@ -303,5 +324,34 @@ public class DataReport extends BaseEntity
             .append("elinkChecked", getElinkChecked())
             .append("wifiChecked", getWifiChecked())
             .toString();
+    }*/
+
+    @Override
+    public String toString() {
+        return "DataReport{" +
+                "id=" + id +
+                ", provName='" + provName + '\'' +
+                ", cityName='" + cityName + '\'' +
+                ", areaName='" + areaName + '\'' +
+                ", orderid='" + orderid + '\'' +
+                ", ordertype=" + ordertype +
+                ", engineerId='" + engineerId + '\'' +
+                ", engineerName='" + engineerName + '\'' +
+                ", engineerTel='" + engineerTel + '\'' +
+                ", createTime '" + getCreateTime() +'\''+
+                ", userAccount='" + userAccount + '\'' +
+                ", aaaPppoe='" + aaaPppoe + '\'' +
+                ", clientSignedSpeed=" + clientSignedSpeed +
+                ", terminalMacList='" + terminalMacList + '\'' +
+                ", wwShareChecked=" + wwShareChecked +
+                ", wwShareMethod=" + wwShareMethod +
+                ", wwShareTime=" + wwShareTime +
+                ", sameArea=" + sameArea +
+                ", effectiveReport=" + effectiveReport +
+                ", elinkChecked=" + elinkChecked +
+                ", wifiChecked=" + wifiChecked +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
     }
 }
