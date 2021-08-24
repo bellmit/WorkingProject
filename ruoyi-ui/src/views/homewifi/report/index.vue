@@ -1,7 +1,21 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="省份" prop="provName">
+      <el-form-item label="统计时间">
+        <el-date-picker
+          v-model="queryParams.startDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="选择日期">
+        </el-date-picker> -
+        <el-date-picker
+          v-model="queryParams.endDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="选择日期">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="地区选择" prop="provName">
         <el-input
           v-model="queryParams.provName"
           placeholder="请输入省份"
@@ -10,24 +24,24 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="地市" prop="cityName">
-        <el-input
-          v-model="queryParams.cityName"
-          placeholder="请输入地市"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="县区" prop="areaName">
-        <el-input
-          v-model="queryParams.areaName"
-          placeholder="请输入县区"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="地市" prop="cityName">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.cityName"-->
+<!--          placeholder="请输入地市"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="县区" prop="areaName">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.areaName"-->
+<!--          placeholder="请输入县区"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="工单号" prop="orderid">
         <el-input
           v-model="queryParams.orderid"
@@ -37,155 +51,155 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="工单类型" prop="ordertype">
-        <el-select v-model="queryParams.ordertype" placeholder="请选择工单类型" clearable size="small">
-          <el-option
-            v-for="dict in ordertypeOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="装维工号" prop="engineerId">
+<!--      <el-form-item label="工单类型" prop="ordertype">-->
+<!--        <el-select v-model="queryParams.ordertype" placeholder="请选择工单类型" clearable size="small">-->
+<!--          <el-option-->
+<!--            v-for="dict in ordertypeOptions"-->
+<!--            :key="dict.dictValue"-->
+<!--            :label="dict.dictLabel"-->
+<!--            :value="dict.dictValue"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+      <el-form-item label="工程师账号" prop="engineerId" label-width="100px">
         <el-input
           v-model="queryParams.engineerId"
-          placeholder="请输入装维工号"
+          placeholder="请输入工程师账号"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="装维姓名" prop="engineerName">
-        <el-input
-          v-model="queryParams.engineerName"
-          placeholder="请输入装维姓名"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="装维手机号" prop="engineerTel">
-        <el-input
-          v-model="queryParams.engineerTel"
-          placeholder="请输入装维手机号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="生成时间" prop="createTime">
-        <el-date-picker clearable size="small"
-          v-model="queryParams.createTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="选择生成时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="工单宽带账号" prop="userAccount">
+<!--      <el-form-item label="装维姓名" prop="engineerName">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.engineerName"-->
+<!--          placeholder="请输入装维姓名"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="装维手机号" prop="engineerTel">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.engineerTel"-->
+<!--          placeholder="请输入装维手机号"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="生成时间" prop="createTime">-->
+<!--        <el-date-picker clearable size="small"-->
+<!--          v-model="queryParams.createTime"-->
+<!--          type="date"-->
+<!--          value-format="yyyy-MM-dd"-->
+<!--          placeholder="选择生成时间">-->
+<!--        </el-date-picker>-->
+<!--      </el-form-item>-->
+      <el-form-item label="宽带账号" prop="userAccount" label-width="80px">
         <el-input
           v-model="queryParams.userAccount"
-          placeholder="请输入工单宽带账号"
+          placeholder="请输入宽带账号"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="3A返查宽带账号" prop="aaaPppoe">
-        <el-input
-          v-model="queryParams.aaaPppoe"
-          placeholder="请输入3A返查宽带账号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="签约速率 / M" prop="clientSignedSpeed">
-        <el-input
-          v-model="queryParams.clientSignedSpeed"
-          placeholder="请输入签约速率 / M"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="终端信息" prop="terminalMacList">
-        <el-input
-          v-model="queryParams.terminalMacList"
-          placeholder="请输入终端信息"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="分享校验" prop="wwShareChecked">
-        <el-select v-model="queryParams.wwShareChecked" placeholder="请选择分享校验" clearable size="small">
-          <el-option
-            v-for="dict in wwShareCheckedOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="分享渠道" prop="wwShareMethod">
-        <el-select v-model="queryParams.wwShareMethod" placeholder="请选择分享渠道" clearable size="small">
-          <el-option
-            v-for="dict in wwShareMethodOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="分享时间" prop="wwShareTime">
-        <el-date-picker clearable size="small"
-          v-model="queryParams.wwShareTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="选择分享时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="交付地一致性校验" prop="sameArea">
-        <el-select v-model="queryParams.sameArea" placeholder="请选择交付地一致性校验" clearable size="small">
-          <el-option
-            v-for="dict in sameAreaOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="有效报告校验" prop="effectiveReport">
-        <el-select v-model="queryParams.effectiveReport" placeholder="请选择有效报告校验" clearable size="small">
-          <el-option
-            v-for="dict in effectiveReportOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="终端稽核校验" prop="elinkChecked">
-        <el-select v-model="queryParams.elinkChecked" placeholder="请选择终端稽核校验" clearable size="small">
-          <el-option
-            v-for="dict in elinkCheckedOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="WiFi测速校验" prop="wifiChecked">
-        <el-select v-model="queryParams.wifiChecked" placeholder="请选择WiFi测速校验" clearable size="small">
-          <el-option
-            v-for="dict in wifiCheckedOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item label="3A返查宽带账号" prop="aaaPppoe" label-width="120px">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.aaaPppoe"-->
+<!--          placeholder="请输入3A返查宽带账号"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="签约速率 / M" prop="clientSignedSpeed">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.clientSignedSpeed"-->
+<!--          placeholder="请输入签约速率 / M"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="终端信息" prop="terminalMacList">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.terminalMacList"-->
+<!--          placeholder="请输入终端信息"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="分享校验" prop="wwShareChecked">-->
+<!--        <el-select v-model="queryParams.wwShareChecked" placeholder="请选择分享校验" clearable size="small">-->
+<!--          <el-option-->
+<!--            v-for="dict in wwShareCheckedOptions"-->
+<!--            :key="dict.dictValue"-->
+<!--            :label="dict.dictLabel"-->
+<!--            :value="dict.dictValue"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="分享渠道" prop="wwShareMethod">-->
+<!--        <el-select v-model="queryParams.wwShareMethod" placeholder="请选择分享渠道" clearable size="small">-->
+<!--          <el-option-->
+<!--            v-for="dict in wwShareMethodOptions"-->
+<!--            :key="dict.dictValue"-->
+<!--            :label="dict.dictLabel"-->
+<!--            :value="dict.dictValue"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="分享时间" prop="wwShareTime">-->
+<!--        <el-date-picker clearable size="small"-->
+<!--          v-model="queryParams.wwShareTime"-->
+<!--          type="date"-->
+<!--          value-format="yyyy-MM-dd"-->
+<!--          placeholder="选择分享时间">-->
+<!--        </el-date-picker>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="交付地一致性校验" prop="sameArea">-->
+<!--        <el-select v-model="queryParams.sameArea" placeholder="请选择交付地一致性校验" clearable size="small">-->
+<!--          <el-option-->
+<!--            v-for="dict in sameAreaOptions"-->
+<!--            :key="dict.dictValue"-->
+<!--            :label="dict.dictLabel"-->
+<!--            :value="dict.dictValue"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="有效报告校验" prop="effectiveReport">-->
+<!--        <el-select v-model="queryParams.effectiveReport" placeholder="请选择有效报告校验" clearable size="small">-->
+<!--          <el-option-->
+<!--            v-for="dict in effectiveReportOptions"-->
+<!--            :key="dict.dictValue"-->
+<!--            :label="dict.dictLabel"-->
+<!--            :value="dict.dictValue"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="终端稽核校验" prop="elinkChecked">-->
+<!--        <el-select v-model="queryParams.elinkChecked" placeholder="请选择终端稽核校验" clearable size="small">-->
+<!--          <el-option-->
+<!--            v-for="dict in elinkCheckedOptions"-->
+<!--            :key="dict.dictValue"-->
+<!--            :label="dict.dictLabel"-->
+<!--            :value="dict.dictValue"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="WiFi测速校验" prop="wifiChecked">-->
+<!--        <el-select v-model="queryParams.wifiChecked" placeholder="请选择WiFi测速校验" clearable size="small">-->
+<!--          <el-option-->
+<!--            v-for="dict in wifiCheckedOptions"-->
+<!--            :key="dict.dictValue"-->
+<!--            :label="dict.dictLabel"-->
+<!--            :value="dict.dictValue"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -193,38 +207,38 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['homewifi:report:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['homewifi:report:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['homewifi:report:remove']"
-        >删除</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          icon="el-icon-plus"-->
+<!--          size="mini"-->
+<!--          @click="handleAdd"-->
+<!--          v-hasPermi="['homewifi:report:add']"-->
+<!--        >新增</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          icon="el-icon-edit"-->
+<!--          size="mini"-->
+<!--          :disabled="single"-->
+<!--          @click="handleUpdate"-->
+<!--          v-hasPermi="['homewifi:report:edit']"-->
+<!--        >修改</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="danger"-->
+<!--          plain-->
+<!--          icon="el-icon-delete"-->
+<!--          size="mini"-->
+<!--          :disabled="multiple"-->
+<!--          @click="handleDelete"-->
+<!--          v-hasPermi="['homewifi:report:remove']"-->
+<!--        >删除</el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -289,7 +303,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -485,7 +499,10 @@ export default {
         sameArea: null,
         effectiveReport: null,
         elinkChecked: null,
-        wifiChecked: null
+        wifiChecked: null,
+        //日期选择
+        startDate: null,
+        endDate: null
       },
       // 表单参数
       form: {},
