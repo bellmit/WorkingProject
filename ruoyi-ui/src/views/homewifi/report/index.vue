@@ -105,6 +105,11 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="校验结果">
+        <el-select v-model="queryParams.effectiveReport" clearable placeholder="请选择校验结果" class="handle-select mr10">
+          <el-option v-for="item in resultList" :key="item.key" :label="item.value" :value="item.key"></el-option>
+        </el-select>
+      </el-form-item>
 <!--      <el-form-item label="3A返查宽带账号" prop="aaaPppoe" label-width="120px">-->
 <!--        <el-input-->
 <!--          v-model="queryParams.aaaPppoe"-->
@@ -442,6 +447,37 @@ export default {
   name: "Report",
   data() {
     return {
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
+      //校验结果
+      resultList:[
+        {
+          "key":"3",
+          "value":"所有"
+        },
+        {
+          "key":"0",
+          "value":"不通过"
+        },{
+          "key":"1",
+          "value":"通过"
+        }
+      ],
       // 遮罩层
       loading: true,
       // 导出遮罩层
@@ -536,6 +572,10 @@ export default {
     });
   },
   methods: {
+    // //选择校验结果
+    // changeResult(event){
+    //   this.queryParams.result = event.key;
+    // },
     /** 查询竣工报告查询列表 */
     getList() {
       this.loading = true;
@@ -601,7 +641,9 @@ export default {
         sameArea: null,
         effectiveReport: null,
         elinkChecked: null,
-        wifiChecked: null
+        wifiChecked: null,
+        startDate: null,
+        endDate: null
       };
       this.resetForm("form");
     },
