@@ -15,15 +15,15 @@
           placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="查询地区" prop="provName">
-        <el-input
-          v-model="queryParams.provName"
-          placeholder="请输入省份或地市"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="查询地区" prop="provName">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.provName"-->
+<!--          placeholder="请输入省份或地市"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="省份">
         <el-select v-model="queryParams.provId" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
           <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
@@ -590,13 +590,13 @@ export default {
     //查询省份
     getProv() {
       getProv().then(response => {
-        this.provList = response.data;
+        this.provList = response;
       });
     },
     //查询地市
     getCity() {
       getCity(this.queryParams.provId).then(response => {
-        this.cityList = response.data;
+        this.cityList = response;
       });
     },
     // //选择校验结果
