@@ -457,8 +457,32 @@ export default {
   name: "Report",
   data() {
     return {
-      provList: [],
-      cityList: [],
+      provList: [
+        {
+          "key":"3",
+          "value":"所有"
+        },
+        {
+          "key":"0",
+          "value":"不通过"
+        },{
+          "key":"1",
+          "value":"通过"
+        }
+      ],
+      cityList: [
+        {
+          "key":"3",
+          "value":"所有"
+        },
+        {
+          "key":"0",
+          "value":"不通过"
+        },{
+          "key":"1",
+          "value":"通过"
+        }
+      ],
       options: [{
         value: '选项1',
         label: '黄金糕'
@@ -591,14 +615,15 @@ export default {
     getProv() {
       getProv().then(response => {
         this.provList = response;
+        this.provList.sort((a, b)=> a.value.localeCompare(b.value, 'zh'));
+        // this.queryParams.cityName = null
       });
     },
     //查询地市id
     getCity() {
-      this.queryParams.cityName = null;
-      getCity(this.queryParams.provId).then(response => {
+      this.queryParams.cityName = null
+      getCity(this.queryParams.provName).then(response => {
         this.cityList = response;
-        this.cityList.sort((a, b)=> b.value.localeCompare(a.value, 'zh'));
       });
     },
     // //选择校验结果
@@ -683,7 +708,15 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
+      // this.resetForm("queryForm");
+      this.queryParams.startDate= null;
+      this.queryParams.endDate=null;
+      this.queryParams.provName= null;
+      this.queryParams.cityName=null;
+      this.queryParams.orderid= null;
+      this.queryParams.engineerId=null;
+      this.queryParams.userAccount= null;
+      this.queryParams.effectiveReport=null;
       this.handleQuery();
     },
     // 多选框选中数据
