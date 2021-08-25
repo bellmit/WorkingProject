@@ -25,12 +25,12 @@
 <!--        />-->
 <!--      </el-form-item>-->
       <el-form-item label="省份">
-        <el-select v-model="queryParams.provId" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
+        <el-select v-model="queryParams.provName" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
           <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="地市">
-        <el-select v-model="queryParams.cityId" clearable placeholder="请选择地市" class="handle-select mr10">
+        <el-select v-model="queryParams.cityName" clearable placeholder="请选择地市" class="handle-select mr10">
           <el-option v-for="item in cityList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>
@@ -551,8 +551,8 @@ export default {
         //日期选择
         startDate: null,
         endDate: null,
-        provId: null,
-        cityId: null
+        // provId: null,
+        // cityId: null
       },
       // 表单参数
       form: {},
@@ -595,8 +595,10 @@ export default {
     },
     //查询地市id
     getCity() {
+      this.queryParams.cityName = null;
       getCity(this.queryParams.provId).then(response => {
         this.cityList = response;
+        this.cityList.sort((a, b)=> b.value.localeCompare(a.value, 'zh'));
       });
     },
     // //选择校验结果
