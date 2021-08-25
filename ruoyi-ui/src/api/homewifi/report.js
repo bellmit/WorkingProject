@@ -9,6 +9,25 @@ export function listReport(query) {
   })
 }
 
+// 查询省份
+export function getProv() {
+  return request({
+    url: '/homewifi/report/provlist',
+    method: 'get',
+  })
+}
+
+// 查询地市
+export function getCity(prov) {
+  return request({
+    url: '/homewifi/report/citylist',
+    method: 'get',
+    params:{
+      provId: prov
+    }
+  })
+}
+
 // 查询竣工报告查询详细
 export function getReport(id) {
   return request({

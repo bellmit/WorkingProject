@@ -15,14 +15,24 @@
           placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="地区选择" prop="provName">
+      <el-form-item label="查询地区" prop="provName">
         <el-input
           v-model="queryParams.provName"
-          placeholder="请输入省份"
+          placeholder="请输入省份或地市"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="省份">
+        <el-select v-model="queryParams.provId" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
+          <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="地市">
+        <el-select v-model="queryParams.cityId" clearable placeholder="请选择地市" class="handle-select mr10">
+          <el-option v-for="item in cityList" :key="item.key" :label="item.value" :value="item.key"></el-option>
+        </el-select>
       </el-form-item>
 <!--      <el-form-item label="地市" prop="cityName">-->
 <!--        <el-input-->
@@ -441,12 +451,14 @@
 </template>
 
 <script>
-import { listReport, getReport, delReport, addReport, updateReport, exportReport } from "@/api/homewifi/report";
+import { listReport, getReport, delReport, addReport, updateReport, exportReport, getProv, getCity } from "@/api/homewifi/report";
 
 export default {
   name: "Report",
   data() {
     return {
+      provList: [],
+      cityList: [],
       options: [{
         value: '选项1',
         label: '黄金糕'
@@ -538,7 +550,9 @@ export default {
         wifiChecked: null,
         //日期选择
         startDate: null,
-        endDate: null
+        endDate: null,
+        provId: null,
+        cityId: null
       },
       // 表单参数
       form: {},
@@ -548,6 +562,7 @@ export default {
     };
   },
   created() {
+    this.getProv();
     this.getList();
     this.getDicts("data_order_type").then(response => {
       this.ordertypeOptions = response.data;
@@ -572,6 +587,18 @@ export default {
     });
   },
   methods: {
+    //查询省份
+    getProv() {
+      getProv().then(response => {
+        this.provList = response.data;
+      });
+    },
+    //查询地市
+    getCity() {
+      getCity(this.queryParams.provId).then(response => {
+        this.cityList = response.data;
+      });
+    },
     // //选择校验结果
     // changeResult(event){
     //   this.queryParams.result = event.key;
