@@ -593,7 +593,7 @@ export default {
         this.provList = response;
       });
     },
-    //查询地市
+    //查询地市id
     getCity() {
       getCity(this.queryParams.provId).then(response => {
         this.cityList = response;
