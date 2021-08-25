@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homewifi.mapper.DataCityRateMapper">
+    
+    <resultMap type="DataCityRate" id="DataCityRateResult">
+        <result property="id"    column="id"    />
+        <result property="provName"    column="prov_name"    />
+        <result property="cityName"    column="city_name"    />
+        <result property="effectiveSum"    column="effective_sum"    />
+        <result property="newGiftSum"    column="new_gift_sum"    />
+        <result property="newTermiGiftSum"    column="new_termi_gift_sum"    />
+        <result property="newServiGiftSum"    column="new_servi_gift_sum"    />
+        <result property="newElinkSum"    column="new_elink_sum"    />
+        <result property="sameAreaSum"    column="same_area_sum"    />
+        <result property="wifiCheckedSum"    column="wifi_checked_sum"    />
+        <result property="shareSum"    column="share_sum"    />
+        <result property="yiShareSum"    column="yi_share_sum"    />
+        <result property="messageShareSum"    column="message_share_sum"    />
+        <result property="wechatShareSum"    column="wechat_share_sum"    />
+        <result property="otherShareSum"    column="other_share_sum"    />
+        <result property="effectiveReportRate"    column="effective_report_rate"    />
+        <result property="sameAreaRate"    column="same_area_rate"    />
+        <result property="wifiCheckedRate"    column="wifi_checked_rate"    />
+        <result property="elinkCheckedRate"    column="elink_checked_rate"    />
+        <result property="shareRate"    column="share_rate"    />
+        <result property="rateReserve1"    column="rate_reserve1"    />
+        <result property="rateReserve2"    column="rate_reserve2"    />
+        <result property="rateReserve3"    column="rate_reserve3"    />
+    </resultMap>
+
+    <sql id="selectDataCityRateVo">
+        select id, prov_name, city_name, effective_sum, new_gift_sum, new_termi_gift_sum, new_servi_gift_sum, new_elink_sum, same_area_sum, wifi_checked_sum, share_sum, yi_share_sum, message_share_sum, wechat_share_sum, other_share_sum, effective_report_rate, same_area_rate, wifi_checked_rate, elink_checked_rate, share_rate, rate_reserve1, rate_reserve2, rate_reserve3 from data_city_rate
+    </sql>
+
+    <select id="selectDataCityRateList" parameterType="DataCityRate" resultMap="DataCityRateResult">
+        <include refid="selectDataCityRateVo"/>
+        <where>  
+            <if test="provName != null  and provName != ''"> and prov_name = #{provName}</if>
+            <if test="cityName != null  and cityName != ''"> and city_name = #{cityName}</if>
+            <if test="effectiveSum != null "> and effective_sum = #{effectiveSum}</if>
+            <if test="newGiftSum != null "> and new_gift_sum = #{newGiftSum}</if>
+            <if test="newTermiGiftSum != null "> and new_termi_gift_sum = #{newTermiGiftSum}</if>
+            <if test="newServiGiftSum != null "> and new_servi_gift_sum = #{newServiGiftSum}</if>
+            <if test="newElinkSum != null "> and new_elink_sum = #{newElinkSum}</if>
+            <if test="sameAreaSum != null "> and same_area_sum = #{sameAreaSum}</if>
+            <if test="wifiCheckedSum != null "> and wifi_checked_sum = #{wifiCheckedSum}</if>
+            <if test="shareSum != null "> and share_sum = #{shareSum}</if>
+            <if test="yiShareSum != null "> and yi_share_sum = #{yiShareSum}</if>
+            <if test="messageShareSum != null "> and message_share_sum = #{messageShareSum}</if>
+            <if test="wechatShareSum != null "> and wechat_share_sum = #{wechatShareSum}</if>
+            <if test="otherShareSum != null "> and other_share_sum = #{otherShareSum}</if>
+            <if test="effectiveReportRate != null  and effectiveReportRate != ''"> and effective_report_rate = #{effectiveReportRate}</if>
+            <if test="sameAreaRate != null  and sameAreaRate != ''"> and same_area_rate = #{sameAreaRate}</if>
+            <if test="wifiCheckedRate != null  and wifiCheckedRate != ''"> and wifi_checked_rate = #{wifiCheckedRate}</if>
+            <if test="elinkCheckedRate != null  and elinkCheckedRate != ''"> and elink_checked_rate = #{elinkCheckedRate}</if>
+            <if test="shareRate != null  and shareRate != ''"> and share_rate = #{shareRate}</if>
+        </where>
+    </select>
+    
+    <select id="selectDataCityRateById" parameterType="Long" resultMap="DataCityRateResult">
+        <include refid="selectDataCityRateVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertDataCityRate" parameterType="DataCityRate" useGeneratedKeys="true" keyProperty="id">
+        insert into data_city_rate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="provName != null">prov_name,</if>
+            <if test="cityName != null">city_name,</if>
+            <if test="effectiveSum != null">effective_sum,</if>
+            <if test="newGiftSum != null">new_gift_sum,</if>
+            <if test="newTermiGiftSum != null">new_termi_gift_sum,</if>
+            <if test="newServiGiftSum != null">new_servi_gift_sum,</if>
+            <if test="newElinkSum != null">new_elink_sum,</if>
+            <if test="sameAreaSum != null">same_area_sum,</if>
+            <if test="wifiCheckedSum != null">wifi_checked_sum,</if>
+            <if test="shareSum != null">share_sum,</if>
+            <if test="yiShareSum != null">yi_share_sum,</if>
+            <if test="messageShareSum != null">message_share_sum,</if>
+            <if test="wechatShareSum != null">wechat_share_sum,</if>
+            <if test="otherShareSum != null">other_share_sum,</if>
+            <if test="effectiveReportRate != null">effective_report_rate,</if>
+            <if test="sameAreaRate != null">same_area_rate,</if>
+            <if test="wifiCheckedRate != null">wifi_checked_rate,</if>
+            <if test="elinkCheckedRate != null">elink_checked_rate,</if>
+            <if test="shareRate != null">share_rate,</if>
+            <if test="rateReserve1 != null">rate_reserve1,</if>
+            <if test="rateReserve2 != null">rate_reserve2,</if>
+            <if test="rateReserve3 != null">rate_reserve3,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="provName != null">#{provName},</if>
+            <if test="cityName != null">#{cityName},</if>
+            <if test="effectiveSum != null">#{effectiveSum},</if>
+            <if test="newGiftSum != null">#{newGiftSum},</if>
+            <if test="newTermiGiftSum != null">#{newTermiGiftSum},</if>
+            <if test="newServiGiftSum != null">#{newServiGiftSum},</if>
+            <if test="newElinkSum != null">#{newElinkSum},</if>
+            <if test="sameAreaSum != null">#{sameAreaSum},</if>
+            <if test="wifiCheckedSum != null">#{wifiCheckedSum},</if>
+            <if test="shareSum != null">#{shareSum},</if>
+            <if test="yiShareSum != null">#{yiShareSum},</if>
+            <if test="messageShareSum != null">#{messageShareSum},</if>
+            <if test="wechatShareSum != null">#{wechatShareSum},</if>
+            <if test="otherShareSum != null">#{otherShareSum},</if>
+            <if test="effectiveReportRate != null">#{effectiveReportRate},</if>
+            <if test="sameAreaRate != null">#{sameAreaRate},</if>
+            <if test="wifiCheckedRate != null">#{wifiCheckedRate},</if>
+            <if test="elinkCheckedRate != null">#{elinkCheckedRate},</if>
+            <if test="shareRate != null">#{shareRate},</if>
+            <if test="rateReserve1 != null">#{rateReserve1},</if>
+            <if test="rateReserve2 != null">#{rateReserve2},</if>
+            <if test="rateReserve3 != null">#{rateReserve3},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDataCityRate" parameterType="DataCityRate">
+        update data_city_rate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="provName != null">prov_name = #{provName},</if>
+            <if test="cityName != null">city_name = #{cityName},</if>
+            <if test="effectiveSum != null">effective_sum = #{effectiveSum},</if>
+            <if test="newGiftSum != null">new_gift_sum = #{newGiftSum},</if>
+            <if test="newTermiGiftSum != null">new_termi_gift_sum = #{newTermiGiftSum},</if>
+            <if test="newServiGiftSum != null">new_servi_gift_sum = #{newServiGiftSum},</if>
+            <if test="newElinkSum != null">new_elink_sum = #{newElinkSum},</if>
+            <if test="sameAreaSum != null">same_area_sum = #{sameAreaSum},</if>
+            <if test="wifiCheckedSum != null">wifi_checked_sum = #{wifiCheckedSum},</if>
+            <if test="shareSum != null">share_sum = #{shareSum},</if>
+            <if test="yiShareSum != null">yi_share_sum = #{yiShareSum},</if>
+            <if test="messageShareSum != null">message_share_sum = #{messageShareSum},</if>
+            <if test="wechatShareSum != null">wechat_share_sum = #{wechatShareSum},</if>
+            <if test="otherShareSum != null">other_share_sum = #{otherShareSum},</if>
+            <if test="effectiveReportRate != null">effective_report_rate = #{effectiveReportRate},</if>
+            <if test="sameAreaRate != null">same_area_rate = #{sameAreaRate},</if>
+            <if test="wifiCheckedRate != null">wifi_checked_rate = #{wifiCheckedRate},</if>
+            <if test="elinkCheckedRate != null">elink_checked_rate = #{elinkCheckedRate},</if>
+            <if test="shareRate != null">share_rate = #{shareRate},</if>
+            <if test="rateReserve1 != null">rate_reserve1 = #{rateReserve1},</if>
+            <if test="rateReserve2 != null">rate_reserve2 = #{rateReserve2},</if>
+            <if test="rateReserve3 != null">rate_reserve3 = #{rateReserve3},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDataCityRateById" parameterType="Long">
+        delete from data_city_rate where id = #{id}
+    </delete>
+
+    <delete id="deleteDataCityRateByIds" parameterType="String">
+        delete from data_city_rate where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

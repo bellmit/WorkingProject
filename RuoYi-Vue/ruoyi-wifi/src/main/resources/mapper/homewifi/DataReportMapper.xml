@@ -74,6 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 <if test="cityName != null  and cityName != ''"> and city_name = #{cityName}</if>
                 <if test="orderid != null  and orderid != ''"> and orderId = #{orderid}</if>
                 <if test="engineerId != null  and engineerId != ''"> and engineer_id = #{engineerId}</if>
+                <if test="userAccount != null  and userAccount != ''"> and user_account = #{orderid}</if>
                 <if test="effectiveReport != null and effectiveReport != 3"> and effective_report = #{effectiveReport}</if>
                 <!-- 数据范围过滤 -->
                 ${params.dataScope}
