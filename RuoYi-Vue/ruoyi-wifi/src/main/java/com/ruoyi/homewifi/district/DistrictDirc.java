@@ -30,7 +30,12 @@ public  class DistrictDirc {
     public static String user = null;
     public static String pass = null;
 
+    //districtMap用来翻译万维编码到地名
     public static Map<String,String> districtMap = Maps.newHashMap();
+    //provMap用来获取省份编码
+    public static Map<String,Long> provMap = Maps.newHashMap();
+    //cityMap用来获取城市编码
+    public static Map<String,Long> cityMap = Maps.newHashMap();
     private static final Logger logger = LoggerFactory.getLogger(DistrictDirc.class);
 
     @Value("${spring.datasource.driverClassName}")
@@ -53,13 +58,13 @@ public  class DistrictDirc {
         DistrictDirc.pass = pass;
     }
 
-    public static String getDistrict(String wwProvId){
+    public static String getDistrict(String wwDistrictId){
         String result = "";
         if(districtMap.size()==0){
             findAllDistrict();
         }
-        if(districtMap.containsKey(wwProvId)){
-            result= districtMap.get(wwProvId);
+        if(districtMap.containsKey(wwDistrictId)){
+            result= districtMap.get(wwDistrictId);
             if("".equals(result)){
                 result = "未知";
             }
@@ -75,7 +80,7 @@ public  class DistrictDirc {
      * 加锁防止数据库过载
      * */
     public synchronized static void findAllDistrict() {
-        logger.info("开始查地名*****************************************");
+        //logger.info("开始查地名*****************************************");
         PreparedStatement prepared = null;
         try {
             if(connection == null){
@@ -95,6 +100,12 @@ public  class DistrictDirc {
             for (DataDistrictCode dc:districtList){
                 if(!districtMap.containsKey(dc.getStrAreaAuth())){
                     districtMap.put(dc.getStrAreaAuth(),dc.getStrRoleName());
+                }
+                if(dc.getIntLevel()==1 && !provMap.containsKey(dc.getStrAreaAuth())){
+                    provMap.put(dc.getStrAreaAuth(),dc.getStrCode());
+                }
+                if(dc.getIntLevel()==2 && !cityMap.containsKey(dc.getStrAreaAuth())){
+                    cityMap.put(dc.getStrAreaAuth(),dc.getStrParentCode());
                 }
             }
         }catch (Exception ex){

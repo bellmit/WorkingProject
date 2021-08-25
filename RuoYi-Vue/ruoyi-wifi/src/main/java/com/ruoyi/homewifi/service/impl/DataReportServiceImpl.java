@@ -3,6 +3,7 @@ package com.ruoyi.homewifi.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.homewifi.district.DistrictDirc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,45 @@ public class DataReportServiceImpl implements IDataReportService
         return transforList(dataReportList);
     }
 
+    /**
+     * 获取省份列表
+     */
+    @Override
+    public List<JSONObject> getProvList() {
+        List<JSONObject> provList = new ArrayList<>();
+        for(String provId:DistrictDirc.provMap.keySet()){
+            String provName = DistrictDirc.getDistrict(provId);
+            JSONObject tmpJson = new JSONObject();
+            tmpJson.put("key",provId);
+            tmpJson.put("value",provName);
+            provList.add(tmpJson);
+        }
+        return provList;
+    }
+
+    /**
+     * 获取指定省份对应的城市列表
+     */
+    @Override
+    public List<JSONObject> getCityList(String provId) {
+        List<JSONObject> cityList = new ArrayList<>();
+        //获取省份对应的地区编码，再去查对用的地市。最后获取地市名称
+        Long provNum = DistrictDirc.provMap.get(provId);
+        for(String cityId:DistrictDirc.cityMap.keySet()){
+            JSONObject tmpJson = new JSONObject();
+            if(DistrictDirc.cityMap.get(cityId) == provNum){
+                String cityName = DistrictDirc.getDistrict(cityId);
+                tmpJson.put("key",cityId);
+                tmpJson.put("value",cityName);
+                cityList.add(tmpJson);
+            }
+        }
+        return cityList;
+    }
+
+    /**
+     * 万维地区编码转文字
+     */
     public List transforList(List<DataReport> list){
         List<DataReport> resultList = new ArrayList<>();
         for(DataReport dr:list){

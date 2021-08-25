@@ -1,16 +1,13 @@
 package com.ruoyi.homewifi.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.homewifi.district.DistrictDirc;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -41,12 +38,14 @@ public class DataReportController extends BaseController
     public TableDataInfo list(DataReport dataReport)
     {
         startPage();
+        //System.out.println(dataReport.toString());
         List<DataReport> list = dataReportService.selectDataReportList(dataReport);
         return getDataTable(list);
 
-        //TODO：2、补充地名、
-
+        //TODO：8月24任务：1.报告页面联调(ing)、2.四率查询建表&代码生成、3.写四率计算业务代码、4.数据湖数据入库代码
     }
+
+
 
     /**
      * 导出竣工报告查询列表
@@ -60,6 +59,27 @@ public class DataReportController extends BaseController
         ExcelUtil<DataReport> util = new ExcelUtil<DataReport>(DataReport.class);
         return util.exportExcel(list, "竣工报告查询数据");
     }
+
+
+    /**
+     * 查询省份列表
+     */
+    @GetMapping("/provlist")
+    public List provList()
+    {
+        return dataReportService.getProvList();
+    }
+
+    /**
+     * 查询某一省份对应的城市列表
+     */
+    @GetMapping("/citylist")
+    public List cityList(String provId)
+    {
+        return dataReportService.getCityList(provId);
+    }
+
+
 
     /**
      * 获取竣工报告查询详细信息

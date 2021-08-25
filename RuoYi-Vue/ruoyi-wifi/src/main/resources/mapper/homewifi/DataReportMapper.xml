@@ -69,8 +69,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             on w.ww_prov_id = d.ww_prov_id and w.ww_city_id = d.ww_city_id and w.orderId = d.orderId and DATE(w.create_time) = d.day_id
             <where>
                 <if test="startDate != null "> and day_id <![CDATA[ >= ]]> #{startDate}</if>
-                <if test="endDate != null "> and day_id <![CDATA[ <= ]]> #{startDate}</if>
+                <if test="endDate != null "> and day_id <![CDATA[ <= ]]> #{endDate}</if>
                 <if test="provName != null  and provName != ''"> and prov_name = #{provName}</if>
+                <if test="cityName != null  and cityName != ''"> and city_name = #{cityName}</if>
                 <if test="orderid != null  and orderid != ''"> and orderId = #{orderid}</if>
                 <if test="engineerId != null  and engineerId != ''"> and engineer_id = #{engineerId}</if>
                 <if test="effectiveReport != null and effectiveReport != 3"> and effective_report = #{effectiveReport}</if>

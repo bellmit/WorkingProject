@@ -1,6 +1,8 @@
 package com.ruoyi.homewifi.service;
 
 import java.util.List;
+
+import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.homewifi.domain.DataReport;
 
 /**
@@ -26,6 +28,17 @@ public interface IDataReportService
      * @return 竣工报告查询集合
      */
     public List<DataReport> selectDataReportList(DataReport dataReport);
+
+    /**
+     * 获取省份列表
+     */
+    public List<JSONObject> getProvList();
+
+    /**
+     * 获取指定省份对应的城市列表
+     */
+    public List<JSONObject> getCityList(String provId);
+
 
     /**
      * 新增竣工报告查询
