@@ -61,43 +61,43 @@ public class DataProvRateController extends BaseController
     /**
      * 获取分省份四率统计详细信息
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:provrate:query')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:provrate:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
         return AjaxResult.success(dataProvRateService.selectDataProvRateById(id));
-    }
+    }*/
 
     /**
      * 新增分省份四率统计
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:provrate:add')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:provrate:add')")
     @Log(title = "分省份四率统计", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody DataProvRate dataProvRate)
     {
         return toAjax(dataProvRateService.insertDataProvRate(dataProvRate));
-    }
+    }*/
 
     /**
      * 修改分省份四率统计
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:provrate:edit')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:provrate:edit')")
     @Log(title = "分省份四率统计", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody DataProvRate dataProvRate)
     {
         return toAjax(dataProvRateService.updateDataProvRate(dataProvRate));
-    }
+    }*/
 
     /**
      * 删除分省份四率统计
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:provrate:remove')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:provrate:remove')")
     @Log(title = "分省份四率统计", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(dataProvRateService.deleteDataProvRateByIds(ids));
-    }
+    }*/
 }

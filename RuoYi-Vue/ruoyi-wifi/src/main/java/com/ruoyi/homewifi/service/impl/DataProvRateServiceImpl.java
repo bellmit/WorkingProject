@@ -20,18 +20,6 @@ public class DataProvRateServiceImpl implements IDataProvRateService
     private DataProvRateMapper dataProvRateMapper;
 
     /**
-     * 查询分省份四率统计
-     * 
-     * @param id 分省份四率统计ID
-     * @return 分省份四率统计
-     */
-    @Override
-    public DataProvRate selectDataProvRateById(Long id)
-    {
-        return dataProvRateMapper.selectDataProvRateById(id);
-    }
-
-    /**
      * 查询分省份四率统计列表
      * 
      * @param dataProvRate 分省份四率统计
@@ -44,16 +32,28 @@ public class DataProvRateServiceImpl implements IDataProvRateService
     }
 
     /**
+     * 查询分省份四率统计
+     *
+     * @param id 分省份四率统计ID
+     * @return 分省份四率统计
+     */
+    /*@Override
+    public DataProvRate selectDataProvRateById(Long id)
+    {
+        return dataProvRateMapper.selectDataProvRateById(id);
+    }*/
+
+    /**
      * 新增分省份四率统计
      * 
      * @param dataProvRate 分省份四率统计
      * @return 结果
      */
-    @Override
+    /*@Override
     public int insertDataProvRate(DataProvRate dataProvRate)
     {
         return dataProvRateMapper.insertDataProvRate(dataProvRate);
-    }
+    }*/
 
     /**
      * 修改分省份四率统计
@@ -61,11 +61,11 @@ public class DataProvRateServiceImpl implements IDataProvRateService
      * @param dataProvRate 分省份四率统计
      * @return 结果
      */
-    @Override
+    /*@Override
     public int updateDataProvRate(DataProvRate dataProvRate)
     {
         return dataProvRateMapper.updateDataProvRate(dataProvRate);
-    }
+    }*/
 
     /**
      * 批量删除分省份四率统计
@@ -73,11 +73,11 @@ public class DataProvRateServiceImpl implements IDataProvRateService
      * @param ids 需要删除的分省份四率统计ID
      * @return 结果
      */
-    @Override
+    /*@Override
     public int deleteDataProvRateByIds(Long[] ids)
     {
         return dataProvRateMapper.deleteDataProvRateByIds(ids);
-    }
+    }*/
 
     /**
      * 删除分省份四率统计信息
@@ -85,9 +85,9 @@ public class DataProvRateServiceImpl implements IDataProvRateService
      * @param id 分省份四率统计ID
      * @return 结果
      */
-    @Override
+    /*@Override
     public int deleteDataProvRateById(Long id)
     {
         return dataProvRateMapper.deleteDataProvRateById(id);
-    }
+    }*/
 }
