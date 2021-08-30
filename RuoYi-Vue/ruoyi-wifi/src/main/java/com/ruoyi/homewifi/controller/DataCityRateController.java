@@ -1,14 +1,11 @@
 package com.ruoyi.homewifi.controller;
 
 import java.util.List;
+
+import com.ruoyi.homewifi.vo.CityRateVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
@@ -38,10 +35,10 @@ public class DataCityRateController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('homewifi:cityrate:list')")
     @GetMapping("/list")
-    public TableDataInfo list(DataCityRate dataCityRate)
+    public TableDataInfo list(CityRateVo cityRateVo)
     {
         startPage();
-        List<DataCityRate> list = dataCityRateService.selectDataCityRateList(dataCityRate);
+        List<DataCityRate> list = dataCityRateService.selectDataCityRateList(cityRateVo);
         return getDataTable(list);
     }
 
@@ -51,9 +48,9 @@ public class DataCityRateController extends BaseController
     @PreAuthorize("@ss.hasPermi('homewifi:cityrate:export')")
     @Log(title = "分地市四率统计", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
-    public AjaxResult export(DataCityRate dataCityRate)
+    public AjaxResult export(CityRateVo cityRateVo)
     {
-        List<DataCityRate> list = dataCityRateService.selectDataCityRateList(dataCityRate);
+        List<DataCityRate> list = dataCityRateService.selectDataCityRateList(cityRateVo);
         ExcelUtil<DataCityRate> util = new ExcelUtil<DataCityRate>(DataCityRate.class);
         return util.exportExcel(list, "分地市四率统计数据");
     }
@@ -61,43 +58,43 @@ public class DataCityRateController extends BaseController
     /**
      * 获取分地市四率统计详细信息
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:cityrate:query')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:cityrate:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
         return AjaxResult.success(dataCityRateService.selectDataCityRateById(id));
-    }
+    }*/
 
     /**
      * 新增分地市四率统计
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:cityrate:add')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:cityrate:add')")
     @Log(title = "分地市四率统计", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody DataCityRate dataCityRate)
     {
         return toAjax(dataCityRateService.insertDataCityRate(dataCityRate));
-    }
+    }*/
 
     /**
      * 修改分地市四率统计
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:cityrate:edit')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:cityrate:edit')")
     @Log(title = "分地市四率统计", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody DataCityRate dataCityRate)
     {
         return toAjax(dataCityRateService.updateDataCityRate(dataCityRate));
-    }
+    }*/
 
     /**
      * 删除分地市四率统计
      */
-    @PreAuthorize("@ss.hasPermi('homewifi:cityrate:remove')")
+    /*@PreAuthorize("@ss.hasPermi('homewifi:cityrate:remove')")
     @Log(title = "分地市四率统计", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(dataCityRateService.deleteDataCityRateByIds(ids));
-    }
+    }*/
 }

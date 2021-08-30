@@ -11,13 +11,6 @@ import com.ruoyi.homewifi.domain.DataProvRate;
  */
 public interface DataProvRateMapper 
 {
-    /**
-     * 查询分省份四率统计
-     * 
-     * @param id 分省份四率统计ID
-     * @return 分省份四率统计
-     */
-    public DataProvRate selectDataProvRateById(Long id);
 
     /**
      * 查询分省份四率统计列表
@@ -28,12 +21,20 @@ public interface DataProvRateMapper
     public List<DataProvRate> selectDataProvRateList(DataProvRate dataProvRate);
 
     /**
+     * 查询分省份四率统计
+     *
+     * @param id 分省份四率统计ID
+     * @return 分省份四率统计
+     */
+    /*public DataProvRate selectDataProvRateById(Long id);*/
+
+    /**
      * 新增分省份四率统计
      * 
      * @param dataProvRate 分省份四率统计
      * @return 结果
      */
-    public int insertDataProvRate(DataProvRate dataProvRate);
+    /*public int insertDataProvRate(DataProvRate dataProvRate);*/
 
     /**
      * 修改分省份四率统计
@@ -41,7 +42,7 @@ public interface DataProvRateMapper
      * @param dataProvRate 分省份四率统计
      * @return 结果
      */
-    public int updateDataProvRate(DataProvRate dataProvRate);
+    /*public int updateDataProvRate(DataProvRate dataProvRate);*/
 
     /**
      * 删除分省份四率统计
@@ -49,7 +50,7 @@ public interface DataProvRateMapper
      * @param id 分省份四率统计ID
      * @return 结果
      */
-    public int deleteDataProvRateById(Long id);
+    /*public int deleteDataProvRateById(Long id);*/
 
     /**
      * 批量删除分省份四率统计
@@ -57,5 +58,5 @@ public interface DataProvRateMapper
      * @param ids 需要删除的数据ID
      * @return 结果
      */
-    public int deleteDataProvRateByIds(Long[] ids);
+    /*public int deleteDataProvRateByIds(Long[] ids);*/
 }

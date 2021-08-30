@@ -3,6 +3,170 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.homewifi.mapper.DataCityRateMapper">
+
+    <resultMap type="LakeReportDo" id="LakeReportResult">
+        <result property="id"    column="id"    />
+        <result property="lakeOrderid"    column="lake_orderId"    />
+        <result property="dayId"    column="day_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="wProvId"    column="w_prov_id"    />
+        <result property="lakeCityId"    column="lake_city_id"    />
+        <result property="wCityId"    column="w_city_id"    />
+        <result property="wAreaId"    column="w_area_id"    />
+        <result property="sameArea"    column="same_area"    />
+        <result property="effectiveReport"    column="effective_report"    />
+        <result property="elinkChecked"    column="elink_checked"    />
+        <result property="wifiChecked"    column="wifi_checked"    />
+        <result property="lakeShareChecked"    column="lake_share_checked"    />
+        <result property="lakeShareMethod"    column="lake_share_method"    />
+        <result property="aaaPppoe"    column="aaa_pppoe"    />
+    </resultMap>
+
+    <sql id="selectLakeReportVo">
+        select id, lake_orderId, day_id, dept_id, w_prov_id, lake_city_id, w_city_id, w_area_id,
+            same_area, effective_report, elink_checked, wifi_checked, lake_share_checked, lake_share_method
+        from data_lake_report
+    </sql>
+
+    <select id="selectLakeReportList" parameterType="CityRatoVo" resultMap="LakeReportResult">
+        <include refid="selectLakeReportVo"/>
+        <where>
+            <if test="startDate != null "> and day_id <![CDATA[ >= ]]> #{startDate}</if>
+            <if test="endDate != null "> and day_id <![CDATA[ <= ]]> #{endDate}</if>
+            <if test="wProvId != null  and wProvId != ''"> and w_prov_id = #{wProvId}</if>
+            <if test="wCityId != null  and wCityId != ''"> and w_city_id = #{wCityId}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+
+
+    <resultMap type="LakeGiftDo" id="LakeGiftResult">
+        <result property="id"    column="id"    />
+        <result property="sealingDate"    column="sealing_date"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="lakeCityId"    column="lake_city_id"    />
+        <result property="lakeAreaId"    column="lake_area_id"    />
+        <result property="giftCode"    column="gift_code"    />
+        <result property="giftOrderId"    column="gift_order_id"    />
+    </resultMap>
+
+    <sql id="selectLakeGiftVo">
+        select id, sealing_time, dept_id, lake_city_id, lake_area_id, gift_code, gift_id from data_lake_gift
+    </sql>
+
+    <select id="selectLakeGiftList" parameterType="LakeCityRateVo" resultMap="LakeGiftResult">
+        <include refid="selectLakeGiftVo"/>
+        <where>
+            <if test="startDate != null "> and DATE(sealing_time) <![CDATA[ >= ]]> #{startDate}</if>
+            <if test="endDate != null "> and DATE(sealing_time) <![CDATA[ <= ]]> #{endDate}</if>
+            <if test="lakeProvId != null  and lakeProvId != ''"> and dept_id = #{lakeProvId}</if>
+            <if test="lakeCityId != null  and lakeCityId != ''"> and lake_city_id = #{lakeCityId}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <!-- 数据湖下发报告表统计结果 -->
+    <resultMap type="LakeReportSumDo" id="LakeReportSumResult">
+        <result property="deptId"    column="dept_id"    />
+        <result property="wProId"    column="w_pro_id"    />
+        <result property="lakeCityId"    column="lake_city_id"    />
+        <result property="wCityId"    column="w_city_id"    />
+        <result property="sameAreaSum"    column="same_area_sum"    />
+        <result property="effectiveSum"    column="effective_sum"    />
+        <result property="wifiCheckedSum"    column="wifi_checked_sum"    />
+        <result property="shareSum"    column="share_sum"    />
+        <result property="messageShareSum"    column="message_share_sum"    />
+        <result property="wechatShareSum"    column="wechat_share_sum"    />
+        <result property="yiShareSum"    column="yi_share_sum"    />
+        <result property="otherShareSum"    column="other_share_sum"    />
+    </resultMap>
+
+    <select id="selectLakeReportSumList" parameterType="CityRatoVo" resultMap="LakeReportSumResult">
+        select
+            any_value(dept_id) as dept_id,
+            any_value(w_prov_id) as w_pro_id,
+            any_value(lake_city_id) as lake_city_id,
+            w_city_id,
+            sum(if(same_area =1,1,0)) as same_area_sum,
+            sum(if(effective_report=1,1,0)) as effective_sum,
+            sum(if(wifi_checked=1,1,0)) as wifi_checked_sum,
+            sum(if(lake_share_checked=1,1,0)) as share_sum,
+            sum(if(lake_share_method=0,1,0)) as message_share_sum,
+            sum(if(lake_share_method=1,1,0)) as wechat_share_sum,
+            sum(if(lake_share_method=2,1,0)) as yi_share_sum,
+            sum(if(lake_share_method=3,1,0)) as other_share_sum
+        from data_lake_report d
+        <where>
+            <if test="startDate != null "> and day_id <![CDATA[ >= ]]> #{startDate}</if>
+            <if test="endDate != null "> and day_id <![CDATA[ <= ]]> #{endDate}</if>
+            <if test="wProvId != null  and wProvId != ''"> and w_prov_id = #{wProvId}</if>
+            <if test="wCityId != null  and wCityId != ''"> and w_city_id = #{wCityId}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+        group by w_city_id
+        order by w_city_id
+    </select>
+
+    <!-- 数据湖下发礼包表统计结果 -->
+    <resultMap type="LakeGiftSumDo" id="LakeGiftSumResult">
+        <result property="deptId"    column="dept_id"    />
+        <result property="lakeCityId"    column="lake_city_id"    />
+        <result property="giftCodeSum"    column="gift_code_sum"    />
+        <result property="giftOrderSum"    column="gift_order_sum"    />
+        <result property="termiGiftSum"    column="termi_gift_sum"    />
+        <result property="serviGiftSum"    column="servi_gift_sum"    />
+    </resultMap>
+
+    <select id="selectLakeGiftSumList" parameterType="LakeCityRateVo" resultMap="LakeGiftSumResult">
+        select
+            any_value(d.dept_id) as dept_id,
+            any_value(d.lake_city_id) as lake_city_id,
+            count(d.gift_code) as gift_code_sum,
+            count(d.gift_order_id) as gift_order_sum,
+            sum(if(g.gift_product_type=1,1,0)) as termi_gift_sum,
+            sum(if(g.gift_product_type=0,1,0)) as servi_gift_sum
+        from data_lake_gift d
+        join data_gift_id g
+        on d.gift_code = g.gift_id
+        <where>
+            <if test="startDate != null "> and sealing_date <![CDATA[ >= ]]> #{startDate}</if>
+            <if test="endDate != null "> and sealing_date <![CDATA[ <= ]]> #{endDate}</if>
+            <if test="lakeProvId != null  and lakeProvId != ''"> and dept_id = #{lakeProvId}</if>
+            <if test="lakeCityId != null  and lakeCityId != ''"> and lake_city_id = #{lakeCityId}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+        group by lake_city_id
+        order by lake_city_id;
+
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     <resultMap type="DataCityRate" id="DataCityRateResult">
         <result property="id"    column="id"    />
@@ -63,7 +227,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectDataCityRateVo"/>
         where id = #{id}
     </select>
-        
+
+
     <insert id="insertDataCityRate" parameterType="DataCityRate" useGeneratedKeys="true" keyProperty="id">
         insert into data_city_rate
         <trim prefix="(" suffix=")" suffixOverrides=",">

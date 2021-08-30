@@ -42,8 +42,10 @@ public class DataReportController extends BaseController
         List<DataReport> list = dataReportService.selectDataReportList(dataReport);
         return getDataTable(list);
 
-        //TODO：8月24任务：1.报告页面联调(ing)、2.四率查询建表&代码生成&数据权限、3.写四率计算业务代码、4.数据湖数据入库代码
-        //TODO:问题：A表和B表连表查询，由于分页函数中的select count(0) from ...,会统计所有字段包括两表重复字段，此时重复字段又是where后的条件，导致查询报错
+        //TODO：8月24任务：
+        // 1.报告页面联调(ok)、2.四率查询建表(ok) & 代码生成 (ok) &数据权限(ing) & 分页 (ing)、3.写四率计算业务代码、4.数据湖数据入库代码
+        // 5.配饰redis读取城市对应的丰联编号再去写ES查询获取新增eLink终端数
+        // 6.Dl那边的建表字段需要修改、7.数据字典里的数代表的含义需要确定、
     }
 
 

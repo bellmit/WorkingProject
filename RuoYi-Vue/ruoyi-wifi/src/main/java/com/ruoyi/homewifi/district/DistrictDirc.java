@@ -30,12 +30,16 @@ public  class DistrictDirc {
     public static String user = null;
     public static String pass = null;
 
-    //districtMap用来翻译万维编码到地名
+    //districtMap:(万维地名编码,地名) 用来翻译万维编码到地名
     public static Map<String,String> districtMap = Maps.newHashMap();
-    //provMap用来获取省份编码
+    //IdTransferMap:(万维地名编码,集团地名编码) 用来实现编码转换
+    public static Map<String,String> IdTransferMap = Maps.newHashMap();
+    //provMap:(万维省份编码,省份编号) 用来获取省份编码
     public static Map<String,Long> provMap = Maps.newHashMap();
-    //cityMap用来获取城市编码
+    //cityMap:(万维城市编码,城市上级省份编号) 用来获取城市编码
     public static Map<String,Long> cityMap = Maps.newHashMap();
+
+
     private static final Logger logger = LoggerFactory.getLogger(DistrictDirc.class);
 
     @Value("${spring.datasource.driverClassName}")
@@ -100,6 +104,9 @@ public  class DistrictDirc {
             for (DataDistrictCode dc:districtList){
                 if(!districtMap.containsKey(dc.getStrAreaAuth())){
                     districtMap.put(dc.getStrAreaAuth(),dc.getStrRoleName());
+                }
+                if(!IdTransferMap.containsKey(dc.getStrAreaAuth())){
+                    IdTransferMap.put(dc.getStrAreaAuth(),dc.getDept_id());
                 }
                 if(dc.getIntLevel()==1 && !provMap.containsKey(dc.getStrAreaAuth())){
                     provMap.put(dc.getStrAreaAuth(),dc.getStrCode());
