@@ -3,7 +3,9 @@ package com.ruoyi.homewifi.mapper;
 import java.util.List;
 
 import com.ruoyi.homewifi.dobj.LakeGiftDo;
+import com.ruoyi.homewifi.dobj.LakeGiftSumDo;
 import com.ruoyi.homewifi.dobj.LakeReportDo;
+import com.ruoyi.homewifi.dobj.LakeReportSumDo;
 import com.ruoyi.homewifi.domain.DataCityRate;
 import com.ruoyi.homewifi.vo.CityRateVo;
 import com.ruoyi.homewifi.vo.LakeCityRateVo;
@@ -18,14 +20,14 @@ public interface DataCityRateMapper
 {
 
     /**
-     * 查询分地市四率统计列表
-     * 
-     * @param cityRateVO 分地市四率统计
-     * @return 分地市四率统计集合
+     * 查询数据湖下发的工单数据统计结果
      */
-    /*public List<DataCityRate> selectDataCityRateList(CityRateVo cityRateVO);*/
+    public List<LakeReportSumDo> selectLakeReportSumList(CityRateVo cityRateVO);
 
-
+    /**
+     * 查询数据湖下发的礼包数据统计结果
+     */
+    public List<LakeGiftSumDo> selectLakeGiftSumList(LakeCityRateVo lakeCityRateVO);
 
     /**
      * 查询数据湖下发的竣工报告数据
@@ -38,6 +40,20 @@ public interface DataCityRateMapper
     public List<LakeGiftDo> selectLakeGiftList(LakeCityRateVo lakeCityRateVo);
 
 
+
+
+
+
+
+
+
+    /**
+     * 查询分地市四率统计列表
+     *
+     * @param cityRateVO 分地市四率统计
+     * @return 分地市四率统计集合
+     */
+    /*public List<DataCityRate> selectDataCityRateList(CityRateVo cityRateVO);*/
 
     /**
      * 查询分地市四率统计

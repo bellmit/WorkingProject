@@ -100,7 +100,6 @@ public  class DistrictDirc {
                 DataDistrictCode districtDetail = JSONObject.toJavaObject(jsonObject, DataDistrictCode.class);
                 districtList.add(districtDetail);
             }
-
             for (DataDistrictCode dc:districtList){
                 if(!districtMap.containsKey(dc.getStrAreaAuth())){
                     districtMap.put(dc.getStrAreaAuth(),dc.getStrRoleName());
@@ -123,13 +122,11 @@ public  class DistrictDirc {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             try {
                 if(prepared !=null)prepared.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             try {
                 if(connection !=null)connection.close();
             } catch (Exception e) {
