@@ -1,169 +1,180 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="省份" prop="provName">
-        <el-input
-          v-model="queryParams.provName"
-          placeholder="请输入省份"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="统计时间">
+        <el-date-picker
+          v-model="queryParams.startDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="选择日期">
+        </el-date-picker> -
+        <el-date-picker
+          v-model="queryParams.endDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="选择日期">
+        </el-date-picker>
       </el-form-item>
-      <el-form-item label="有效报告数" prop="effectiveSum">
-        <el-input
-          v-model="queryParams.effectiveSum"
-          placeholder="请输入有效报告数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="省份">
+        <el-select v-model="queryParams.provName" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
+          <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="新增礼包数" prop="newGiftSum">
-        <el-input
-          v-model="queryParams.newGiftSum"
-          placeholder="请输入新增礼包数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="新增含终端礼包数" prop="newTermiGiftSum">
-        <el-input
-          v-model="queryParams.newTermiGiftSum"
-          placeholder="请输入新增含终端礼包数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="新增纯服务礼包数" prop="newServiGiftSum">
-        <el-input
-          v-model="queryParams.newServiGiftSum"
-          placeholder="请输入新增纯服务礼包数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="新增e_link/e_OS终端数" prop="newElinkSum">
-        <el-input
-          v-model="queryParams.newElinkSum"
-          placeholder="请输入新增e_link/e_OS终端数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="交付地一致数" prop="sameAreaSum">
-        <el-input
-          v-model="queryParams.sameAreaSum"
-          placeholder="请输入交付地一致数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="测速达标数" prop="wifiCheckedSum">
-        <el-input
-          v-model="queryParams.wifiCheckedSum"
-          placeholder="请输入测速达标数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="报告分享数" prop="shareSum">
-        <el-input
-          v-model="queryParams.shareSum"
-          placeholder="请输入报告分享数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="小翼管家分享数" prop="yiShareSum">
-        <el-input
-          v-model="queryParams.yiShareSum"
-          placeholder="请输入小翼管家分享数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="短信分享数" prop="messageShareSum">
-        <el-input
-          v-model="queryParams.messageShareSum"
-          placeholder="请输入短信分享数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="微信分享数" prop="wechatShareSum">
-        <el-input
-          v-model="queryParams.wechatShareSum"
-          placeholder="请输入微信分享数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="其他分享数" prop="otherShareSum">
-        <el-input
-          v-model="queryParams.otherShareSum"
-          placeholder="请输入其他分享数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="有效报告匹配率" prop="effectiveReportRate">
-        <el-input
-          v-model="queryParams.effectiveReportRate"
-          placeholder="请输入有效报告匹配率"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="交付地一致率" prop="sameAreaRate">
-        <el-input
-          v-model="queryParams.sameAreaRate"
-          placeholder="请输入交付地一致率"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="WiFi测速达标率" prop="wifiCheckedRate">
-        <el-input
-          v-model="queryParams.wifiCheckedRate"
-          placeholder="请输入WiFi测速达标率"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="终端稽核率" prop="elinkCheckedRate">
-        <el-input
-          v-model="queryParams.elinkCheckedRate"
-          placeholder="请输入终端稽核率"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="报告分享率" prop="shareRate">
-        <el-input
-          v-model="queryParams.shareRate"
-          placeholder="请输入报告分享率"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="有效报告数" prop="effectiveSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.effectiveSum"-->
+<!--          placeholder="请输入有效报告数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="新增礼包数" prop="newGiftSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.newGiftSum"-->
+<!--          placeholder="请输入新增礼包数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="新增含终端礼包数" prop="newTermiGiftSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.newTermiGiftSum"-->
+<!--          placeholder="请输入新增含终端礼包数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="新增纯服务礼包数" prop="newServiGiftSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.newServiGiftSum"-->
+<!--          placeholder="请输入新增纯服务礼包数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="新增e_link/e_OS终端数" prop="newElinkSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.newElinkSum"-->
+<!--          placeholder="请输入新增e_link/e_OS终端数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="交付地一致数" prop="sameAreaSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.sameAreaSum"-->
+<!--          placeholder="请输入交付地一致数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="测速达标数" prop="wifiCheckedSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.wifiCheckedSum"-->
+<!--          placeholder="请输入测速达标数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="报告分享数" prop="shareSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.shareSum"-->
+<!--          placeholder="请输入报告分享数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="小翼管家分享数" prop="yiShareSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.yiShareSum"-->
+<!--          placeholder="请输入小翼管家分享数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="短信分享数" prop="messageShareSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.messageShareSum"-->
+<!--          placeholder="请输入短信分享数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="微信分享数" prop="wechatShareSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.wechatShareSum"-->
+<!--          placeholder="请输入微信分享数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="其他分享数" prop="otherShareSum">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.otherShareSum"-->
+<!--          placeholder="请输入其他分享数"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="有效报告匹配率" prop="effectiveReportRate">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.effectiveReportRate"-->
+<!--          placeholder="请输入有效报告匹配率"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="交付地一致率" prop="sameAreaRate">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.sameAreaRate"-->
+<!--          placeholder="请输入交付地一致率"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="WiFi测速达标率" prop="wifiCheckedRate">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.wifiCheckedRate"-->
+<!--          placeholder="请输入WiFi测速达标率"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="终端稽核率" prop="elinkCheckedRate">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.elinkCheckedRate"-->
+<!--          placeholder="请输入终端稽核率"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="报告分享率" prop="shareRate">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.shareRate"-->
+<!--          placeholder="请输入报告分享率"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
+        <el-button type="success" icon="el-icon-search" size="mini" >+生成excel</el-button>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
@@ -256,7 +267,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -332,12 +343,13 @@
 </template>
 
 <script>
-import { listProvrate, getProvrate, delProvrate, addProvrate, updateProvrate, exportProvrate } from "@/api/homewifi/provrate";
+import { listProvrate, getProvrate, delProvrate, addProvrate, updateProvrate, exportProvrate, getCity } from "@/api/homewifi/provrate";
 
 export default {
   name: "Provrate",
   data() {
     return {
+      provList: [],
       // 遮罩层
       loading: true,
       // 导出遮罩层
@@ -380,6 +392,8 @@ export default {
         wifiCheckedRate: null,
         elinkCheckedRate: null,
         shareRate: null,
+        startDate: null,
+        endDate: null
       },
       // 表单参数
       form: {},
@@ -389,9 +403,17 @@ export default {
     };
   },
   created() {
+    this.getProv();
     this.getList();
   },
   methods: {
+    //查询地市id
+    getCity() {
+      this.queryParams.cityName = null
+      getCity(this.queryParams.provName).then(response => {
+        this.cityList = response;
+      });
+    },
     /** 查询分省份四率统计列表 */
     getList() {
       this.loading = true;
@@ -441,7 +463,10 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
+      // this.resetForm("queryForm");
+      this.queryParams.startDate= null;
+      this.queryParams.endDate=null;
+      this.queryParams.provName= null;
       this.handleQuery();
     },
     // 多选框选中数据
