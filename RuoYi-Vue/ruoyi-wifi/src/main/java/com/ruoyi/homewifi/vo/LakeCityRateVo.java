@@ -8,35 +8,8 @@ import java.sql.Date;
  * @Description: 数据湖下发的礼包数据查询需要使用集团的地名编码
  * @Version:1.0
  */
-public class LakeCityRateVo {
-    private Date startDate;
-    private Date endDate;
-    private String lakeProvId;
+public class LakeCityRateVo extends LakeRateVo{
     private String lakeCityId;
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getLakeProvId() {
-        return lakeProvId;
-    }
-
-    public void setLakeProvId(String lakeProvId) {
-        this.lakeProvId = lakeProvId;
-    }
 
     public String getLakeCityId() {
         return lakeCityId;
@@ -48,11 +21,7 @@ public class LakeCityRateVo {
 
     @Override
     public String toString() {
-        return "LakeCityRateVo{" +
-                "startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", lakeProvId='" + lakeProvId + '\'' +
-                ", lakeCityId='" + lakeCityId + '\'' +
+        return super.toString()+"LakeCityRateVo{ lakeCityId='" + lakeCityId + '\'' +
                 '}';
     }
 }

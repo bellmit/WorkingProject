@@ -2,6 +2,7 @@ package com.ruoyi.homewifi.service;
 
 import java.util.List;
 import com.ruoyi.homewifi.domain.DataProvRate;
+import com.ruoyi.homewifi.vo.ProvRateVo;
 
 /**
  * 分省份四率统计Service接口
@@ -15,10 +16,10 @@ public interface IDataProvRateService
     /**
      * 查询分省份四率统计列表
      * 
-     * @param dataProvRate 分省份四率统计
+     * @param provRateVo 分省份四率统计查询条件
      * @return 分省份四率统计集合
      */
-    public List<DataProvRate> selectDataProvRateList(DataProvRate dataProvRate);
+    public List<DataProvRate> selectDataProvRateList(ProvRateVo provRateVo);
 
     /**
      * 查询分省份四率统计

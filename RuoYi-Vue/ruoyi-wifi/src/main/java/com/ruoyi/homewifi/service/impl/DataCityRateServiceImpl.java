@@ -56,14 +56,16 @@ public class DataCityRateServiceImpl implements IDataCityRateService
         if(lakeReportSumList != null && lakeReportSumList.size() != 0){
             return getDataCityRateList(cityRateVo,lakeReportSumList);
         }else{
-            logger.info("条件为{}时，数据湖竣工报告数据为空",cityRateVo.toString());
+            logger.info("条件为{}时，数据湖城市级竣工报告数据为空",cityRateVo.toString());
             return null;
         }
 
     }
 
 
-
+    /**
+     * 拼接数据湖礼包数据统计结果，返回完整四率统计数据
+     */
     public ArrayList<DataCityRate> getDataCityRateList(CityRateVo cityRateVo,List<LakeReportSumDo> lakeReportSumList){
         ArrayList<DataCityRate> cityRateList = new ArrayList<>();
         for(LakeReportSumDo lakeReportSumDo:lakeReportSumList){
@@ -72,7 +74,7 @@ public class DataCityRateServiceImpl implements IDataCityRateService
             lakeCityRateVo.setEndDate(cityRateVo.getEndDate());
             lakeCityRateVo.setLakeProvId(lakeReportSumDo.getDeptId());
             lakeCityRateVo.setLakeCityId(lakeReportSumDo.getLakeCityId());
-            //获取指定省市的礼包统计数据
+            //获取指定城市的礼包统计数据
             List<LakeGiftSumDo> lakeGiftSumList = dataCityRateMapper.selectLakeGiftSumList(lakeCityRateVo);
             LakeGiftSumDo lakeGiftSumDo = lakeGiftSumList.get(0);
             /*装载统计数据*/
@@ -117,7 +119,8 @@ public class DataCityRateServiceImpl implements IDataCityRateService
             dataCityRate.setElinkCheckedRate(aDivideBPercent(new BigDecimal(newElinkSum),new BigDecimal(termiGiftSum)));
             //交付报告分享率:有效报告分享数/有效报告数
             dataCityRate.setWifiCheckedRate(aDivideBPercent(new BigDecimal(shareSum),new BigDecimal(effectiveSum)));
-            }
+            cityRateList.add(dataCityRate);
+        }
         return cityRateList;
     }
 

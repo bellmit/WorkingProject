@@ -1,6 +1,8 @@
 package com.ruoyi.homewifi.controller;
 
 import java.util.List;
+
+import com.ruoyi.homewifi.vo.ProvRateVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,10 +40,10 @@ public class DataProvRateController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('homewifi:provrate:list')")
     @GetMapping("/list")
-    public TableDataInfo list(DataProvRate dataProvRate)
+    public TableDataInfo list(ProvRateVo provRateVo)
     {
         startPage();
-        List<DataProvRate> list = dataProvRateService.selectDataProvRateList(dataProvRate);
+        List<DataProvRate> list = dataProvRateService.selectDataProvRateList(provRateVo);
         return getDataTable(list);
     }
 
@@ -51,12 +53,24 @@ public class DataProvRateController extends BaseController
     @PreAuthorize("@ss.hasPermi('homewifi:provrate:export')")
     @Log(title = "分省份四率统计", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
-    public AjaxResult export(DataProvRate dataProvRate)
+    public AjaxResult export(ProvRateVo provRateVo)
     {
-        List<DataProvRate> list = dataProvRateService.selectDataProvRateList(dataProvRate);
+        List<DataProvRate> list = dataProvRateService.selectDataProvRateList(provRateVo);
         ExcelUtil<DataProvRate> util = new ExcelUtil<DataProvRate>(DataProvRate.class);
         return util.exportExcel(list, "分省份四率统计数据");
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 获取分省份四率统计详细信息

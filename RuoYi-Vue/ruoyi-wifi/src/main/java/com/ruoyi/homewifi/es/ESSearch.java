@@ -6,6 +6,7 @@ import com.ruoyi.homewifi.config.BaseConfig;
 import com.ruoyi.homewifi.district.ProvinceCode;
 import com.ruoyi.homewifi.redis.RedisUtils;
 import com.ruoyi.homewifi.vo.LakeCityRateVo;
+import com.ruoyi.homewifi.vo.LakeRateVo;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,14 @@ public class ESSearch {
     private BaseConfig baseConfig;
 
 
-    public int getApSum(LakeCityRateVo lakeCityRateVo) {
-
-
+    public int getApSum(LakeRateVo lakeRateVo) {
         try {
             String url = "http://"+baseConfig.getEsAddress()+":"+baseConfig.getEsPort()+"/"+baseConfig.getApIndex()+"/"+baseConfig.getApType()+"/_search";
-            String searchStr = checkCityRateUrl(lakeCityRateVo);
+            String searchStr = checkCityRateUrl(lakeRateVo);
+            if(searchStr == null || "".equals(searchStr)){
+                logger.error("获取ES查询语句出错!");
+                return 0;
+            }
             ResponseEntity<JSONObject> responseEntity = esUtils.query(url ,searchStr);
             JSONObject resultJson = responseEntity.getBody();
             JSONArray jsonArray = resultJson.getJSONObject("hits").getJSONArray("hits");
@@ -45,23 +48,22 @@ public class ESSearch {
                 return 0;
             }
             int apSum = Integer.parseInt(resultJson.getJSONObject("hits").get("total").toString());
-            System.out.println(apSum);
+            System.out.println("apSum"+apSum);
             return apSum;
         } catch (Exception e) {
-            logger.error("获取在ap总数出错!错误:{}",e);
+            logger.error("获取ap总数出错!错误:{}",e);
         } finally {
             return 0;
         }
     }
 
-    public String checkCityRateUrl(LakeCityRateVo lakeCityRateVo){
+    public String checkCityRateUrl(LakeRateVo lakeRateVo){
         JSONObject queryRoot = new JSONObject();
         JSONObject boolString = new JSONObject();
         JSONArray mustString = new JSONArray();
-        Long startTime = lakeCityRateVo.getStartDate().getTime();
-        Long endTime = lakeCityRateVo.getEndDate().getTime();
-        String lakeProvId = lakeCityRateVo.getLakeProvId();
-        String lakeCityId = lakeCityRateVo.getLakeCityId();
+        Long startTime = lakeRateVo.getStartDate().getTime();
+        Long endTime = lakeRateVo.getEndDate().getTime();
+        String lakeProvId = lakeRateVo.getLakeProvId();
         if(lakeProvId != null && !"".equals(lakeProvId)){
             String flProvId = ProvinceCode.parse(lakeProvId).getCode();
             if(flProvId != null && !"".equals(flProvId)){
@@ -71,13 +73,17 @@ public class ESSearch {
                 return "";
             }
         }
-        if(lakeCityId != null && !"".equals(lakeCityId)) {
-            String flCityId = redisUtils.get("assetmanage_citycode_" + lakeCityId);
-            if(flCityId != null && !"".equals(flCityId)){
-                mustString.add(newJSONObject("term",newJSONObject("city",flCityId)));
-            }else{
-                logger.info("集团城市编码：{},不存在对应丰联城市编码",lakeCityId);
-                return "";
+
+        if(lakeRateVo instanceof LakeCityRateVo){
+            String lakeCityId = ((LakeCityRateVo)lakeRateVo).getLakeCityId();
+            if(lakeCityId != null && !"".equals(lakeCityId)) {
+                String flCityId = redisUtils.get("assetmanage_citycode_" + lakeCityId);
+                if(flCityId != null && !"".equals(flCityId)){
+                    mustString.add(newJSONObject("term",newJSONObject("city",flCityId)));
+                }else{
+                    logger.info("集团城市编码：{},不存在对应丰联城市编码",lakeCityId);
+                    return "";
+                }
             }
         }
         JSONObject timeRang = null;

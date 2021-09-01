@@ -1,7 +1,12 @@
 package com.ruoyi.homewifi.mapper;
 
 import java.util.List;
+
+import com.ruoyi.homewifi.dobj.LakeGiftSumDo;
+import com.ruoyi.homewifi.dobj.LakeReportSumDo;
 import com.ruoyi.homewifi.domain.DataProvRate;
+import com.ruoyi.homewifi.vo.LakeProvRateVo;
+import com.ruoyi.homewifi.vo.ProvRateVo;
 
 /**
  * 分省份四率统计Mapper接口
@@ -12,13 +17,24 @@ import com.ruoyi.homewifi.domain.DataProvRate;
 public interface DataProvRateMapper 
 {
 
+
+    /**
+     * 条件查询获得竣工报告统计结果
+     */
+    List<LakeReportSumDo> selectLakeReportSumList(ProvRateVo provRateVo);
+
+    /**
+     * 条件查询获得礼包数据统计结果
+     */
+    List<LakeGiftSumDo> selectLakeGiftSumList(LakeProvRateVo lakeProvRateVo);
+
     /**
      * 查询分省份四率统计列表
-     * 
+     *
      * @param dataProvRate 分省份四率统计
      * @return 分省份四率统计集合
      */
-    public List<DataProvRate> selectDataProvRateList(DataProvRate dataProvRate);
+    /*public List<DataProvRate> selectDataProvRateList(DataProvRate dataProvRate);*/
 
     /**
      * 查询分省份四率统计

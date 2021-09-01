@@ -43,3 +43,4 @@ nbdist/
 !*/build/*.java
 !*/build/*.html
 !*/build/*.xml
+/ruoyi-wifi/src/main/java/com/ruoyi/homewifi/vo/
