@@ -24,6 +24,8 @@ public interface DataCityRateMapper
      */
     public List<LakeReportSumDo> selectLakeReportSumList(CityRateVo cityRateVO);
 
+
+
     /**
      * 查询数据湖下发的礼包数据统计结果
      */
@@ -35,9 +37,19 @@ public interface DataCityRateMapper
     public List<LakeReportDo> selectLakeReportList(CityRateVo cityRateVO);
 
     /**
+     * 数据湖下发的竣工报告批量入库
+     */
+    public int insertLakeReportList(List<LakeReportDo> lakeReportList);
+
+    /**
      * 查询数据湖下发的礼包数据
      */
     public List<LakeGiftDo> selectLakeGiftList(LakeCityRateVo lakeCityRateVo);
+
+    /**
+     * 数据湖下发的礼包数据批量入库
+     */
+    public int insertLakeGiftList(List<LakeGiftDo> lakeGiftList);
 
 
 

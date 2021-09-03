@@ -20,7 +20,7 @@ import redis.clients.jedis.JedisPoolConfig;
 public class RedisConfig extends CachingConfigurerSupport {
     protected static final Logger logger = LoggerFactory.getLogger(RedisConfig.class);
 
-    @Value("${spring.redis.district-host}")
+    @Value("${spring.redis.host}")
     private String host;
 
     @Value("${spring.redis.port}")

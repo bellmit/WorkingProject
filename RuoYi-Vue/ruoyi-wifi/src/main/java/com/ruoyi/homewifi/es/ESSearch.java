@@ -77,7 +77,7 @@ public class ESSearch {
         if(lakeRateVo instanceof LakeCityRateVo){
             String lakeCityId = ((LakeCityRateVo)lakeRateVo).getLakeCityId();
             if(lakeCityId != null && !"".equals(lakeCityId)) {
-                String flCityId = redisUtils.get("assetmanage_citycode_" + lakeCityId);
+                String flCityId = redisUtils.getFlCityCode("assetmanage_citycode_" + lakeCityId);
                 if(flCityId != null && !"".equals(flCityId)){
                     mustString.add(newJSONObject("term",newJSONObject("city",flCityId)));
                 }else{

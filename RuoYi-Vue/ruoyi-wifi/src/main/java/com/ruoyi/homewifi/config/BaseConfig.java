@@ -11,6 +11,22 @@ import org.springframework.stereotype.Component;
 //@PropertySource("classpath:application.yml")
 public class BaseConfig {
 
+    //sftp配置
+    @Value("${spring.datatransport.localdir}")
+    private String localdir;
+    //sftp 配置
+    @Value("${spring.datatransport.sftpdir}")
+    private String sftpdir;
+    @Value("${spring.datatransport.sftp.name}")
+    private String sftpname;
+    @Value("${spring.datatransport.sftp.pass}")
+    private String sftppass;
+    @Value("${spring.datatransport.sftp.ip}")
+    private String sftpip;
+    @Value("${spring.datatransport.sftp.port}")
+    private String sftpport;
+
+
     //ES数据库
     @Value("${spring.elasticsearch.cluster.name}")
     private String esCluseterName;
@@ -24,6 +40,54 @@ public class BaseConfig {
     private String apIndex;
     @Value("${spring.elasticsearch.type.apTypeName}")
     private String apType;
+
+    public String getLocaldir() {
+        return localdir;
+    }
+
+    public void setLocaldir(String localdir) {
+        this.localdir = localdir;
+    }
+
+    public String getSftpdir() {
+        return sftpdir;
+    }
+
+    public void setSftpdir(String sftpdir) {
+        this.sftpdir = sftpdir;
+    }
+
+    public String getSftpname() {
+        return sftpname;
+    }
+
+    public void setSftpname(String sftpname) {
+        this.sftpname = sftpname;
+    }
+
+    public String getSftppass() {
+        return sftppass;
+    }
+
+    public void setSftppass(String sftppass) {
+        this.sftppass = sftppass;
+    }
+
+    public String getSftpip() {
+        return sftpip;
+    }
+
+    public void setSftpip(String sftpip) {
+        this.sftpip = sftpip;
+    }
+
+    public String getSftpport() {
+        return sftpport;
+    }
+
+    public void setSftpport(String sftpport) {
+        this.sftpport = sftpport;
+    }
 
     public String getApType() {
         return apType;

@@ -33,28 +33,76 @@ public class RedisUtils {
         jedisPool = redisConfig.redisPoolFactory();
     }*/
 
-    @Autowired
+
     private static JedisPool jedisPool;
 
-    private static Integer indexdb = null;
-
-    @Value("${spring.redis.fl-database}")
-    public void setIndexdb(Integer districtIndexdb) {
-        RedisUtils.indexdb = districtIndexdb;
+    @Autowired
+    public void setJedisPool(JedisPool jedisPool){
+        RedisUtils.jedisPool = jedisPool;
     }
 
-    public static String get(String key) {
+
+    private static Integer flIndex = null;
+    @Value("${spring.redis.fl-database}")
+    public void setIndexdb(Integer districtIndexdb) {
+        RedisUtils.flIndex = districtIndexdb;
+    }
+
+    private static Integer fileNameIndex;
+    @Value("${spring.redis.database}")
+    public void setfileNameIndexdb(Integer fileNameIndexdb) {
+        RedisUtils.fileNameIndex = fileNameIndexdb;
+    }
+
+    //从27服务器8号库获取丰联城市编码
+    public static String getFlCityCode(String key) {
         Jedis jedis = null;
         String value = null;
-
         try {
             jedis = jedisPool.getResource();//获取一个jedis实例
-            jedis.select(indexdb);
+            jedis.select(flIndex);
             value = jedis.get(key);
         } catch (Exception e) {
-            logger.error("错误日志："+e.getMessage());
+            logger.error("redis连接错误,错误日志："+e.getMessage());
         } finally {
-            jedis.close();
+            if(jedis != null){
+                jedis.close();
+            }
+        }
+        return value;
+    }
+
+    //将下发文件名存入27服务器redis缓存7号库,10天过期
+    public static void saveFileName(String fileName){
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();//获取一个jedis实例
+            jedis.select(fileNameIndex);
+            jedis.set(fileName,"");
+            jedis.expire(fileName,864000);
+        } catch (Exception e) {
+            logger.error("redis连接错误,错误日志："+e.getMessage());
+        } finally {
+            if(jedis != null){
+                jedis.close();
+            }
+        }
+    }
+
+    //查询存入redis的文件名是否存在
+    public static String getFileName(String fileName){
+        Jedis jedis = null;
+        String value = null;
+        try {
+            jedis = jedisPool.getResource();//获取一个jedis实例
+            jedis.select(fileNameIndex);
+            value = jedis.get(fileName);
+        } catch (Exception e) {
+            logger.error("redis连接错误,错误日志："+e.getMessage());
+        } finally {
+            if(jedis != null){
+                jedis.close();
+            }
         }
         return value;
     }
