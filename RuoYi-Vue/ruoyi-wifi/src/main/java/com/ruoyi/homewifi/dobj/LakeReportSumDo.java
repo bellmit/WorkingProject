@@ -1,11 +1,14 @@
 package com.ruoyi.homewifi.dobj;
 
+import org.springframework.stereotype.Component;
+
 /**
  * @Author:Z
  * @Data:2021/8/30 15:19
  * @Description: 数据湖竣工报告统计结果
  * @Version:1.0
  */
+@Component
 public class LakeReportSumDo {
     private String deptId;
     private String wProId;

@@ -17,8 +17,8 @@ import redis.clients.jedis.JedisPoolConfig;
 
 
 @Configuration
-public class RedisConfig extends CachingConfigurerSupport {
-    protected static final Logger logger = LoggerFactory.getLogger(RedisConfig.class);
+public class RedisConfigration {
+    protected static final Logger logger = LoggerFactory.getLogger(RedisConfigration.class);
 
     @Value("${spring.redis.host}")
     private String host;
@@ -38,8 +38,12 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Value("${spring.redis.password}")
     private String password;
 
-    @Value("${spring.redis.timeout}")
     private int timeout;
+
+    @Value("${spring.redis.timeout}")
+    public void setTimeout(String timeout){
+        this.timeout = Integer.parseInt(timeout.substring(0,timeout.length()-1));
+    }
 
     @Bean
     public JedisPool redisPoolFactory() {

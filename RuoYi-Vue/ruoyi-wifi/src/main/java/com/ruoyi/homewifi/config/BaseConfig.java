@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 //@Configuration
 //@PropertySource("classpath:application.yml")
+@Component
 public class BaseConfig {
 
     //sftp配置

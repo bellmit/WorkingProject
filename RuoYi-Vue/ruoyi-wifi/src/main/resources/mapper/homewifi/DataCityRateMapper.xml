@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.homewifi.mapper.DataCityRateMapper">
 
-    <resultMap type="LakeReportDo" id="LakeReportResult">
+    <resultMap type="com.ruoyi.homewifi.dobj.LakeReportDo" id="LakeReportResult">
         <result property="id"    column="id"    />
         <result property="lakeOrderid"    column="lake_orderId"    />
         <result property="dayId"    column="day_id"    />
@@ -28,7 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from data_lake_report
     </sql>
 
-    <select id="selectLakeReportList" parameterType="CityRatoVo" resultMap="LakeReportResult">
+    <select id="selectLakeReportList" parameterType="com.ruoyi.homewifi.vo.CityRateVo" resultMap="LakeReportResult">
         <include refid="selectLakeReportVo"/>
         <where>
             <if test="startDate != null "> and day_id <![CDATA[ >= ]]> #{startDate}</if>
@@ -84,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
 
-    <resultMap type="LakeGiftDo" id="LakeGiftResult">
+    <resultMap type="com.ruoyi.homewifi.dobj.LakeGiftDo" id="LakeGiftResult">
         <result property="id"    column="id"    />
         <result property="sealingDate"    column="sealing_date"    />
         <result property="deptId"    column="dept_id"    />
@@ -98,7 +98,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, sealing_time, dept_id, lake_city_id, lake_area_id, gift_code, gift_id from data_lake_gift
     </sql>
 
-    <select id="selectLakeGiftList" parameterType="LakeCityRateVo" resultMap="LakeGiftResult">
+    <select id="selectLakeGiftList" parameterType="com.ruoyi.homewifi.vo.LakeCityRateVo" resultMap="LakeGiftResult">
         <include refid="selectLakeGiftVo"/>
         <where>
             <if test="startDate != null "> and DATE(sealing_time) <![CDATA[ >= ]]> #{startDate}</if>
@@ -144,7 +144,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <!-- 数据湖下发报告表统计结果 -->
-    <resultMap type="LakeReportSumDo" id="LakeReportSumResult">
+    <resultMap type="com.ruoyi.homewifi.dobj.LakeReportSumDo" id="LakeReportSumResult">
         <result property="deptId"    column="dept_id"    />
         <result property="wProId"    column="w_pro_id"    />
         <result property="lakeCityId"    column="lake_city_id"    />
@@ -159,7 +159,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="otherShareSum"    column="other_share_sum"    />
     </resultMap>
 
-    <select id="selectLakeReportSumList" parameterType="CityRateVo" resultMap="LakeReportSumResult">
+    <select id="selectLakeReportSumList" parameterType="com.ruoyi.homewifi.vo.CityRateVo" resultMap="LakeReportSumResult">
         select
             any_value(dept_id) as dept_id,
             any_value(w_prov_id) as w_pro_id,
@@ -187,7 +187,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!-- 数据湖下发礼包表统计结果 -->
-    <resultMap type="LakeGiftSumDo" id="LakeGiftSumResult">
+    <resultMap type="com.ruoyi.homewifi.dobj.LakeGiftSumDo" id="LakeGiftSumResult">
         <result property="deptId"    column="dept_id"    />
         <result property="lakeCityId"    column="lake_city_id"    />
         <result property="giftCodeSum"    column="gift_code_sum"    />
@@ -196,7 +196,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="serviGiftSum"    column="servi_gift_sum"    />
     </resultMap>
 
-    <select id="selectLakeGiftSumList" parameterType="LakeCityRateVo" resultMap="LakeGiftSumResult">
+    <select id="selectLakeGiftSumList" parameterType="com.ruoyi.homewifi.vo.LakeCityRateVo" resultMap="LakeGiftSumResult">
         select
             any_value(d.dept_id) as dept_id,
             any_value(d.lake_city_id) as lake_city_id,
@@ -390,7 +390,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteDataCityRateByIds" parameterType="String">
-        delete from data_city_rate where id in 
+        delete from data_city_rate where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

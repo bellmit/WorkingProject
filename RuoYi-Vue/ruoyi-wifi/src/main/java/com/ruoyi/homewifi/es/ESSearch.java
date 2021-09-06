@@ -65,21 +65,20 @@ public class ESSearch {
         Long endTime = lakeRateVo.getEndDate().getTime();
         String lakeProvId = lakeRateVo.getLakeProvId();
         if(lakeProvId != null && !"".equals(lakeProvId)){
-            String flProvId = ProvinceCode.parse(lakeProvId).getCode();
-            if(flProvId != null && !"".equals(flProvId)){
-                mustString.add(newJSONObject("term",newJSONObject("province",flProvId)));
+            ProvinceCode pCode = ProvinceCode.parse(lakeProvId);
+            if(pCode != null && !"".equals(pCode.getCode())){
+                mustString.add(newJSONObject("term",newJSONObject("province",Integer.valueOf(pCode.getCode()))));
             }else{
                 logger.info("集团省份编码：{},不存在对应丰联省份编码",lakeProvId);
                 return "";
             }
         }
-
         if(lakeRateVo instanceof LakeCityRateVo){
             String lakeCityId = ((LakeCityRateVo)lakeRateVo).getLakeCityId();
             if(lakeCityId != null && !"".equals(lakeCityId)) {
                 String flCityId = redisUtils.getFlCityCode("assetmanage_citycode_" + lakeCityId);
                 if(flCityId != null && !"".equals(flCityId)){
-                    mustString.add(newJSONObject("term",newJSONObject("city",flCityId)));
+                    mustString.add(newJSONObject("term",newJSONObject("city",Integer.valueOf(flCityId))));
                 }else{
                     logger.info("集团城市编码：{},不存在对应丰联城市编码",lakeCityId);
                     return "";
@@ -113,7 +112,7 @@ public class ESSearch {
                 jsonObject.put(key,o);
             }
         }catch (Exception e){
-
+            e.printStackTrace();
         }
         return jsonObject;
     }

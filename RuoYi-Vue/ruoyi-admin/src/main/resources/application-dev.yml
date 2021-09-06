@@ -92,8 +92,8 @@ spring:
   #es配置
   elasticsearch:
     cluster:
-      name: Test_es_cluster
-    address: localhost
+      name: es1
+    address: 101.89.160.189
     zen:
       discovery:
         port: 9300
