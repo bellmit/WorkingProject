@@ -2,6 +2,7 @@ package com.ruoyi.homewifi.dobj;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
+import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 
@@ -11,6 +12,7 @@ import java.sql.Date;
  * @Description: 数据湖下发竣工报告DO对象
  * @Version:1.0
  */
+@Component
 public class LakeReportDo {
     /** 主键id */
     private Long id;

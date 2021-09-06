@@ -62,8 +62,10 @@ spring:
     host: localhost
     # 端口，默认为6379
     port: 6379
-    # 数据库索引
-    database: 0
+    # 数据库索引存放若依缓存数据和数据湖文件名
+    database: 7
+    # 数据库索引存放集团-丰联地区转换编码表
+    fl-database: 8
     # 密码
     password:
     # 连接超时时间
@@ -78,13 +80,20 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+    jedis:
+      pool:
+        # 连接池最大连接数
+        max-active: 8
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池中的最小空闲连接
+        min-idle: 0
 
   #es配置
-#es配置
   elasticsearch:
     cluster:
-      name: Test_es_cluster
-    address: localhost
+      name: es1
+    address: 101.89.160.189
     zen:
       discovery:
         port: 9300
@@ -93,3 +102,13 @@ spring:
       apIndexName: aponline
     type:
       apTypeName: messagedb
+
+#sftp路径 下载排障标签的路径
+  datatransport:
+    sftpdir: /data/super/301/data/
+    localdir: F:/Java/IdeaProjects/tmp/homewifi
+    sftp:
+      name: zhhjt
+      pass: zhhjt#123
+      ip: 10.251.16.137
+      port: 6122

@@ -100,7 +100,7 @@ public enum ProvinceCode {
     /****
      * 获取 所有的业务代码以及描述，以map形式返回
      *
-     * @return Map<String                                                               ,                                                               String>
+     * @return Map<String,String>
      */
     public static Map<String, String> getMap() {
         Map<String, String> map = new HashMap<String, String>();
