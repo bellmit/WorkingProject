@@ -16,7 +16,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="省份">
-        <el-select v-model="queryParams.provName" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
+        <el-select v-model="queryParams.provName" clearable placeholder="请选择省份" class="handle-select mr10">
           <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>
@@ -343,7 +343,7 @@
 </template>
 
 <script>
-import { listProvrate, getProvrate, delProvrate, addProvrate, updateProvrate, exportProvrate, getCity } from "@/api/homewifi/provrate";
+import { listProvrate, getProvrate, delProvrate, addProvrate, updateProvrate, exportProvrate, getProv } from "@/api/homewifi/provrate";
 
 export default {
   name: "Provrate",
@@ -351,7 +351,7 @@ export default {
     return {
       provList: [],
       // 遮罩层
-      loading: true,
+      loading: false,
       // 导出遮罩层
       exportLoading: false,
       // 选中数组
@@ -404,14 +404,15 @@ export default {
   },
   created() {
     this.getProv();
-    this.getList();
+    // this.getList();
   },
   methods: {
-    //查询地市id
-    getCity() {
-      this.queryParams.cityName = null
-      getCity(this.queryParams.provName).then(response => {
-        this.cityList = response;
+    //查询省份
+    getProv() {
+      getProv().then(response => {
+        this.provList = response;
+        this.provList.sort((a, b)=> a.value.localeCompare(b.value, 'zh'));
+        // this.queryParams.cityName = null
       });
     },
     /** 查询分省份四率统计列表 */

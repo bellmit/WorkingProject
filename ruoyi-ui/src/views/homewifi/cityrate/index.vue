@@ -352,7 +352,7 @@
 </template>
 
 <script>
-import { listCityrate, getCityrate, delCityrate, addCityrate, updateCityrate, exportCityrate, getCity } from "@/api/homewifi/cityrate";
+import { listCityrate, getCityrate, delCityrate, addCityrate, updateCityrate, exportCityrate, getCity, getProv } from "@/api/homewifi/cityrate";
 
 export default {
   name: "Cityrate",
@@ -361,7 +361,7 @@ export default {
       provList: [],
       cityList: [],
       // 遮罩层
-      loading: true,
+      loading: false,
       // 导出遮罩层
       exportLoading: false,
       // 选中数组
@@ -414,10 +414,18 @@ export default {
     };
   },
   created() {
-    this.getCity();
-    this.getList();
+    this.getProv();
+    // this.getList();
   },
   methods: {
+    //查询省份
+    getProv() {
+      getProv().then(response => {
+        this.provList = response;
+        this.provList.sort((a, b)=> a.value.localeCompare(b.value, 'zh'));
+        // this.queryParams.cityName = null
+      });
+    },
     //查询地市id
     getCity() {
       this.queryParams.cityName = null
