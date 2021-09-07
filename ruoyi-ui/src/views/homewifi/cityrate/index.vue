@@ -16,12 +16,12 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="省份">
-        <el-select v-model="queryParams.provName" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
+        <el-select v-model="queryParams.wProvId" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
           <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="地市">
-        <el-select v-model="queryParams.cityName" clearable placeholder="请选择地市" class="handle-select mr10">
+        <el-select v-model="queryParams.wCityId" clearable placeholder="请选择地市" class="handle-select mr10">
           <el-option v-for="item in cityList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>
@@ -384,27 +384,29 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        provName: null,
-        cityName: null,
-        effectiveSum: null,
-        newGiftSum: null,
-        newTermiGiftSum: null,
-        newServiGiftSum: null,
-        newElinkSum: null,
-        sameAreaSum: null,
-        wifiCheckedSum: null,
-        shareSum: null,
-        yiShareSum: null,
-        messageShareSum: null,
-        wechatShareSum: null,
-        otherShareSum: null,
-        effectiveReportRate: null,
-        sameAreaRate: null,
-        wifiCheckedRate: null,
-        elinkCheckedRate: null,
-        shareRate: null,
+        // provName: null,
+        // cityName: null,
+        // effectiveSum: null,
+        // newGiftSum: null,
+        // newTermiGiftSum: null,
+        // newServiGiftSum: null,
+        // newElinkSum: null,
+        // sameAreaSum: null,
+        // wifiCheckedSum: null,
+        // shareSum: null,
+        // yiShareSum: null,
+        // messageShareSum: null,
+        // wechatShareSum: null,
+        // otherShareSum: null,
+        // effectiveReportRate: null,
+        // sameAreaRate: null,
+        // wifiCheckedRate: null,
+        // elinkCheckedRate: null,
+        // shareRate: null,
         startDate: null,
-        endDate: null
+        endDate: null,
+        wProvId: null,
+        wCityId: null
       },
       // 表单参数
       form: {},
