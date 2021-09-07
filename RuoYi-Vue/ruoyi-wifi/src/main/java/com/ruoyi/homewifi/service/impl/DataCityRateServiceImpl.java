@@ -36,6 +36,8 @@ public class DataCityRateServiceImpl implements IDataCityRateService
 
     @Autowired
     private DataCityRateMapper dataCityRateMapper;
+    @Autowired
+    private ESSearch esSearch;
 
     /**
      * 查询分地市四率统计列表
@@ -92,7 +94,7 @@ public class DataCityRateServiceImpl implements IDataCityRateService
             Integer serviGiftSum = lakeGiftSumDo.getServiGiftSum();
             dataCityRate.setNewServiGiftSum(serviGiftSum);
             //配置ES查询新增e_link/e_OS终端数
-            ESSearch esSearch = new ESSearch();
+            //ESSearch esSearch = new ESSearch();
             int newElinkSum = esSearch.getApSum(lakeCityRateVo);
             dataCityRate.setNewElinkSum(newElinkSum);
             Integer sameAreaSum = lakeReportSumDo.getSameAreaSum();

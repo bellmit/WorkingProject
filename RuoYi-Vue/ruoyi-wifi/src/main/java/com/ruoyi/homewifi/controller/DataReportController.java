@@ -77,9 +77,9 @@ public class DataReportController extends BaseController
      * 查询某一省份对应的城市列表
      */
     @GetMapping("/citylist")
-    public List cityList(String provId)
+    public List cityList(String wProvId)
     {
-        return dataReportService.getCityList(provId);
+        return dataReportService.getCityList(wProvId);
     }
 
 

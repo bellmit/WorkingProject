@@ -1,5 +1,7 @@
 package com.ruoyi.homewifi.vo;
 
+import com.ruoyi.common.core.domain.BaseEntity;
+
 import java.sql.Date;
 
 /**
@@ -8,7 +10,7 @@ import java.sql.Date;
  * @Description: 四率条件查询视觉转换对象父类
  * @Version:1.0
  */
-public class LakeRateVo {
+public class LakeRateVo extends BaseEntity {
     private Date startDate;
     private Date endDate;
     private String lakeProvId;

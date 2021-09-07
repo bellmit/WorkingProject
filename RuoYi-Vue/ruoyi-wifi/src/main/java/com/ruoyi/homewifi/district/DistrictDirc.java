@@ -84,7 +84,7 @@ public  class DistrictDirc {
      * 加锁防止数据库过载
      * */
     public synchronized static void findAllDistrict() {
-        //logger.info("开始查地名*****************************************");
+        logger.info("开始查地名*****************************************");
         PreparedStatement prepared = null;
         try {
             if(connection == null){

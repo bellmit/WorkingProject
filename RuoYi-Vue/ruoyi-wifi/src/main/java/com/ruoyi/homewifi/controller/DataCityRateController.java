@@ -38,6 +38,7 @@ public class DataCityRateController extends BaseController
     public TableDataInfo list(CityRateVo cityRateVo)
     {
         startPage();
+        System.out.println(cityRateVo.toString());
         List<DataCityRate> list = dataCityRateService.selectDataCityRateList(cityRateVo);
         return getDataTable(list);
     }
