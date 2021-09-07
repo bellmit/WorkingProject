@@ -66,7 +66,7 @@ export function getCity(prov) {
     url: '/homewifi/report/citylist',
     method: 'get',
     params:{
-      provId: prov
+      wProvId: prov
     }
   })
 }

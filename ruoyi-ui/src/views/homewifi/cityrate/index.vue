@@ -431,7 +431,7 @@ export default {
     //查询地市id
     getCity() {
       this.queryParams.cityName = null
-      getCity(this.queryParams.provName).then(response => {
+      getCity(this.queryParams.wProvId).then(response => {
         this.cityList = response;
       });
     },
