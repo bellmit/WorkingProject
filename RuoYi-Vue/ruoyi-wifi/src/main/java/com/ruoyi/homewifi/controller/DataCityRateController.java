@@ -37,8 +37,9 @@ public class DataCityRateController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(CityRateVo cityRateVo)
     {
+
+        //System.out.println(cityRateVo.toString());
         startPage();
-        System.out.println(cityRateVo.toString());
         List<DataCityRate> list = dataCityRateService.selectDataCityRateList(cityRateVo);
         return getDataTable(list);
     }
@@ -55,6 +56,31 @@ public class DataCityRateController extends BaseController
         ExcelUtil<DataCityRate> util = new ExcelUtil<DataCityRate>(DataCityRate.class);
         return util.exportExcel(list, "分地市四率统计数据");
     }
+
+    /**
+     * 查询分地市四率统计列表
+     */
+    /*@PreAuthorize("@ss.hasPermi('homewifi:cityrate:list')")
+    @GetMapping("/list")
+    public TableDataInfo list(CityRateVo cityRateVo)
+    {
+        //System.out.println(cityRateVo.toString());
+        startPage();
+        return  dataCityRateService.selectDataCityRateList(cityRateVo);
+    }*/
+
+    /**
+     * 导出分地市四率统计列表
+     */
+    /*@PreAuthorize("@ss.hasPermi('homewifi:cityrate:export')")
+    @Log(title = "分地市四率统计", businessType = BusinessType.EXPORT)
+    @GetMapping("/export")
+    public AjaxResult export(CityRateVo cityRateVo)
+    {
+        TableDataInfo list = dataCityRateService.selectDataCityRateList(cityRateVo);
+        ExcelUtil<DataCityRate> util = new ExcelUtil<DataCityRate>(DataCityRate.class);
+        return util.exportExcel((List<DataCityRate>) list.getRows(), "分地市四率统计数据");
+    }*/
 
     /**
      * 获取分地市四率统计详细信息

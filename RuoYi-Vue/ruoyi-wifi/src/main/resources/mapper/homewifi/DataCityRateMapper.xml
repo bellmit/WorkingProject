@@ -183,7 +183,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ${params.dataScope}
         </where>
         group by w_city_id
-        order by w_city_id
+        order by w_pro_id
     </select>
 
     <!-- 数据湖下发礼包表统计结果 -->
