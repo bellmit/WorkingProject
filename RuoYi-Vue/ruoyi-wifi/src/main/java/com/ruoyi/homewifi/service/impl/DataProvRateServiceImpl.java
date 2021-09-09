@@ -118,7 +118,7 @@ public class DataProvRateServiceImpl implements IDataProvRateService
             //终端稽核率:e-link终端数/含终端礼包数
             dataProvRate.setElinkCheckedRate(aDivideBPercent(new BigDecimal(newElinkSum),new BigDecimal(termiGiftSum)));
             //交付报告分享率:有效报告分享数/有效报告数
-            dataProvRate.setWifiCheckedRate(aDivideBPercent(new BigDecimal(shareSum),new BigDecimal(effectiveSum)));
+            dataProvRate.setShareRate(aDivideBPercent(new BigDecimal(shareSum),new BigDecimal(effectiveSum)));
             provRateList.add(dataProvRate);
         }
         return provRateList;

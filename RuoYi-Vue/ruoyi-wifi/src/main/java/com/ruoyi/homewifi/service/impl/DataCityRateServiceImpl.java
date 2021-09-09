@@ -161,7 +161,7 @@ public class DataCityRateServiceImpl implements IDataCityRateService
             //终端稽核率:e-link终端数/含终端礼包数
             dataCityRate.setElinkCheckedRate(aDivideBPercent(new BigDecimal(newElinkSum),new BigDecimal(termiGiftSum)));
             //交付报告分享率:有效报告分享数/有效报告数
-            dataCityRate.setWifiCheckedRate(aDivideBPercent(new BigDecimal(shareSum),new BigDecimal(effectiveSum)));
+            dataCityRate.setShareRate(aDivideBPercent(new BigDecimal(shareSum),new BigDecimal(effectiveSum)));
             cityRateList.add(dataCityRate);
         }
         return cityRateList;
