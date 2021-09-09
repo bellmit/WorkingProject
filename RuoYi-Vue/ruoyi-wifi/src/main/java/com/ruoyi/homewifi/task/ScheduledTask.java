@@ -1,7 +1,6 @@
-package com.ruoyi.homewifi;
+package com.ruoyi.homewifi.task;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.ChannelSftp;
 import com.ruoyi.homewifi.config.BaseConfig;
 import com.ruoyi.homewifi.dobj.LakeGiftDo;
@@ -16,15 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -75,7 +71,7 @@ public class ScheduledTask {
     //@Scheduled(fixedDelay=3000)
     public String readFileToEs() {
         try {
-            logger.info("{}号,存储数据湖下发的礼包数据，开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
+            logger.info("{}号,存储数据湖下发数据，开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
             Long startTime = System.currentTimeMillis();
             pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
 

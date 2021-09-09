@@ -29,10 +29,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         sum(if(effective_report = 1 and same_area =1,1,0)) as same_area_sum,
         sum(if(effective_report = 1 and wifi_checked=1,1,0)) as wifi_checked_sum,
         sum(if(effective_report = 1 and lake_share_checked=1,1,0)) as share_sum,
-        sum(if(effective_report = 1 and lake_share_method=0,1,0)) as message_share_sum,
-        sum(if(effective_report = 1 and lake_share_method=1,1,0)) as wechat_share_sum,
-        sum(if(effective_report = 1 and lake_share_method=2,1,0)) as yi_share_sum,
-        sum(if(effective_report = 1 and lake_share_method=3,1,0)) as other_share_sum
+        sum(if(effective_report = 1 and lake_share_method=2,1,0)) as message_share_sum,
+        sum(if(effective_report = 1 and lake_share_method=9,1,0)) as wechat_share_sum,
+        sum(if(effective_report = 1 and lake_share_method=3,1,0)) as yi_share_sum,
+        sum(if(effective_report = 1 and lake_share_method=0,1,0)) as other_share_sum
         from data_lake_report d
         <where>
             <if test="startDate != null "> and day_id <![CDATA[ >= ]]> #{startDate}</if>
