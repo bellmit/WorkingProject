@@ -6,6 +6,8 @@ import java.util.List;
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.homewifi.district.DistrictDirc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.homewifi.mapper.DataReportMapper;
@@ -23,6 +25,8 @@ public class DataReportServiceImpl implements IDataReportService
 {
     @Autowired
     private DataReportMapper dataReportMapper;
+
+    protected static final Logger logger = LoggerFactory.getLogger(DataReportServiceImpl.class);
 
     /**
      * 查询竣工报告查询
@@ -55,8 +59,13 @@ public class DataReportServiceImpl implements IDataReportService
      */
     @Override
     public List<JSONObject> getProvList() {
+        logger.info("获取省份列表");
         List<JSONObject> provList = new ArrayList<>();
+        if(DistrictDirc.provMap.size() == 0){
+            DistrictDirc.findAllDistrict();
+        }
         for(String provId:DistrictDirc.provMap.keySet()){
+            //System.out.println("执行到这里");
             String provName = DistrictDirc.getDistrict(provId);
             JSONObject tmpJson = new JSONObject();
             tmpJson.put("key",provId);
@@ -76,7 +85,7 @@ public class DataReportServiceImpl implements IDataReportService
         Long provNum = DistrictDirc.provMap.get(provId);
         for(String cityId:DistrictDirc.cityMap.keySet()){
             JSONObject tmpJson = new JSONObject();
-            if(DistrictDirc.cityMap.get(cityId) == provNum){
+            if(DistrictDirc.cityMap.get(cityId).equals(provNum)){
                 String cityName = DistrictDirc.getDistrict(cityId);
                 tmpJson.put("key",cityId);
                 tmpJson.put("value",cityName);

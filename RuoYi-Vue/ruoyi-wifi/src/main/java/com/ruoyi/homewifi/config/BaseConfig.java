@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-@Data
 //@Configuration
 //@PropertySource("classpath:application.yml")
 @Component
@@ -136,5 +135,23 @@ public class BaseConfig {
 
     public void setEsPort(String esPort) {
         this.esPort = esPort;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseConfig{" +
+                "localdir='" + localdir + '\'' +
+                ", sftpdir='" + sftpdir + '\'' +
+                ", sftpname='" + sftpname + '\'' +
+                ", sftppass='" + sftppass + '\'' +
+                ", sftpip='" + sftpip + '\'' +
+                ", sftpport='" + sftpport + '\'' +
+                ", esCluseterName='" + esCluseterName + '\'' +
+                ", esAddress='" + esAddress + '\'' +
+                ", esZenPort='" + esZenPort + '\'' +
+                ", esPort='" + esPort + '\'' +
+                ", apIndex='" + apIndex + '\'' +
+                ", apType='" + apType + '\'' +
+                '}';
     }
 }

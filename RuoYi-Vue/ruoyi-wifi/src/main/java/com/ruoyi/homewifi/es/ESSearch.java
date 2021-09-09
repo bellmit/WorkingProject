@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.util.Map;
@@ -22,6 +23,7 @@ import java.util.Map;
  * @Description: 根据时间区间查看elink总数
  * @Version:1.0
  */
+@Component
 public class ESSearch {
     private static final Logger logger = LoggerFactory.getLogger(ESSearch.class);
     @Autowired
@@ -34,7 +36,11 @@ public class ESSearch {
 
     public int getApSum(LakeRateVo lakeRateVo) {
         try {
-            String url = "http://"+baseConfig.getEsAddress()+":"+baseConfig.getEsPort()+"/"+baseConfig.getApIndex()+"/"+baseConfig.getApType()+"/_search";
+            //System.out.println(baseConfig.toString());
+            String esAddress = baseConfig.getEsAddress();
+            System.out.println("esAddress:"+esAddress);
+            String url = "http://"+ esAddress +":"+baseConfig.getEsPort()+"/"+baseConfig.getApIndex()+"/"+baseConfig.getApType()+"/_search";
+
             String searchStr = checkCityRateUrl(lakeRateVo);
             if(searchStr == null || "".equals(searchStr)){
                 logger.error("获取ES查询语句出错!");
@@ -76,7 +82,7 @@ public class ESSearch {
         if(lakeRateVo instanceof LakeCityRateVo){
             String lakeCityId = ((LakeCityRateVo)lakeRateVo).getLakeCityId();
             if(lakeCityId != null && !"".equals(lakeCityId)) {
-                String flCityId = redisUtils.getFlCityCode("assetmanage_citycode_" + lakeCityId);
+                String flCityId = redisUtils.getFlCityCode("assetmanage_citycode_" + lakeCityId+"00");
                 if(flCityId != null && !"".equals(flCityId)){
                     mustString.add(newJSONObject("term",newJSONObject("city",Integer.valueOf(flCityId))));
                 }else{
@@ -117,10 +123,14 @@ public class ESSearch {
         return jsonObject;
     }
 
-    /*@Test
+    @Test
     public void test1(){
-        getApSum(1629216000000L,1629291600000L);
-    }*/
+        LakeRateVo lakeRateVo = new LakeRateVo();
+        lakeRateVo.setStartDate(new Date(2021,8,1));
+        lakeRateVo.setEndDate(new Date(2021,9,1));
+        lakeRateVo.setLakeProvId("833");
+        System.out.println(getApSum(lakeRateVo));
+    }
 
 
 
