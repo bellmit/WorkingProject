@@ -269,8 +269,8 @@
     </el-row>
 
     <el-table v-loading="loading" :data="reportList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键id" align="center" prop="id" />
+<!--      <el-table-column type="selection" width="55" align="center" />-->
+      <el-table-column label="主键id" align="center" prop="id" v-if="showId"/>
       <el-table-column label="省份" align="center" prop="provName" />
       <el-table-column label="地市" align="center" prop="cityName" />
       <el-table-column label="县区" align="center" prop="areaName" />
@@ -299,7 +299,7 @@
       <el-table-column label="有效报告校验" align="center" prop="effectiveReport" :formatter="effectiveReportFormat" />
       <el-table-column label="终端稽核校验" align="center" prop="elinkChecked" :formatter="elinkCheckedFormat" />
       <el-table-column label="WiFi测速校验" align="center" prop="wifiChecked" :formatter="wifiCheckedFormat" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="showHandle">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -457,6 +457,8 @@ export default {
   name: "Report",
   data() {
     return {
+      showHandle:false,
+      showId:false,
       provList: [],
       cityList: [],
       options: [],

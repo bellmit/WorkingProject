@@ -174,45 +174,45 @@
 <!--        />-->
 <!--      </el-form-item>-->
       <el-form-item>
-        <el-button type="success" icon="el-icon-search" size="mini" @click="handleExport">+生成excel</el-button>
+<!--        <el-button type="success" icon="el-icon-search" size="mini" @click="handleExport">+生成excel</el-button>-->
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['homewifi:provrate:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['homewifi:provrate:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['homewifi:provrate:remove']"
-        >删除</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          icon="el-icon-plus"-->
+<!--          size="mini"-->
+<!--          @click="handleAdd"-->
+<!--          v-hasPermi="['homewifi:provrate:add']"-->
+<!--        >新增</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          icon="el-icon-edit"-->
+<!--          size="mini"-->
+<!--          :disabled="single"-->
+<!--          @click="handleUpdate"-->
+<!--          v-hasPermi="['homewifi:provrate:edit']"-->
+<!--        >修改</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="danger"-->
+<!--          plain-->
+<!--          icon="el-icon-delete"-->
+<!--          size="mini"-->
+<!--          :disabled="multiple"-->
+<!--          @click="handleDelete"-->
+<!--          v-hasPermi="['homewifi:provrate:remove']"-->
+<!--        >删除</el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -228,8 +228,8 @@
     </el-row>
 
     <el-table v-loading="loading" :data="provrateList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键id" align="center" prop="id" />
+<!--      <el-table-column type="selection" width="55" align="center" />-->
+      <el-table-column label="主键id" align="center" prop="id" v-if="showId"/>
       <el-table-column label="省份" align="center" prop="provName" />
       <el-table-column label="有效报告数" align="center" prop="effectiveSum" />
       <el-table-column label="新增礼包数" align="center" prop="newGiftSum" />
@@ -248,7 +248,7 @@
       <el-table-column label="WiFi测速达标率" align="center" prop="wifiCheckedRate" />
       <el-table-column label="终端稽核率" align="center" prop="elinkCheckedRate" />
       <el-table-column label="报告分享率" align="center" prop="shareRate" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="showHandle">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -349,6 +349,8 @@ export default {
   name: "Provrate",
   data() {
     return {
+      showHandle:false,
+      showId:false,
       provList: [],
       // 遮罩层
       loading: false,
