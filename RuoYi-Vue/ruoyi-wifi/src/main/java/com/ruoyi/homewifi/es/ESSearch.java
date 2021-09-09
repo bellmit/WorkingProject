@@ -67,8 +67,6 @@ public class ESSearch {
         JSONObject queryRoot = new JSONObject();
         JSONObject boolString = new JSONObject();
         JSONArray mustString = new JSONArray();
-        Long startTime = lakeRateVo.getStartDate().getTime();
-        Long endTime = lakeRateVo.getEndDate().getTime();
         String lakeProvId = lakeRateVo.getLakeProvId();
         if(lakeProvId != null && !"".equals(lakeProvId)){
             ProvinceCode pCode = ProvinceCode.parse(lakeProvId);
@@ -92,14 +90,16 @@ public class ESSearch {
             }
         }
         JSONObject timeRang = null;
-        if(startTime != null){
-            timeRang = newJSONObject("gte", startTime);
+        Date startDate = lakeRateVo.getStartDate();
+        Date endDate = lakeRateVo.getEndDate();
+        if(startDate != null){
+            timeRang = newJSONObject("gte", startDate.getTime());
         }
-        if(endTime != null){
+        if(endDate != null){
             if(timeRang != null){
-                timeRang.put("lte",endTime);
+                timeRang.put("lte",endDate.getTime());
             }else{
-                timeRang = newJSONObject("lte", endTime);
+                timeRang = newJSONObject("lte", endDate.getTime());
             }
         }
         if(timeRang!= null){

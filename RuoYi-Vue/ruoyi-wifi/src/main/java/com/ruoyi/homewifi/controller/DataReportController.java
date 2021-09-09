@@ -42,8 +42,7 @@ public class DataReportController extends BaseController
         List<DataReport> list = dataReportService.selectDataReportList(dataReport);
         return getDataTable(list);
 
-        //TODO：
-        // Dl那边的建表字段需要修改、7.数据字典里的数代表的含义需要确定、
+        //TODO：数据库入库测试、项目梳理、分省功能测试（Bug）、页面美化、验收、准备上线测试
     }
 
 

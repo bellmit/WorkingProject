@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.homewifi.district.DistrictDirc;
 import org.slf4j.Logger;
@@ -47,7 +48,8 @@ public class DataReportServiceImpl implements IDataReportService
      * 万维地区编码转文字
      */
     public List transforList(List<DataReport> list){
-        List<DataReport> resultList = new ArrayList<>();
+        Page resultList = new Page<DataReport>();
+        resultList.setTotal(((Page)list).getTotal());
         for(DataReport dr:list){
             String provCode = dr.getProvName();
             String cityCode = dr.getCityName();

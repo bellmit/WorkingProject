@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.pagehelper.Page;
 import com.ruoyi.homewifi.district.DistrictDirc;
 import com.ruoyi.homewifi.dobj.LakeGiftSumDo;
 import com.ruoyi.homewifi.dobj.LakeReportSumDo;
@@ -34,6 +35,8 @@ public class DataProvRateServiceImpl implements IDataProvRateService
 
     @Autowired
     private DataProvRateMapper dataProvRateMapper;
+    @Autowired
+    private ESSearch esSearch;
 
     /**
      * 查询分省份四率统计列表
@@ -50,7 +53,9 @@ public class DataProvRateServiceImpl implements IDataProvRateService
             return getDataProvRateList(provRateVo,lakeReportSumList);
         }else{
             logger.info("条件为{}时，数据湖省级级竣工报告数据为空",provRateVo.toString());
-            return null;
+            Page provRateList = new Page();
+            provRateList.setTotal(0);
+            return provRateList;
         }
     }
 
@@ -58,29 +63,36 @@ public class DataProvRateServiceImpl implements IDataProvRateService
      * 拼接数据湖礼包数据统计结果，返回完整四率统计数据
      */
     public ArrayList<DataProvRate> getDataProvRateList(ProvRateVo provRateVo, List<LakeReportSumDo> lakeReportSumList){
-        ArrayList<DataProvRate> provRateList = new ArrayList<>();
+        //ArrayList<DataProvRate> provRateList = new ArrayList<>();
+        Page provRateList = new Page<DataProvRate>();
+        provRateList.setTotal(((Page)lakeReportSumList).getTotal());
         for(LakeReportSumDo lakeReportSumDo:lakeReportSumList){
             LakeProvRateVo lakeProvRateVo = new LakeProvRateVo();
             lakeProvRateVo.setStartDate(provRateVo.getStartDate());
             lakeProvRateVo.setEndDate(provRateVo.getEndDate());
             lakeProvRateVo.setLakeProvId(lakeReportSumDo.getDeptId());
-            //获取指定省份的礼包统计数据
-            List<LakeGiftSumDo> lakeGiftSumList = dataProvRateMapper.selectLakeGiftSumList(lakeProvRateVo);
-            LakeGiftSumDo lakeGiftSumDo = lakeGiftSumList.get(0);
             /*装载统计数据*/
             DataProvRate dataProvRate = new DataProvRate();
+            //获取指定省份的礼包统计数据
+            List<LakeGiftSumDo> lakeGiftSumList = dataProvRateMapper.selectLakeGiftSumList(lakeProvRateVo);
+            Integer giftOrderSum = 0;
+            Integer termiGiftSum = 0;
+            Integer serviGiftSum = 0;
+            if(lakeGiftSumList.size() != 0){
+                LakeGiftSumDo lakeGiftSumDo = lakeGiftSumList.get(0);
+                giftOrderSum = lakeGiftSumDo.getGiftOrderSum();
+                dataProvRate.setNewGiftSum(giftOrderSum);
+                termiGiftSum = lakeGiftSumDo.getTermiGiftSum();
+                dataProvRate.setNewTermiGiftSum(termiGiftSum);
+                serviGiftSum = lakeGiftSumDo.getServiGiftSum();
+                dataProvRate.setNewServiGiftSum(serviGiftSum);
+            }
             String provName = DistrictDirc.districtMap.get(lakeReportSumDo.getwProId());
             dataProvRate.setProvName(provName);
             Integer effectiveSum = lakeReportSumDo.getEffectiveSum();
             dataProvRate.setEffectiveSum(effectiveSum);
-            Integer giftOrderSum = lakeGiftSumDo.getGiftOrderSum();
-            dataProvRate.setNewGiftSum(giftOrderSum);
-            Integer termiGiftSum = lakeGiftSumDo.getTermiGiftSum();
-            dataProvRate.setNewTermiGiftSum(termiGiftSum);
-            Integer serviGiftSum = lakeGiftSumDo.getServiGiftSum();
-            dataProvRate.setNewServiGiftSum(serviGiftSum);
+
             //配置ES查询新增e_link/e_OS终端数
-            ESSearch esSearch = new ESSearch();
             int newElinkSum = esSearch.getApSum(lakeProvRateVo);
             dataProvRate.setNewElinkSum(newElinkSum);
             Integer sameAreaSum = lakeReportSumDo.getSameAreaSum();
