@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.druid.support.json.JSONUtils;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.homewifi.district.DistrictDirc;
 import com.ruoyi.homewifi.dobj.LakeGiftDo;
 import com.ruoyi.homewifi.dobj.LakeGiftSumDo;
@@ -59,42 +63,79 @@ public class DataCityRateServiceImpl implements IDataCityRateService
             return getDataCityRateList(cityRateVo,lakeReportSumList);
         }else{
             logger.info("条件为{}时，数据湖城市级竣工报告数据为空",cityRateVo.toString());
-            return null;
+            Page cityRateList = new Page();
+            cityRateList.setTotal(0);
+            return cityRateList;
         }
 
     }
+
+    /*@Override
+    @DataScope(deptAlias = "d")
+    public TableDataInfo selectDataCityRateList(CityRateVo cityRateVo)
+    {
+        //分4种情况展示查询结果
+        //1、无条件查询，进入页面不显示
+        //2、只有时间(必选字段)范围内查询权限范围内的所有城市
+        //3、cityRateVo只有时间段和省份编码，显示省内所有城市的四率信息
+        //4、cityRateVo有时间段、省份编码和城市编码，
+        List<LakeReportSumDo> lakeReportSumList = dataCityRateMapper.selectLakeReportSumList(cityRateVo);
+        if (lakeReportSumList instanceof Page) {
+            Long total = ((Page)lakeReportSumList).getTotal();
+            System.out.println(total);
+        }
+
+
+        TableDataInfo rspData = new TableDataInfo();
+        rspData.setCode(HttpStatus.SUCCESS);
+        rspData.setMsg("查询成功");
+        if(lakeReportSumList != null && lakeReportSumList.size() != 0){
+            rspData.setTotal(new PageInfo(lakeReportSumList).getTotal());
+            rspData.setRows( getDataCityRateList(cityRateVo,lakeReportSumList));
+        }else{
+            logger.info("条件为{}时，数据湖城市级竣工报告数据为空",cityRateVo.toString());
+            rspData.setTotal(0);
+        }
+        return rspData;
+
+    }*/
 
 
     /**
      * 拼接数据湖礼包数据统计结果，返回完整四率统计数据
      */
     public ArrayList<DataCityRate> getDataCityRateList(CityRateVo cityRateVo,List<LakeReportSumDo> lakeReportSumList){
-        ArrayList<DataCityRate> cityRateList = new ArrayList<>();
+        Page cityRateList = new Page();
+        cityRateList.setTotal(((Page)lakeReportSumList).getTotal());
         for(LakeReportSumDo lakeReportSumDo:lakeReportSumList){
             LakeCityRateVo lakeCityRateVo = new LakeCityRateVo();
             lakeCityRateVo.setStartDate(cityRateVo.getStartDate());
             lakeCityRateVo.setEndDate(cityRateVo.getEndDate());
             lakeCityRateVo.setLakeProvId(lakeReportSumDo.getDeptId());
             lakeCityRateVo.setLakeCityId(lakeReportSumDo.getLakeCityId());
-            //获取指定城市的礼包统计数据
-            List<LakeGiftSumDo> lakeGiftSumList = dataCityRateMapper.selectLakeGiftSumList(lakeCityRateVo);
-            LakeGiftSumDo lakeGiftSumDo = lakeGiftSumList.get(0);
+
             /*装载统计数据*/
             DataCityRate dataCityRate = new DataCityRate();
+            //获取指定城市的礼包统计数据
+            List<LakeGiftSumDo> lakeGiftSumList = dataCityRateMapper.selectLakeGiftSumList(lakeCityRateVo);
+            Integer giftOrderSum = 0;
+            Integer termiGiftSum = 0;
+            Integer serviGiftSum = 0;
+            if(lakeGiftSumList.size() != 0){
+                LakeGiftSumDo lakeGiftSumDo = lakeGiftSumList.get(0);
+                giftOrderSum = lakeGiftSumDo.getGiftOrderSum();
+                dataCityRate.setNewGiftSum(giftOrderSum);
+                termiGiftSum = lakeGiftSumDo.getTermiGiftSum();
+                dataCityRate.setNewTermiGiftSum(termiGiftSum);
+                serviGiftSum = lakeGiftSumDo.getServiGiftSum();
+                dataCityRate.setNewServiGiftSum(serviGiftSum);
+            }
             String provName = DistrictDirc.districtMap.get(lakeReportSumDo.getwProId());
             dataCityRate.setProvName(provName);
             String cityName = DistrictDirc.districtMap.get(lakeReportSumDo.getwCityId());
             dataCityRate.setCityName(cityName);
             Integer effectiveSum = lakeReportSumDo.getEffectiveSum();
             dataCityRate.setEffectiveSum(effectiveSum);
-            Integer giftOrderSum = lakeGiftSumDo.getGiftOrderSum();
-            dataCityRate.setNewGiftSum(giftOrderSum);
-            Integer termiGiftSum = lakeGiftSumDo.getTermiGiftSum();
-            dataCityRate.setNewTermiGiftSum(termiGiftSum);
-            Integer serviGiftSum = lakeGiftSumDo.getServiGiftSum();
-            dataCityRate.setNewServiGiftSum(serviGiftSum);
-            //配置ES查询新增e_link/e_OS终端数
-            //ESSearch esSearch = new ESSearch();
             int newElinkSum = esSearch.getApSum(lakeCityRateVo);
             dataCityRate.setNewElinkSum(newElinkSum);
             Integer sameAreaSum = lakeReportSumDo.getSameAreaSum();

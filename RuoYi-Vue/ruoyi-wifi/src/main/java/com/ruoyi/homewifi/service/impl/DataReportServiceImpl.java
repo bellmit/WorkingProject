@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.homewifi.district.DistrictDirc;
 import org.slf4j.Logger;
@@ -29,18 +30,6 @@ public class DataReportServiceImpl implements IDataReportService
     protected static final Logger logger = LoggerFactory.getLogger(DataReportServiceImpl.class);
 
     /**
-     * 查询竣工报告查询
-     * 
-     * @param id 竣工报告查询ID
-     * @return 竣工报告查询
-     */
-    /*@Override
-    public DataReport selectDataReportById(Long id)
-    {
-        return dataReportMapper.selectDataReportById(id);
-    }*/
-
-    /**
      * 查询竣工报告查询列表
      * 
      * @param dataReport 竣工报告查询
@@ -53,6 +42,35 @@ public class DataReportServiceImpl implements IDataReportService
         List<DataReport> dataReportList = dataReportMapper.selectDataReportList(dataReport);
         return transforList(dataReportList);
     }
+
+
+    /**
+     * 万维地区编码转文字
+     */
+    public List transforList(List<DataReport> list){
+        Page resultList = new Page<DataReport>();
+        resultList.setTotal(((Page)list).getTotal());
+        for(DataReport dr:list){
+            String provCode = dr.getProvName();
+            String cityCode = dr.getCityName();
+            String areaCode = dr.getAreaName();
+            if(provCode != null && !"".equals(provCode)){
+                String provName = DistrictDirc.getDistrict(provCode);
+                dr.setProvName(provName);
+            }
+            if(cityCode != null && !"".equals(cityCode)){
+                String cityName = DistrictDirc.getDistrict(cityCode);
+                dr.setCityName(cityName);
+            }
+            if(areaCode != null && !"".equals(areaCode)){
+                String areaName = DistrictDirc.getDistrict(areaCode);
+                dr.setAreaName(areaName);
+            }
+            resultList.add(dr);
+        }
+        return resultList;
+    }
+
 
     /**
      * 获取省份列表
@@ -95,31 +113,19 @@ public class DataReportServiceImpl implements IDataReportService
         return cityList;
     }
 
+
     /**
-     * 万维地区编码转文字
+     * 查询竣工报告查询
+     *
+     * @param id 竣工报告查询ID
+     * @return 竣工报告查询
      */
-    public List transforList(List<DataReport> list){
-        List<DataReport> resultList = new ArrayList<>();
-        for(DataReport dr:list){
-            String provCode = dr.getProvName();
-            String cityCode = dr.getCityName();
-            String areaCode = dr.getAreaName();
-            if(provCode != null && !"".equals(provCode)){
-                String provName = DistrictDirc.getDistrict(provCode);
-                dr.setProvName(provName);
-            }
-            if(cityCode != null && !"".equals(cityCode)){
-                String cityName = DistrictDirc.getDistrict(cityCode);
-                dr.setCityName(cityName);
-            }
-            if(areaCode != null && !"".equals(areaCode)){
-                String areaName = DistrictDirc.getDistrict(areaCode);
-                dr.setAreaName(areaName);
-            }
-            resultList.add(dr);
-        }
-        return resultList;
-    }
+    /*@Override
+    public DataReport selectDataReportById(Long id)
+    {
+        return dataReportMapper.selectDataReportById(id);
+    }*/
+
 
     /**
      * 新增竣工报告查询
