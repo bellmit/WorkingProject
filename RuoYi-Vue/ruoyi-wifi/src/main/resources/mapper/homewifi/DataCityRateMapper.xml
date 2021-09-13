@@ -41,7 +41,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!-- 批量插入竣工报告 -->
-    <insert id="insertLakeReportList" parameterType="java.util.List">
+    <!--<insert id="insertLakeReportList" parameterType="java.util.List">
         insert into data_lake_report
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="lakeOrderid != null">lake_orderId,</if>
@@ -80,7 +80,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 </trim>
             </foreach>
         </trim>
+    </insert>-->
+    <insert id="insertLakeReportList" parameterType="java.util.List">
+        insert into data_lake_report (lake_orderId,day_id,dept_id,w_prov_id,lake_city_id,w_city_id,w_area_id,
+            same_area,effective_report,elink_checked,wifi_checked,lake_share_checked,lake_share_method,aaa_pppoe)
+        values
+        <trim suffixOverrides=",">
+            <foreach collection="list" item="report" separator=",">
+                (#{report.lakeOrderid},#{report.dayId},#{report.deptId},#{report.wProvId},#{report.lakeCityId},
+                #{report.wCityId},#{report.wAreaId},#{report.sameArea},#{report.effectiveReport},#{report.elinkChecked},
+                #{report.wifiChecked},#{report.lakeShareChecked},#{report.lakeShareMethod},#{report.aaaPppoe})
+            </foreach>
+        </trim>
     </insert>
+
 
 
 
@@ -111,7 +124,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!-- 批量插入礼包数据 -->
-    <insert id="insertLakeGiftList" parameterType="java.util.List">
+    <!--<insert id="insertLakeGiftList" parameterType="java.util.List">
         insert into data_lake_gift
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="sealingDate != null">sealing_date,</if>
@@ -123,18 +136,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         values
         <trim suffixOverrides=",">
-            <foreach collection="lakeGiftList" item="gift" open="(" close=")" separator=",">
+            <foreach collection="list" item="gift" open="(" close=")" separator=",">
                 <trim suffixOverrides=",">
-                    <if test="sealingDate != null">#{sealingDate},</if>
-                    <if test="deptId != null">#{deptId},</if>
-                    <if test="lakeCityId != null">#{lakeCityId},</if>
-                    <if test="lakeAreaId != null">#{lakeAreaId},</if>
-                    <if test="giftCode != null">#{giftCode},</if>
-                    <if test="giftOrderId != null">#{giftOrderId},</if>
+                    <if test="sealingDate != null">#{gift.sealingDate},</if>
+                    <if test="deptId != null">#{gift.deptId},</if>
+                    <if test="lakeCityId != null">#{gift.lakeCityId},</if>
+                    <if test="lakeAreaId != null">#{gift.lakeAreaId},</if>
+                    <if test="giftCode != null">#{gift.giftCode},</if>
+                    <if test="giftOrderId != null">#{gift.giftOrderId},</if>
                 </trim>
             </foreach>
         </trim>
+    </insert>-->
+    <insert id="insertLakeGiftList" parameterType="java.util.List">
+        insert into data_lake_gift (sealing_date,dept_id,lake_city_id,lake_area_id,gift_code,gift_order_id)
+        values
+        <trim suffixOverrides=",">
+            <foreach collection="list" item="gift" separator=",">
+                (#{gift.sealingDate},#{gift.deptId},#{gift.lakeCityId},#{gift.lakeAreaId},#{gift.giftCode},#{gift.giftOrderId})
+            </foreach>
+        </trim>
     </insert>
+
+
 
 
 
