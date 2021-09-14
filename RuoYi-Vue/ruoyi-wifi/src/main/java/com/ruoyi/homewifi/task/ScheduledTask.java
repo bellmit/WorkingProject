@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @Description: 数据湖下发数据文件定时数据入库
  * @Version:1.0
  */
-@Component
+@Component("lakeTask")
 @EnableScheduling
 public class ScheduledTask {
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTask.class);
@@ -69,7 +69,7 @@ public class ScheduledTask {
     /**
      * 排障标签数据解压入库
      */
-    @Scheduled(cron = "0 0 05 * * ?")  //每天5点
+    //@Scheduled(cron = "0 0 05 * * ?")  //每天5点
     //@Scheduled(fixedDelay=3000)
     public String readFileToEs() {
         try {
@@ -320,7 +320,7 @@ public class ScheduledTask {
     /**
      * 解析本地数据文件并入库。
      */
-    @Scheduled(cron = "0 */1 * * * ?")
+    //@Scheduled(cron = "0 */1 * * * ?")
     public void excuteTimingTeskWithoutDownload() {
         try {
             Long startTime = System.currentTimeMillis();
