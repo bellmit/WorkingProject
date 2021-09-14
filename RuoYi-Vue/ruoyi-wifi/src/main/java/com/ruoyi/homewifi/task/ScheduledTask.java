@@ -85,13 +85,16 @@ public class ScheduledTask {
             //2.解压文件
             File testfile = new File(baseConfig.getLocaldir());
             int unNum = 0;
-            if (null != testfile) {
+            if (testfile.listFiles().length != 0) {
                 for (File f : testfile.listFiles()) {
                     boolean unBool = FileZipUtile.unGzipFile(f.toString());
                     if(unBool){
                         unNum++;
                     }
                 }
+            }else{
+                logger.info("{}号,数据湖未下发文件", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
+                return "";
             }
             logger.info("解压文件成功,本次解压{}个文件",unNum);
             //3、解析入库
@@ -157,7 +160,7 @@ public class ScheduledTask {
      * 完成潜客数据下载后解析数据到ES数据库
      */
     public void analysisFileToEs(){
-        logger.info("四率数据湖数据入库");
+        //logger.info("四率数据湖数据入库");
         File filename = new File(baseConfig.getLocaldir());
         if (filename.list().length != 0) {
             for (File f : filename.listFiles()) {
@@ -167,10 +170,13 @@ public class ScheduledTask {
                     insertReportData(f);
                 }
             }
+        }else{
+            logger.info("数据湖下发四率入库文件不存在");
         }
     }
 
     public void insertGiftData(File f){
+        logger.info("数据湖礼包数据入库");
         pool.execute(new Runnable() {
             @Override
             public void run() {
@@ -202,7 +208,7 @@ public class ScheduledTask {
                 if(br != null){
                     try {
                         while ((line = br.readLine()) != null) {
-                            String[] oneGift = line.split("\u0005");
+                            String[] oneGift = line.split("\u0005",-1);
                             if(oneGift.length<6){
                                 errNum++;
                                 continue;
@@ -239,6 +245,7 @@ public class ScheduledTask {
     }
 
     public void insertReportData(File f){
+        logger.info("数据湖报告数据入库");
         pool.execute(new Runnable() {
             @Override
             public void run() {
@@ -269,14 +276,14 @@ public class ScheduledTask {
                 if(br != null){
                     try {
                         while ((line = br.readLine()) != null) {
-                            String[] oneReport = line.split("\u0005");
-                            if(oneReport.length<13){
+                            String[] oneReport = line.split("\u0005",-1);
+                            if(oneReport.length<14){
+                                logger.info(Arrays.toString(oneReport));
                                 errNum++;
                                 continue;
                             }
                             LakeReportDo lakeReportDo = new LakeReportDo();
                             lakeReportDo.setLakeOrderid(oneReport[0]);
-                            String date = oneReport[1];
                             lakeReportDo.setDayId(new java.sql.Date(df.get().parse(oneReport[1]).getTime()));
                             lakeReportDo.setDeptId(oneReport[2]);
                             lakeReportDo.setwProvId(oneReport[3]);
@@ -286,9 +293,10 @@ public class ScheduledTask {
                             lakeReportDo.setSameArea("".equals(oneReport[7]) ? null:Integer.parseInt(oneReport[7]));
                             lakeReportDo.setEffectiveReport("".equals(oneReport[8]) ? null:Integer.parseInt(oneReport[8]));
                             lakeReportDo.setElinkChecked("".equals(oneReport[9]) ? null:Integer.parseInt(oneReport[9]));
-                            lakeReportDo.setLakeShareChecked("".equals(oneReport[10]) ? null:Integer.parseInt(oneReport[10]));
-                            lakeReportDo.setLakeShareMethod("".equals(oneReport[11]) ? null:Integer.parseInt(oneReport[11]));
-                            lakeReportDo.setAaaPppoe("".equals(oneReport[12]) ? null:oneReport[12]);
+                            lakeReportDo.setWifiChecked("".equals(oneReport[10]) ? null:Integer.parseInt(oneReport[10]));
+                            lakeReportDo.setLakeShareChecked("".equals(oneReport[11]) ? null:Integer.parseInt(oneReport[11]));
+                            lakeReportDo.setLakeShareMethod("".equals(oneReport[12]) ? null:Integer.parseInt(oneReport[12]));
+                            lakeReportDo.setAaaPppoe("".equals(oneReport[13]) ? null:oneReport[13]);
                             lakeReportList.add(lakeReportDo);
                             Num++;
                         }

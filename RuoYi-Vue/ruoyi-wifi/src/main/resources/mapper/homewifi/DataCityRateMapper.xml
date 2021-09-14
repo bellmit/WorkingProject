@@ -41,47 +41,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!-- 批量插入竣工报告 -->
-    <!--<insert id="insertLakeReportList" parameterType="java.util.List">
+    <insert id="insertLakeReportList" parameterType="java.util.List">
         insert into data_lake_report
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="lakeOrderid != null">lake_orderId,</if>
-            <if test="dayId != null">day_id,</if>
-            <if test="deptId != null">dept_id,</if>
-            <if test="wProvId != null">w_prov_id,</if>
-            <if test="lakeCityId != null">lake_city_id,</if>
-            <if test="wCityId != null">w_city_id,</if>
-            <if test="wAreaId != null">w_area_id,</if>
-            <if test="sameArea != null">same_area,</if>
-            <if test="effectiveReport != null">effective_report,</if>
-            <if test="elinkChecked != null">elink_checked,</if>
-            <if test="wifiChecked != null">wifi_checked,</if>
-            <if test="lakeShareChecked != null">lake_share_checked,</if>
-            <if test="lakeShareMethod != null">lake_share_method,</if>
-            <if test="aaaPppoe != null">aaa_pppoe,</if>
+            lake_orderId,day_id,dept_id,w_prov_id,lake_city_id,w_city_id,w_area_id,same_area,effective_report,
+            elink_checked,wifi_checked,lake_share_checked,lake_share_method,aaa_pppoe,
         </trim>
         values
-        <trim suffixOverrides=",">
-            <foreach collection="lakeReportList" item="report" open="(" close=")" separator=",">
-                <trim suffixOverrides=",">
-                    <if test="lakeOrderid != null">#{lakeOrderid},</if>
-                    <if test="dayId != null">#{dayId},</if>
-                    <if test="deptId != null">#{deptId},</if>
-                    <if test="wProvId != null">#{wProvId},</if>
-                    <if test="lakeCityId != null">#{lakeCityId},</if>
-                    <if test="wCityId != null">#{wCityId},</if>
-                    <if test="wAreaId != null">#{wAreaId},</if>
-                    <if test="sameArea != null">#{sameArea},</if>
-                    <if test="effectiveReport != null">#{effectiveReport},</if>
-                    <if test="elinkChecked != null">#{elinkChecked},</if>
-                    <if test="wifiChecked != null">#{wifiChecked},</if>
-                    <if test="lakeShareChecked != null">#{lakeShareChecked},</if>
-                    <if test="lakeShareMethod != null">#{lakeShareMethod},</if>
-                    <if test="aaaPppoe != null">#{aaaPppoe},</if>
-                </trim>
-            </foreach>
-        </trim>
-    </insert>-->
-    <insert id="insertLakeReportList" parameterType="java.util.List">
+        <foreach collection="list" item="report" separator=",">
+            <trim prefix="(" suffixOverrides="," suffix=")">
+                #{report.lakeOrderid},
+                #{report.dayId},#{report.deptId},#{report.wProvId},#{report.lakeCityId},
+                #{report.wCityId},#{report.wAreaId},#{report.sameArea},#{report.effectiveReport},
+                #{report.elinkChecked},#{report.wifiChecked},#{report.lakeShareChecked},
+                #{report.lakeShareMethod},#{report.aaaPppoe},
+            </trim>
+        </foreach>
+    </insert>
+    <!--<insert id="insertLakeReportList" parameterType="java.util.List">
         insert into data_lake_report (lake_orderId,day_id,dept_id,w_prov_id,lake_city_id,w_city_id,w_area_id,
             same_area,effective_report,elink_checked,wifi_checked,lake_share_checked,lake_share_method,aaa_pppoe)
         values
@@ -92,10 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 #{report.wifiChecked},#{report.lakeShareChecked},#{report.lakeShareMethod},#{report.aaaPppoe})
             </foreach>
         </trim>
-    </insert>
-
-
-
+    </insert>-->
 
     <resultMap type="com.ruoyi.homewifi.dobj.LakeGiftDo" id="LakeGiftResult">
         <result property="id"    column="id"    />
@@ -124,30 +98,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!-- 批量插入礼包数据 -->
-    <!--<insert id="insertLakeGiftList" parameterType="java.util.List">
-        insert into data_lake_gift
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="sealingDate != null">sealing_date,</if>
-            <if test="deptId != null">dept_id,</if>
-            <if test="lakeCityId != null">lake_city_id,</if>
-            <if test="lakeAreaId != null">lake_area_id,</if>
-            <if test="giftCode != null">gift_code,</if>
-            <if test="giftOrderId != null">gift_order_id,</if>
-        </trim>
-        values
-        <trim suffixOverrides=",">
-            <foreach collection="list" item="gift" open="(" close=")" separator=",">
-                <trim suffixOverrides=",">
-                    <if test="sealingDate != null">#{gift.sealingDate},</if>
-                    <if test="deptId != null">#{gift.deptId},</if>
-                    <if test="lakeCityId != null">#{gift.lakeCityId},</if>
-                    <if test="lakeAreaId != null">#{gift.lakeAreaId},</if>
-                    <if test="giftCode != null">#{gift.giftCode},</if>
-                    <if test="giftOrderId != null">#{gift.giftOrderId},</if>
-                </trim>
-            </foreach>
-        </trim>
-    </insert>-->
     <insert id="insertLakeGiftList" parameterType="java.util.List">
         insert into data_lake_gift (sealing_date,dept_id,lake_city_id,lake_area_id,gift_code,gift_order_id)
         values
