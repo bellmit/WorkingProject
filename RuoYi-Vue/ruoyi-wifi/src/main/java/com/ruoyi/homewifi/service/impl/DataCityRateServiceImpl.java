@@ -162,6 +162,7 @@ public class DataCityRateServiceImpl implements IDataCityRateService
             dataCityRate.setElinkCheckedRate(aDivideBPercent(new BigDecimal(newElinkSum),new BigDecimal(termiGiftSum)));
             //交付报告分享率:有效报告分享数/有效报告数
             dataCityRate.setShareRate(aDivideBPercent(new BigDecimal(shareSum),new BigDecimal(effectiveSum)));
+            //System.out.println(dataCityRate.toString());
             cityRateList.add(dataCityRate);
         }
         return cityRateList;

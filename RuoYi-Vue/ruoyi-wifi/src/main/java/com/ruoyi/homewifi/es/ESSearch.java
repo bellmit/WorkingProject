@@ -54,13 +54,12 @@ public class ESSearch {
                 return 0;
             }
             int apSum = Integer.parseInt(resultJson.getJSONObject("hits").get("total").toString());
-            System.out.println("apSum"+apSum);
+            //System.out.println("apSum："+apSum);
             return apSum;
         } catch (Exception e) {
             logger.error("获取ap总数出错!错误:{}",e);
-        } finally {
-            return 0;
         }
+        return 0;
     }
 
     public String checkCityRateUrl(LakeRateVo lakeRateVo){
