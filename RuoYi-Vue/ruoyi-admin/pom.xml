@@ -97,7 +97,7 @@
            </plugin>   
         </plugins>
         <!--<finalName>${project.artifactId}</finalName>-->
-        <finalName>homewifi-statistics</finalName>
+        <finalName>homewifistatistics</finalName>
     </build>
 
 </project>
