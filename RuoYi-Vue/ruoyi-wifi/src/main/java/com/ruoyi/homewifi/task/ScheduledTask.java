@@ -1,7 +1,6 @@
-package com.ruoyi.homewifi;
+package com.ruoyi.homewifi.task;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.ChannelSftp;
 import com.ruoyi.homewifi.config.BaseConfig;
 import com.ruoyi.homewifi.dobj.LakeGiftDo;
@@ -14,17 +13,15 @@ import com.ruoyi.homewifi.utils.SftpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -37,7 +34,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @Description: 数据湖下发数据文件定时数据入库
  * @Version:1.0
  */
-@Component
+@Component("lakeTask")
+@EnableScheduling
 public class ScheduledTask {
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTask.class);
 
@@ -71,11 +69,11 @@ public class ScheduledTask {
     /**
      * 排障标签数据解压入库
      */
-    @Scheduled(cron = "0 0 05 * * ?")  //每天5点
+    //@Scheduled(cron = "0 0 05 * * ?")  //每天5点
     //@Scheduled(fixedDelay=3000)
     public String readFileToEs() {
         try {
-            logger.info("{}号,存储数据湖下发的礼包数据，开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
+            logger.info("{}号,存储数据湖下发数据，开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
             Long startTime = System.currentTimeMillis();
             pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
 
@@ -87,13 +85,16 @@ public class ScheduledTask {
             //2.解压文件
             File testfile = new File(baseConfig.getLocaldir());
             int unNum = 0;
-            if (null != testfile) {
+            if (testfile.listFiles().length != 0) {
                 for (File f : testfile.listFiles()) {
                     boolean unBool = FileZipUtile.unGzipFile(f.toString());
                     if(unBool){
                         unNum++;
                     }
                 }
+            }else{
+                logger.info("{}号,数据湖未下发文件", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
+                return "";
             }
             logger.info("解压文件成功,本次解压{}个文件",unNum);
             //3、解析入库
@@ -159,7 +160,7 @@ public class ScheduledTask {
      * 完成潜客数据下载后解析数据到ES数据库
      */
     public void analysisFileToEs(){
-        //3.读文件存到es
+        //logger.info("四率数据湖数据入库");
         File filename = new File(baseConfig.getLocaldir());
         if (filename.list().length != 0) {
             for (File f : filename.listFiles()) {
@@ -169,10 +170,13 @@ public class ScheduledTask {
                     insertReportData(f);
                 }
             }
+        }else{
+            logger.info("数据湖下发四率入库文件不存在");
         }
     }
 
     public void insertGiftData(File f){
+        logger.info("数据湖礼包数据入库");
         pool.execute(new Runnable() {
             @Override
             public void run() {
@@ -204,13 +208,15 @@ public class ScheduledTask {
                 if(br != null){
                     try {
                         while ((line = br.readLine()) != null) {
-                            String[] oneGift = line.split("\u0005");
-                            if(oneGift.length<8){
+                            String[] oneGift = line.split("\u0005",-1);
+                            if(oneGift.length<6){
                                 errNum++;
                                 continue;
                             }
+                            String date = oneGift[0];
+                            java.sql.Date sealDate = new java.sql.Date(df.get().parse(date).getTime());
                             LakeGiftDo lakeGiftDo = new LakeGiftDo();
-                            lakeGiftDo.setSealingDate(new java.sql.Date(df.get().parse(oneGift[0]).getTime()));
+                            lakeGiftDo.setSealingDate(sealDate);
                             lakeGiftDo.setDeptId(oneGift[1] == null?"":oneGift[1]);
                             lakeGiftDo.setLakeCityId(oneGift[2] == null?"":oneGift[2]);
                             lakeGiftDo.setLakeAreaId(oneGift[3] == null?"":oneGift[3]);
@@ -219,21 +225,27 @@ public class ScheduledTask {
                             lakeGiftList.add(lakeGiftDo);
                             Num++;
                         }
+                        br.close();
+
                     } catch (Exception ex) {
                         logger.error("按行读取文件错误,错误:{}", ex);
                     }
                     //mysql入库
-                    dataCityRateMapper.insertLakeGiftList(lakeGiftList);
+                    if(!lakeGiftList.isEmpty()){
+                        dataCityRateMapper.insertLakeGiftList(lakeGiftList);
+                    }
+
                     logger.info("{},文件读取成功!!本次添加成功{}条,文件单行数据长度出错{}条",f.toString(),Num,errNum);
                 }
                 //添加完成删除文件
-                file.delete();
-                logger.info("删除{}文件",file.getName());
+                boolean deleteResult = file.delete();
+                logger.info("删除{}文件,{}",file.getName(),deleteResult);
             }
         });
     }
 
     public void insertReportData(File f){
+        logger.info("数据湖报告数据入库");
         pool.execute(new Runnable() {
             @Override
             public void run() {
@@ -264,8 +276,9 @@ public class ScheduledTask {
                 if(br != null){
                     try {
                         while ((line = br.readLine()) != null) {
-                            String[] oneReport = line.split("\u0005");
-                            if(oneReport.length<16){
+                            String[] oneReport = line.split("\u0005",-1);
+                            if(oneReport.length<14){
+                                logger.info(Arrays.toString(oneReport));
                                 errNum++;
                                 continue;
                             }
@@ -280,21 +293,26 @@ public class ScheduledTask {
                             lakeReportDo.setSameArea("".equals(oneReport[7]) ? null:Integer.parseInt(oneReport[7]));
                             lakeReportDo.setEffectiveReport("".equals(oneReport[8]) ? null:Integer.parseInt(oneReport[8]));
                             lakeReportDo.setElinkChecked("".equals(oneReport[9]) ? null:Integer.parseInt(oneReport[9]));
-                            lakeReportDo.setLakeShareChecked("".equals(oneReport[10]) ? null:Integer.parseInt(oneReport[10]));
-                            lakeReportDo.setLakeShareMethod("".equals(oneReport[11]) ? null:Integer.parseInt(oneReport[11]));
-                            lakeReportDo.setAaaPppoe("".equals(oneReport[12]) ? null:oneReport[12]);
+                            lakeReportDo.setWifiChecked("".equals(oneReport[10]) ? null:Integer.parseInt(oneReport[10]));
+                            lakeReportDo.setLakeShareChecked("".equals(oneReport[11]) ? null:Integer.parseInt(oneReport[11]));
+                            lakeReportDo.setLakeShareMethod("".equals(oneReport[12]) ? null:Integer.parseInt(oneReport[12]));
+                            lakeReportDo.setAaaPppoe("".equals(oneReport[13]) ? null:oneReport[13]);
+                            lakeReportList.add(lakeReportDo);
                             Num++;
                         }
+                        br.close();
                     } catch (Exception ex) {
                         logger.error("按行读取文件错误,错误:{}", ex);
                     }
                     //mysql入库
-                    dataCityRateMapper.insertLakeReportList(lakeReportList);
+                    if(!lakeReportList.isEmpty()){
+                        dataCityRateMapper.insertLakeReportList(lakeReportList);
+                    }
                     logger.info("{},文件读取成功!!本次添加成功{}条,文件单行数据长度出错{}条",f.toString(),Num,errNum);
                 }
                 //添加完成删除文件
-                file.delete();
-                logger.info("删除{}文件",file.getName());
+                boolean deleteResult = file.delete();
+                logger.info("删除{}文件,{}",file.getName(),deleteResult);
             }
         });
     }
@@ -302,11 +320,12 @@ public class ScheduledTask {
     /**
      * 解析本地数据文件并入库。
      */
+    //@Scheduled(cron = "0 */1 * * * ?")
     public void excuteTimingTeskWithoutDownload() {
         try {
             Long startTime = System.currentTimeMillis();
             pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
-            logger.info("{} sftp排障标签数据下载开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
+            logger.info("{} 本地数据湖下发文件解析入库开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
             //3、解析入库
             analysisFileToEs();
             Long endTime = System.currentTimeMillis();

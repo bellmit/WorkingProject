@@ -44,45 +44,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertLakeReportList" parameterType="java.util.List">
         insert into data_lake_report
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="lakeOrderid != null">lake_orderId,</if>
-            <if test="dayId != null">day_id,</if>
-            <if test="deptId != null">dept_id,</if>
-            <if test="wProvId != null">w_prov_id,</if>
-            <if test="lakeCityId != null">lake_city_id,</if>
-            <if test="wCityId != null">w_city_id,</if>
-            <if test="wAreaId != null">w_area_id,</if>
-            <if test="sameArea != null">same_area,</if>
-            <if test="effectiveReport != null">effective_report,</if>
-            <if test="elinkChecked != null">elink_checked,</if>
-            <if test="wifiChecked != null">wifi_checked,</if>
-            <if test="lakeShareChecked != null">lake_share_checked,</if>
-            <if test="lakeShareMethod != null">lake_share_method,</if>
-            <if test="aaaPppoe != null">aaa_pppoe,</if>
+            lake_orderId,day_id,dept_id,w_prov_id,lake_city_id,w_city_id,w_area_id,same_area,effective_report,
+            elink_checked,wifi_checked,lake_share_checked,lake_share_method,aaa_pppoe,
         </trim>
         values
+        <foreach collection="list" item="report" separator=",">
+            <trim prefix="(" suffixOverrides="," suffix=")">
+                #{report.lakeOrderid},
+                #{report.dayId},#{report.deptId},#{report.wProvId},#{report.lakeCityId},
+                #{report.wCityId},#{report.wAreaId},#{report.sameArea},#{report.effectiveReport},
+                #{report.elinkChecked},#{report.wifiChecked},#{report.lakeShareChecked},
+                #{report.lakeShareMethod},#{report.aaaPppoe},
+            </trim>
+        </foreach>
+    </insert>
+    <!--<insert id="insertLakeReportList" parameterType="java.util.List">
+        insert into data_lake_report (lake_orderId,day_id,dept_id,w_prov_id,lake_city_id,w_city_id,w_area_id,
+            same_area,effective_report,elink_checked,wifi_checked,lake_share_checked,lake_share_method,aaa_pppoe)
+        values
         <trim suffixOverrides=",">
-            <foreach collection="lakeReportList" item="report" open="(" close=")" separator=",">
-                <trim suffixOverrides=",">
-                    <if test="lakeOrderid != null">#{lakeOrderid},</if>
-                    <if test="dayId != null">#{dayId},</if>
-                    <if test="deptId != null">#{deptId},</if>
-                    <if test="wProvId != null">#{wProvId},</if>
-                    <if test="lakeCityId != null">#{lakeCityId},</if>
-                    <if test="wCityId != null">#{wCityId},</if>
-                    <if test="wAreaId != null">#{wAreaId},</if>
-                    <if test="sameArea != null">#{sameArea},</if>
-                    <if test="effectiveReport != null">#{effectiveReport},</if>
-                    <if test="elinkChecked != null">#{elinkChecked},</if>
-                    <if test="wifiChecked != null">#{wifiChecked},</if>
-                    <if test="lakeShareChecked != null">#{lakeShareChecked},</if>
-                    <if test="lakeShareMethod != null">#{lakeShareMethod},</if>
-                    <if test="aaaPppoe != null">#{aaaPppoe},</if>
-                </trim>
+            <foreach collection="list" item="report" separator=",">
+                (#{report.lakeOrderid},#{report.dayId},#{report.deptId},#{report.wProvId},#{report.lakeCityId},
+                #{report.wCityId},#{report.wAreaId},#{report.sameArea},#{report.effectiveReport},#{report.elinkChecked},
+                #{report.wifiChecked},#{report.lakeShareChecked},#{report.lakeShareMethod},#{report.aaaPppoe})
             </foreach>
         </trim>
-    </insert>
-
-
+    </insert>-->
 
     <resultMap type="com.ruoyi.homewifi.dobj.LakeGiftDo" id="LakeGiftResult">
         <result property="id"    column="id"    />
@@ -112,29 +99,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!-- 批量插入礼包数据 -->
     <insert id="insertLakeGiftList" parameterType="java.util.List">
-        insert into data_lake_gift
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="sealingDate != null">sealing_date,</if>
-            <if test="deptId != null">dept_id,</if>
-            <if test="lakeCityId != null">lake_city_id,</if>
-            <if test="lakeAreaId != null">lake_area_id,</if>
-            <if test="giftCode != null">gift_code,</if>
-            <if test="giftOrderId != null">gift_order_id,</if>
-        </trim>
+        insert into data_lake_gift (sealing_date,dept_id,lake_city_id,lake_area_id,gift_code,gift_order_id)
         values
         <trim suffixOverrides=",">
-            <foreach collection="lakeGiftList" item="gift" open="(" close=")" separator=",">
-                <trim suffixOverrides=",">
-                    <if test="sealingDate != null">#{sealingDate},</if>
-                    <if test="deptId != null">#{deptId},</if>
-                    <if test="lakeCityId != null">#{lakeCityId},</if>
-                    <if test="lakeAreaId != null">#{lakeAreaId},</if>
-                    <if test="giftCode != null">#{giftCode},</if>
-                    <if test="giftOrderId != null">#{giftOrderId},</if>
-                </trim>
+            <foreach collection="list" item="gift" separator=",">
+                (#{gift.sealingDate},#{gift.deptId},#{gift.lakeCityId},#{gift.lakeAreaId},#{gift.giftCode},#{gift.giftOrderId})
             </foreach>
         </trim>
     </insert>
+
+
 
 
 
@@ -169,10 +143,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sum(if(effective_report = 1 and same_area =1,1,0)) as same_area_sum,
             sum(if(effective_report = 1 and wifi_checked=1,1,0)) as wifi_checked_sum,
             sum(if(effective_report = 1 and lake_share_checked=1,1,0)) as share_sum,
-            sum(if(effective_report = 1 and lake_share_method=0,1,0)) as message_share_sum,
-            sum(if(effective_report = 1 and lake_share_method=1,1,0)) as wechat_share_sum,
-            sum(if(effective_report = 1 and lake_share_method=2,1,0)) as yi_share_sum,
-            sum(if(effective_report = 1 and lake_share_method=3,1,0)) as other_share_sum
+            sum(if(effective_report = 1 and lake_share_method=2,1,0)) as message_share_sum,
+            sum(if(effective_report = 1 and lake_share_method=9,1,0)) as wechat_share_sum,
+            sum(if(effective_report = 1 and lake_share_method=3,1,0)) as yi_share_sum,
+            sum(if(effective_report = 1 and lake_share_method=0,1,0)) as other_share_sum
         from data_lake_report d
         <where>
             <if test="startDate != null "> and day_id <![CDATA[ >= ]]> #{startDate}</if>
