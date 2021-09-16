@@ -34,8 +34,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select w.id, w.ww_prov_id, w.ww_city_id, w.ww_area_id, w.ww_orderId, w.orderType, w.engineer_id, w.engineer_name,
                 w.create_time, w.engineer_tel, w.user_account, w.client_signed_speed, w.terminal_mac_list, w.ww_share_checked, w.ww_share_method,
                 w.ww_share_time, d.aaa_pppoe, d.same_area, d.effective_report, d.elink_checked, d.wifi_checked, d.dept_id,d.day_id
-            from data_ww_report w
-            left join data_lake_report d
+            from start_rating.data_ww_report w
+            left join home_wifi.data_lake_report d
             on w.ww_prov_id = d.w_prov_id and w.ww_city_id = d.w_city_id and w.ww_orderId = d.lake_orderId and DATE(w.create_time) = d.day_id
             <where>
                 <if test="startDate != null "> and day_id <![CDATA[ >= ]]> #{startDate}</if>
@@ -50,6 +50,36 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 ${params.dataScope}
             </where>
     </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     <sql id="selectDataReportVo">
@@ -85,7 +115,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
-    
+
     <select id="selectDataReportById" parameterType="Long" resultMap="DataReportResult">
         <include refid="selectDataReportVo"/>
         where id = #{id}

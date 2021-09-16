@@ -58,6 +58,7 @@ public class DataCityRateServiceImpl implements IDataCityRateService
         //2、只有时间(必选字段)范围内查询权限范围内的所有城市
         //3、cityRateVo只有时间段和省份编码，显示省内所有城市的四率信息
         //4、cityRateVo有时间段、省份编码和城市编码，
+        //System.out.println("Map:"+cityRateVo.getParams().toString());
         List<LakeReportSumDo> lakeReportSumList = dataCityRateMapper.selectLakeReportSumList(cityRateVo);
         if(lakeReportSumList != null && lakeReportSumList.size() != 0){
             return getDataCityRateList(cityRateVo,lakeReportSumList);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.pagehelper.Page;
+import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.homewifi.district.DistrictDirc;
 import com.ruoyi.homewifi.dobj.LakeGiftSumDo;
 import com.ruoyi.homewifi.dobj.LakeReportSumDo;
@@ -45,9 +46,11 @@ public class DataProvRateServiceImpl implements IDataProvRateService
      * @return 分省份四率统计
      */
     @Override
+    @DataScope(deptAlias = "d")
     public List<DataProvRate> selectDataProvRateList(ProvRateVo provRateVo)
     {
         //条件查询获得竣工报告统计结果
+        //System.out.println("Map:"+provRateVo.getParams().toString());
         List<LakeReportSumDo> lakeReportSumList = dataProvRateMapper.selectLakeReportSumList(provRateVo);
         if(lakeReportSumList != null && lakeReportSumList.size() != 0){
             return getDataProvRateList(provRateVo,lakeReportSumList);

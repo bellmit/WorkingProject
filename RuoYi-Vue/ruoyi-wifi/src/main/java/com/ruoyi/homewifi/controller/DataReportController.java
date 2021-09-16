@@ -44,7 +44,7 @@ public class DataReportController extends BaseController
 
         //TODO：项目梳理、
         //  准备上线测试：
-        //      学习项目部署过程、配置测试服务器(建表)、创建测试环境配置文件、完成测试环境部署、
+        //      学习项目部署过程、创建测试环境配置文件、完成测试环境部署、
     }
 
 

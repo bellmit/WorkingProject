@@ -127,11 +127,11 @@ public  class DistrictDirc {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            try {
+            /*try {
                 if(connection !=null)connection.close();
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
         }
     }
 
