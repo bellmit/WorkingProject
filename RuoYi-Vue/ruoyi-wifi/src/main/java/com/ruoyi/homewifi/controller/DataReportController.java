@@ -38,7 +38,7 @@ public class DataReportController extends BaseController
     public TableDataInfo list(DataReport dataReport)
     {
         startPage();
-        System.out.println(dataReport.toString());
+        //System.out.println(dataReport.toString());
         List<DataReport> list = dataReportService.selectDataReportList(dataReport);
         return getDataTable(list);
 

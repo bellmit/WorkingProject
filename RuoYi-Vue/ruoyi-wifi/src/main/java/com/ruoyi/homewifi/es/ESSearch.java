@@ -38,7 +38,7 @@ public class ESSearch {
         try {
             //System.out.println(baseConfig.toString());
             String esAddress = baseConfig.getEsAddress();
-            System.out.println("esAddress:"+esAddress);
+            //System.out.println("esAddress:"+esAddress);
             String url = "http://"+ esAddress +":"+baseConfig.getEsPort()+"/"+baseConfig.getApIndex()+"/"+baseConfig.getApType()+"/_search";
 
             String searchStr = checkCityRateUrl(lakeRateVo);
