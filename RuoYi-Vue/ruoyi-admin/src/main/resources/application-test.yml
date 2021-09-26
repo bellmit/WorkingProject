@@ -1,3 +1,18 @@
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8085
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+
 # 数据源配置
 spring:
   datasource:
@@ -6,9 +21,9 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://localhost:3307/home_wifi?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-        username: root
-        password: root2
+        url: jdbc:mysql://192.168.201.111:3306/home_wifi?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: start_rating_user
+        password: Ss89KilPo8U?
       # 从库数据源
       slave:
         # 从数据源开关/默认关闭
@@ -59,7 +74,7 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: localhost
+    host: 192.168.111.27
     # 端口，默认为6379
     port: 6379
     # 数据库索引存放若依缓存数据和数据湖文件名
@@ -93,7 +108,7 @@ spring:
   elasticsearch:
     cluster:
       name: es1
-    address: 101.89.160.189
+    address: 192.168.111.31
     zen:
       discovery:
         port: 9300
@@ -106,9 +121,14 @@ spring:
   #sftp路径 下载排障标签的路径
   datatransport:
     sftpdir: /data/super/301/data/
-    localdir: F:/Java/IdeaProjects/tmp/homewifi
+    localdir: /data/homeWifiData/lakeReportAndGit
     sftp:
       name: zhhjt
       pass: zhhjt#123
       ip: 10.251.16.137
       port: 6122
+
+#日志文件存放路径配置
+logging:
+  file:
+    path: /data/homeWifiRate/logs

@@ -16,26 +16,13 @@ ruoyi:
   # 验证码类型 math 数组计算 char 字符验证
   captchaType: math
 
-# 开发环境配置
-server:
-  # 服务器的HTTP端口，默认为8080
-  port: 8085
-  servlet:
-    # 应用的访问路径
-    context-path: /
-  tomcat:
-    # tomcat的URI编码
-    uri-encoding: UTF-8
-    # tomcat最大线程数，默认为200
-    max-threads: 800
-    # Tomcat启动初始化的线程数，默认值25
-    min-spare-threads: 30
-
 # 日志配置
 logging:
   level:
     com.ruoyi: debug
     org.springframework: warn
+  config:
+    classpath: logback-spring.xml
 
 # Spring配置
 spring:
