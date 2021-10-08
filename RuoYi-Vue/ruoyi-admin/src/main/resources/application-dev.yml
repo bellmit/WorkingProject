@@ -1,3 +1,24 @@
+# 项目相关配置
+ruoyi:
+  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
+  profile: F:/Java/IdeaProjects/tmp/ruoyi/uploadPath
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+
+
 # 数据源配置
 spring:
   datasource:
@@ -112,3 +133,8 @@ spring:
       pass: zhhjt#123
       ip: 10.251.16.137
       port: 6122
+
+#日志文件存放路径配置
+logging:
+  file:
+    path: F:/Java/IdeaProjects/tmp/ruoyi

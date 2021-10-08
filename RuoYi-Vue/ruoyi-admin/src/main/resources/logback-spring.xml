@@ -2,7 +2,8 @@
 <configuration>
     <!-- 日志存放路径 -->
 	<!--<property name="log.path" value="/home/ruoyi/logs" />-->
-    <property name="log.path" value="F:/Java/IdeaProjects/tmp/ruoyi" />
+    <!--<property name="log.path" value="F:/Java/IdeaProjects/tmp/ruoyi" />-->
+    <springProperty scope="context" name="log.path" source="logging.file.path"/>
     <!-- 日志输出格式 -->
 	<property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
 
