@@ -65,6 +65,7 @@ service.interceptors.response.use(res => {
       ).then(() => {
         store.dispatch('LogOut').then(() => {
           location.href = '/index';
+          // location.href = '/homewifi';
         })
       }).catch(() => {});
     } else if (code === 500) {
