@@ -38,8 +38,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             left join home_wifi.data_lake_report d
             on w.ww_prov_id = d.w_prov_id and w.ww_city_id = d.w_city_id and w.ww_orderId = d.lake_orderId and DATE(w.create_time) = d.day_id
             <where>
-                <if test="startDate != null "> and day_id <![CDATA[ >= ]]> #{startDate}</if>
-                <if test="endDate != null "> and day_id <![CDATA[ <= ]]> #{endDate}</if>
+                <if test="startDate != null "> and DATE(w.create_time) <![CDATA[ >= ]]> #{startDate}</if>
+                <if test="endDate != null "> and DATE(w.create_time) <![CDATA[ <= ]]> #{endDate}</if>
                 <if test="provName != null  and provName != ''"> and ww_prov_id = #{provName}</if>
                 <if test="cityName != null  and cityName != ''"> and ww_city_id = #{cityName}</if>
                 <if test="orderid != null  and orderid != ''"> and ww_orderId = #{orderid}</if>

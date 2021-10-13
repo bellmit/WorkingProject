@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FastByteArrayOutputStream;
@@ -27,6 +31,8 @@ import com.ruoyi.system.service.ISysConfigService;
 @RestController
 public class CaptchaController
 {
+    private static final Logger log = LoggerFactory.getLogger(CaptchaController.class);
+
     @Resource(name = "captchaProducer")
     private Producer captchaProducer;
 
@@ -46,8 +52,16 @@ public class CaptchaController
      * 生成验证码
      */
     @GetMapping("/captchaImage")
-    public AjaxResult getCode(HttpServletResponse response) throws IOException
+    public AjaxResult getCode(HttpServletResponse response, HttpServletRequest request) throws IOException
     {
+        String requestUrl = request.getScheme() //当前链接使用的协议
+                +"://" + request.getServerName()//服务器地址
+                + ":" + request.getServerPort() //端口号
+                + request.getContextPath() //应用名称，如果应用名称为
+                + request.getServletPath() //请求的相对url
+                + "?" + request.getQueryString(); //请求参数
+        log.info("获取验证码,请求url={}",requestUrl);
+
         AjaxResult ajax = AjaxResult.success();
         boolean captchaOnOff = configService.selectCaptchaOnOff();
         ajax.put("captchaOnOff", captchaOnOff);
