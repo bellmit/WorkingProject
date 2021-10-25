@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <!-- 数据湖下发报告表统计结果 -->
-    <resultMap type="LakeReportSumDo" id="LakeReportSumResult">
+    <resultMap type="com.ruoyi.homewifi.dobj.LakeReportSumDo" id="LakeReportSumResult">
         <result property="deptId"    column="dept_id"    />
         <result property="wProId"    column="w_pro_id"    />
         <result property="lakeCityId"    column="lake_city_id"    />
@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="otherShareSum"    column="other_share_sum"    />
     </resultMap>
 
-    <select id="selectLakeReportSumList" parameterType="provRateVo" resultMap="LakeReportSumResult">
+    <select id="selectLakeReportSumList" parameterType="com.ruoyi.homewifi.vo.ProvRateVo" resultMap="LakeReportSumResult">
         select
         any_value(dept_id) as dept_id,
         any_value(w_prov_id) as w_pro_id,
@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <!-- 数据湖下发礼包表统计结果 -->
-    <resultMap type="LakeGiftSumDo" id="LakeGiftSumResult">
+    <resultMap type="com.ruoyi.homewifi.dobj.LakeGiftSumDo" id="LakeGiftSumResult">
         <result property="deptId"    column="dept_id"    />
         <result property="lakeCityId"    column="lake_city_id"    />
         <result property="giftCodeSum"    column="gift_code_sum"    />
@@ -56,7 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="serviGiftSum"    column="servi_gift_sum"    />
     </resultMap>
 
-    <select id="selectLakeGiftSumList" parameterType="lakeProvRateVo" resultMap="LakeGiftSumResult">
+    <select id="selectLakeGiftSumList" parameterType="com.ruoyi.homewifi.vo.LakeProvRateVo" resultMap="LakeGiftSumResult">
         select
         any_value(d.dept_id) as dept_id,
         count(d.gift_code) as gift_code_sum,
@@ -71,11 +71,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="endDate != null "> and sealing_date <![CDATA[ <= ]]> #{endDate}</if>
             <if test="lakeProvId != null  and lakeProvId != ''"> and dept_id = #{lakeProvId}</if>
             <!-- 数据范围过滤 -->
-            /*${params.dataScope}*/
         </where>
         group by dept_id
-        order by dept_id;
-
+        order by dept_id
     </select>
 
 

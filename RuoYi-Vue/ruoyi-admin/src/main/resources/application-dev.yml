@@ -72,7 +72,7 @@ spring:
           # 慢SQL记录
           log-slow-sql: true
           slow-sql-millis: 1000
-          merge-sql: true
+          merge-sql: false
         wall:
           config:
             multi-statement-allow: true
@@ -110,17 +110,29 @@ spring:
         # 连接池中的最小空闲连接
         min-idle: 0
 
-  #es配置
+#es配置
+#  elasticsearch:
+#    cluster:
+#      name: es1
+#    address: 101.89.160.189
+#    zen:
+#      discovery:
+#        port: 9300
+#    port: 9200
+#    index:
+#      apIndexName: aponline
+#    type:
+#      apTypeName: messagedb
   elasticsearch:
     cluster:
-      name: es1
-    address: 101.89.160.189
+      name: Test_es_cluster
+    address: localhost
     zen:
       discovery:
         port: 9300
     port: 9200
     index:
-      apIndexName: aponline
+      apIndexName: wifi_aponline
     type:
       apTypeName: messagedb
 
