@@ -9,9 +9,9 @@ axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
   // baseURL: process.env.VUE_APP_BASE_API,
-  // baseURL: 'http://172.20.3.107:8080/prod-api',
-  // baseURL: 'http://192.168.201.110:8085/dev-api',
-  baseURL: 'https://guangxistarwifitest.189cube.com/dev-api',
+  // baseURL: 'http://172.20.3.107:8080',
+  // baseURL: 'http://192.168.201.110:8080/dev-api',
+  baseURL: 'https://guangxistarwifitest.189cube.com',
   // 超时
   timeout: 10000
 })
@@ -64,7 +64,7 @@ service.interceptors.response.use(res => {
         }
       ).then(() => {
         store.dispatch('LogOut').then(() => {
-          location.href = '/index';
+          location.href = '/homewifi';
           // location.href = '/homewifi';
         })
       }).catch(() => {});
