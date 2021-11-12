@@ -25,12 +25,12 @@
 <!--        />-->
 <!--      </el-form-item>-->
       <el-form-item label="省份">
-        <el-select v-model="queryParams.provName" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
+        <el-select v-model="queryParams.provName" filterable clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
           <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="地市">
-        <el-select v-model="queryParams.cityName" clearable placeholder="请选择地市" class="handle-select mr10">
+        <el-select v-model="queryParams.cityName" filterable clearable placeholder="请选择地市" class="handle-select mr10">
           <el-option v-for="item in cityList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>
@@ -254,21 +254,21 @@
 <!--          v-hasPermi="['homewifi:report:remove']"-->
 <!--        >删除</el-button>-->
 <!--      </el-col>-->
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-		  :loading="exportLoading"
-          @click="handleExport"
-          v-hasPermi="['homewifi:report:export']"
-        >导出</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="warning"-->
+<!--          plain-->
+<!--          icon="el-icon-download"-->
+<!--          size="mini"-->
+<!--		  :loading="exportLoading"-->
+<!--          @click="handleExport"-->
+<!--          v-hasPermi="['homewifi:report:export']"-->
+<!--        >导出</el-button>-->
+<!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="reportList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="reportList" @selection-change="handleSelectionChange" height="600px">
 <!--      <el-table-column type="selection" width="55" align="center" />-->
       <el-table-column label="主键id" align="center" prop="id" v-if="showId"/>
       <el-table-column label="省份" align="center" prop="provName" />
@@ -550,28 +550,29 @@ export default {
   },
   created() {
     this.getProv();
-    this.getList();
-    this.getDicts("data_order_type").then(response => {
-      this.ordertypeOptions = response.data;
-    });
-    this.getDicts("data_check_type").then(response => {
-      this.wwShareCheckedOptions = response.data;
-    });
-    this.getDicts("data_share_type").then(response => {
-      this.wwShareMethodOptions = response.data;
-    });
-    this.getDicts("data_check_type").then(response => {
-      this.sameAreaOptions = response.data;
-    });
-    this.getDicts("data_check_type").then(response => {
-      this.effectiveReportOptions = response.data;
-    });
-    this.getDicts("data_check_type").then(response => {
-      this.elinkCheckedOptions = response.data;
-    });
-    this.getDicts("data_check_type").then(response => {
-      this.wifiCheckedOptions = response.data;
-    });
+    this.loading = false;
+    // this.getList();
+    // this.getDicts("data_order_type").then(response => {
+    //   this.ordertypeOptions = response.data;
+    // });
+    // this.getDicts("data_check_type").then(response => {
+    //   this.wwShareCheckedOptions = response.data;
+    // });
+    // this.getDicts("data_share_type").then(response => {
+    //   this.wwShareMethodOptions = response.data;
+    // });
+    // this.getDicts("data_check_type").then(response => {
+    //   this.sameAreaOptions = response.data;
+    // });
+    // this.getDicts("data_check_type").then(response => {
+    //   this.effectiveReportOptions = response.data;
+    // });
+    // this.getDicts("data_check_type").then(response => {
+    //   this.elinkCheckedOptions = response.data;
+    // });
+    // this.getDicts("data_check_type").then(response => {
+    //   this.wifiCheckedOptions = response.data;
+    // });
   },
   methods: {
     //查询省份
