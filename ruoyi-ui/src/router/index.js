@@ -42,7 +42,10 @@ export const constantRoutes = [
   {
     path: '/login',
     component: (resolve) => require(['@/views/login'], resolve),
-    hidden: true
+    hidden: true,
+    meta:{
+      title:'全屋WiFi运营支撑系统'
+    }
   },
   {
     path: '/404',
@@ -149,7 +152,8 @@ export const constantRoutes = [
 ]
 
 export default new Router({
-  mode: 'history', // 去掉url中的#
+  mode: 'hash', // 去掉url中的#
+  base: '/homewifi',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
