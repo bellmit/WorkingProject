@@ -1,0 +1,35 @@
+#项目相关配置
+mesh:
+  time:
+    routerUpdateDay: 1
+    gatewayUpdateDay: 1
+  #日志文件存放路径配置
+  logging:
+    file:
+      path: F:/Java/IdeaProjects/tmp/ruoyi
+
+
+# 数据源配置
+spring:
+  elasticsearch:
+    cluster:
+      name: Test_es_cluster
+    address: localhost
+    zen:
+      discovery:
+        port: 9300
+    port: 9200
+    index:
+      apIndexName: wifi_aponline
+    type:
+      apTypeName: messagedb
+
+  #sftp路径
+  datatransport:
+    sftpdir: /data/super/301/data/
+    localdir: F:/Java/IdeaProjects/tmp/homewifi
+    sftp:
+      name: zhhjt
+      pass: zhhjt#123
+      ip: 10.251.16.137
+      port: 6122
