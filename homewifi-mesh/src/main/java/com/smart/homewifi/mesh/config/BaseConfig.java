@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Data
 @Configuration
-public class BasicConfig {
+public class BaseConfig {
     //路由器状态文件上传时间
     @Value("${mesh.time.routerUpdateDay}")
     private Integer routerUpdateDay;
@@ -21,5 +21,13 @@ public class BasicConfig {
     //网关状态文件上传时间
     @Value("${mesh.time.gatewayUpdateDay}")
     private Integer gatewayUpdateDay;
+
+    //上传文件地址
+    @Value("${mesh.fileUpdate.localdir}")
+    private String localdir;
+
+    //线程池核心线程数
+    @Value("${Spring.threads.pool.corePoolSize}")
+    private Integer corePoolSize;
 
 }

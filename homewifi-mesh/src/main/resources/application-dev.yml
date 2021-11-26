@@ -3,10 +3,14 @@ mesh:
   time:
     routerUpdateDay: 1
     gatewayUpdateDay: 1
-  #日志文件存放路径配置
-  logging:
-    file:
-      path: F:/Java/IdeaProjects/tmp/ruoyi
+  # 文件路径 示例（Linux配置 /home/mesh/uploadPath）
+  fileUpdate:
+    localdir: F:/Java/IdeaProjects/tmp/mesh/uploadPath
+
+#日志文件存放路径配置
+logging:
+  file:
+    path: F:/Java/IdeaProjects/tmp/mesh/meshLog
 
 
 # 数据源配置
@@ -27,9 +31,13 @@ spring:
   #sftp路径
   datatransport:
     sftpdir: /data/super/301/data/
-    localdir: F:/Java/IdeaProjects/tmp/homewifi
     sftp:
       name: zhhjt
       pass: zhhjt#123
       ip: 10.251.16.137
       port: 6122
+
+  threads:
+    pool:
+      #线程池核心线程数
+      corePoolSize: 10

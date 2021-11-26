@@ -1,8 +1,5 @@
 package com.smart.homewifi.mesh.utils;
 
-import com.smart.homewifi.mesh.config.BasicConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.Calendar;
 import java.util.Date;
 
