@@ -9,7 +9,6 @@ import com.smart.homewifi.mesh.es.EsUtils;
 import com.smart.homewifi.mesh.es.JsonView;
 import com.smart.homewifi.mesh.scp.ScpTransfer;
 import com.smart.homewifi.mesh.utils.*;
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -66,18 +63,21 @@ public class GatewayMesh {
 
         while(true){
             if(TimeUtils.isDayOfMonth(20)){
+                Date changeDate = new Date();
+                logger.info("本月{}修改上传标志位为0",dateFormat.format(changeDate));
                 updloadFlag = 0;
             }
-            if(TimeUtils.isDayOfMonth(1) && updloadFlag ==0){
-                //上传文件
+            if(TimeUtils.isDayOfMonth(baseConfig.getGatewayUpdateDay()) && updloadFlag ==0){
                 uploadFile();
                 updloadFlag = 1;
             }
             //使用scroll条件查询时间排序
             jsonView = scrollGatewaymac(scrollId);
+            logger.info("查询本地库获取在线网关mac {}条",jsonView.getNumber());
             scrollId = jsonView.getScrollId();
             if(jsonView.getNumber() == 0){
-                //reindex从线上gatewayonline动态库补充数据
+                Date reindexDate = new Date();
+                logger.info("{}，本轮本地库网关mac查询结束，开始reindex从线上gatewayonline动态库补充数据",dateFormat.format(reindexDate));
                 String taskId = reindexNewGateway();
                 if(!checkTask(taskId)){
                     //reindex未完成就sleep;
@@ -87,38 +87,33 @@ public class GatewayMesh {
                 jsonView = scrollGatewaymac(scrollId);
                 scrollId = jsonView.getScrollId();
             }
-            //for循环
+            logger.info("for循环Scroll查询结果");
             for (JSONObject jsonObject :jsonView.getList()){
                 String macAddress = jsonObject.getString("MAC_ADDRESS");
+                logger.info("开始查询mac为{}的网关",macAddress);
                 //以阻塞形式运行，每10ms产生一个令牌，即允许每秒发送100个数据。
                 rateLimiter.acquire(1);
                 poolExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        //TODO：开启多线程调用接口查询mesh状态
-                        String URL = "https://nos9.189cube.com/plugin/post?appid=1000000273534113&secret=4463d6ab2f0a4afc" +
-                                "&PluginName=com.chinatelecom.all.smartgateway.inter_conndv3_mt7526&Version=3.3.04&MAC="+
-                                macAddress;
-                        String result = HttpRetryUtils.postRetryQuery(URL, "{\"CmdType\": \"GetMeshStatus\",\"SequenceId\": \"76721\"}");
-                        if(!EmptyUtil.isEmpty(result)){
-                            JSONObject resultJson=(JSONObject) JSONObject.parse(result);
-                            String return_parameter = resultJson.getString("return_Parameter");
-                            if(!EmptyUtil.isEmpty(return_parameter)){
-                                JSONObject meshJson = (JSONObject) JSONObject.parse(Base64Utils.decode(return_parameter));
-                                JSONObject gwMesh = meshJson.getJSONObject("gw");
-                                Integer meshSupport = gwMesh.getInteger("support");
-                                Integer meshOpen = gwMesh.getInteger("enable");
-                                if(meshSupport == 0){
-                                    //删除这一条本地数据
-                                    String deleteUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
-                                            "/gatewayonline_copy/messagedb/"+macAddress;
-                                    HttpUtil.delete(deleteUrl);
-                                }else if(meshSupport == 1 && meshOpen == 1){
-                                    //写入一条数据（后期优化：可采用Bulk写入，但是担心不同线程ElasticSearchOperations能否共享）
-                                    String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
-                                            "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
-                                    String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
-                                    HttpUtil.post(postUrl,state);
+                        //todo：后期优化：1、使用bulk写入；2、使用接口校验是否在线；3、申请并使用自己的appid；4、指定获取插件名请求的请求体中id随机
+                        //开启多线程调用接口查询mesh状态
+                        //1、获取路由器插件名称和版本号
+                        String plugeUrl = "https://nos9.189cube.com/device/listplugin?MAC=" +macAddress
+                                +"&token&appid=1000000208455928&secret=f17ddb39a13ad0e7&Plugin_Name=eLinkAP&Version=null";
+                        String plugeQueryBody = "{\"RPCMethod\": \"ListPlugin\",\"ID\": " +
+                                "\"a2b15ce0-50da-11ec-8490-fa163ea2992d\",\"MAC\": \""+macAddress+"\"}";
+                        String plugeResult = HttpRetryUtils.getRetryQuery(plugeUrl, plugeQueryBody);
+                        if(!EmptyUtil.isEmpty(plugeResult)){
+                            JSONObject plugeJson = (JSONObject) JSONObject.parse(plugeResult);
+                            JSONArray plugeArrayList = plugeJson.getJSONArray("List");
+                            for(int i = 0;i<plugeArrayList.size();i++){
+                                JSONObject jsonObject = plugeArrayList.getJSONObject(i);
+                                String pluginName = jsonObject.getString("Plugin_Name");
+                                if(!EmptyUtil.isEmpty(pluginName) && pluginName.contains("com.chinatelecom.all.smartgateway.inter_conndv3")){
+                                    //2、根据mac、Plugin_Name、Version三个参数获取网关mesh状态
+                                    getMeshState(macAddress,pluginName,jsonObject.getString("Version"));
+                                    break;
                                 }
                             }
                         }
@@ -141,9 +136,10 @@ public class GatewayMesh {
      * 每月一号没有上传文件的情况下就上传
      */
     public void uploadFile() throws InterruptedException {
+        Date updateDate = new Date();
         String scrollId = null;
         boolean flag = true;
-        logger.info("上传定时任务开始执行");
+        logger.info("{}定时上传任务开始执行",dateFormat.format(updateDate));
         String filePath = baseConfig.getLocaldir()+"/GATEWAY_Mesh_State_"+ CalendarUtils.getDate()
                 +"_"+CalendarUtils.getLastMonth()+".txt";
         File gatewayMeshFile = new File(filePath);
@@ -159,8 +155,11 @@ public class GatewayMesh {
             }
         }
         //3、压缩文件、上传文件
+        logger.info("开始压缩文件");
         ScpTransfer scpTransfer = new ScpTransfer();
+        logger.info("开始scp上传文件");
         scpTransfer.scpUploadFile(FileZipUtile.GzipFile(filePath,""));
+        logger.info("上传结束删除文件");
         gatewayMeshFile.delete();
         //5、删除原表所有数据、上传标志位置1
         String deleteaskId = deleteAllData();
@@ -168,7 +167,8 @@ public class GatewayMesh {
             //reindex未完成就sleep;
             Thread.sleep(10000);
         }
-        //6、reindex一张新表、记录入库时间
+        //6、reindex一张新表
+        logger.info("上传结束，删除原表数据，reindex新表数据");
         String reindexTaskId = reindexNewGateway();
         if(!checkTask(reindexTaskId)){
             //reindex未完成就sleep;
@@ -341,6 +341,40 @@ public class GatewayMesh {
             }
         }
     }
+
+    public void getMeshState(String macAddress,String plugeName,String version){
+        //2、根据mac、Plugin_Name、Version三个参数获取网关mesh状态
+        String meshUrl = "https://nos9.189cube.com/plugin/post?appid=1000000273534113&secret=4463d6ab2f0a4afc" +
+                "&PluginName="+plugeName+"&Version="+version+"&MAC="+ macAddress;
+        String meshQueryBody = "{\"CmdType\": \"GetMeshStatus\",\"SequenceId\": \"76721\"}";
+        String meshResult = HttpRetryUtils.postRetryQuery(meshUrl,meshQueryBody);
+        logger.info("mac为{}的网关nos9平台查询结果：{}",macAddress,meshResult);
+        if(!EmptyUtil.isEmpty(meshResult)){
+            JSONObject resultJson=(JSONObject) JSONObject.parse(meshResult);
+            String return_parameter = resultJson.getString("return_Parameter");
+            if(!EmptyUtil.isEmpty(return_parameter)){
+                JSONObject meshJson = (JSONObject) JSONObject.parse(Base64Utils.decode(return_parameter));
+                JSONObject gwMesh = meshJson.getJSONObject("gw");
+                Integer meshSupport = gwMesh.getInteger("support");
+                Integer meshOpen = gwMesh.getInteger("enable");
+                if(meshSupport == 0){
+                    logger.info("mac为{}的网关不支持mesh",macAddress);
+                    //删除这一条本地数据
+                    String deleteUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
+                            "/gatewayonline_copy/messagedb/"+macAddress;
+                    HttpUtil.delete(deleteUrl);
+                }else if(meshSupport == 1 && meshOpen == 1){
+                    //写入一条数据（后期优化：可采用Bulk写入，但是担心不同线程ElasticSearchOperations能否共享）
+                    logger.info("mac为{}的网关支持且开启mesh",macAddress);
+                    String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
+                            "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
+                    String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
+                    HttpUtil.post(postUrl,state);
+                }
+            }
+        }
+    }
+
 
     public static void main(String[] args) throws InterruptedException {
         /*String filePath = "/GATEWAY_Mesh_State_"+ CalendarUtils.getDate()

@@ -62,10 +62,30 @@ public class HttpRetryUtils {
             return null;
         }
     }
+
+    public static String getRetryQuery(String url , String str) {
+        try {
+            JSONObject queryRoot=(JSONObject)JSONObject.parse(str);
+            RestTemplate restTemplate=new RestTemplate();
+            restTemplate.setRequestFactory(clientHttpRequestFactory());
+            restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
+            return restTemplate.getForEntity(url,JSONObject.class,queryRoot).getBody().toJSONString();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     public static void main(String[] args) {
-        String result = postRetryQuery("https://nos9.189cube.com/plugin/post?appid=1000000273534113&secret=4463d6ab2f0a4afc" +
+        /*String result = postRetryQuery("https://nos9.189cube.com/plugin/post?appid=1000000273534113&secret=4463d6ab2f0a4afc" +
                 "&MAC=C8F6C80314C0&PluginName=com.chinatelecom.all.smartgateway.inter_conndv3_mt7526&Version=3.3.04","{\"CmdType\": \"GetMeshStatus\",\"SequenceId\": \"76721\"}");
-        System.out.println(result);
+        System.out.println(result);*/
+
+        String getResult = getRetryQuery("https://nos9.189cube.com/device/listplugin?" +
+                "MAC=C8F6C80314C0&token&appid=1000000208455928&secret=f17ddb39a13ad0e7&" +
+                "Plugin_Name=eLinkAP&Version=null","{\"RPCMethod\": \"ListPlugin\"," +
+                "\"ID\": \"a2b15ce0-50da-11ec-8490-fa163ea2992d\",\"MAC\": \"C8F6C80314C0\"}");
+        System.out.println("getResult"+getResult);
     }
 
 

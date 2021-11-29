@@ -27,7 +27,7 @@ public class BaseConfig {
     private String localdir;
 
     //线程池核心线程数
-    @Value("${Spring.threads.pool.corePoolSize}")
+    @Value("${spring.threads.pool.corePoolSize}")
     private Integer corePoolSize;
 
 }
