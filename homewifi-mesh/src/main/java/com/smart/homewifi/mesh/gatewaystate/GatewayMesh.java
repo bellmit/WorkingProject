@@ -85,10 +85,10 @@ public class GatewayMesh {
                     jsonView = scrollGatewayMac(scrollId);
                     scrollId = jsonView.getScrollId();
                 }
-                logger.info("for循环Scroll查询结果");
+                //logger.info("for循环Scroll查询结果");
                 for (JSONObject jsonObject :jsonView.getList()){
                     String macAddress = jsonObject.getString("MAC_ADDRESS");
-                    logger.info("开始查询mac为{}的网关",macAddress);
+                    //logger.info("开始查询mac为{}的网关",macAddress);
                     //以阻塞形式运行，每10ms产生一个令牌，即允许每秒发送100个数据。
                     rateLimiter.acquire(1);
                     poolExecutor.execute(new Runnable() {
@@ -369,7 +369,7 @@ public class GatewayMesh {
                 "&PluginName="+plugeName+"&Version="+version+"&MAC="+ macAddress;
         String meshQueryBody = "{\"CmdType\": \"GetMeshStatus\",\"SequenceId\": \"76721\"}";
         String meshResult = HttpRetryUtils.postRetryQuery(meshUrl,meshQueryBody);
-        logger.info("mac为{}的网关nos9平台查询结果：{}",macAddress,meshResult);
+        //logger.info("mac为{}的网关nos9平台查询结果：{}",macAddress,meshResult);
         if(!EmptyUtil.isEmpty(meshResult)){
             JSONObject resultJson=(JSONObject) JSONObject.parse(meshResult);
             String return_parameter = resultJson.getString("return_Parameter");
@@ -379,7 +379,7 @@ public class GatewayMesh {
                 Integer meshSupport = gwMesh.getInteger("support");
                 Integer meshOpen = gwMesh.getInteger("enable");
                 if(meshSupport == 0){
-                    logger.info("mac为{}的网关不支持mesh",macAddress);
+                    //logger.info("mac为{}的网关不支持mesh",macAddress);
                     //给这一条数据添加不支持（不查）标志位。
                     String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                             "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
@@ -387,13 +387,13 @@ public class GatewayMesh {
                     HttpUtil.post(postUrl,state);
                 }else if(meshSupport == 1 && meshOpen == 1){
                     //写入一条数据（后期优化：可采用Bulk写入，但是担心不同线程ElasticSearchOperations能否共享）
-                    logger.info("mac为{}的网关支持且开启mesh",macAddress);
+                    //logger.info("mac为{}的网关支持且开启mesh",macAddress);
                     String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                             "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
                     String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
                     HttpUtil.post(postUrl,state);
                 }else{
-                    logger.info("查询结果为：{}",meshJson.toJSONString());
+                    //logger.info("查询结果为：{}",meshJson.toJSONString());
                 }
             }
         }

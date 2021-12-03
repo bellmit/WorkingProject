@@ -86,10 +86,10 @@ public class RouterMesh {
                     jsonView = scrollRouterMac(scrollId);
                     scrollId = jsonView.getScrollId();
                 }
-                logger.info("for循环Scroll查询结果");
+                //logger.info("for循环Scroll查询结果");
                 for (JSONObject jsonObject :jsonView.getList()){
                     String macAddress = jsonObject.getString("mac");
-                    logger.info("开始查询mac为{}的路由器",macAddress);
+                    //logger.info("开始查询mac为{}的路由器",macAddress);
                     //以阻塞形式运行，每10ms产生一个令牌，即允许每秒发送100个数据。
                     rateLimiter.acquire(1);
                     poolExecutor.execute(new Runnable() {
@@ -331,7 +331,7 @@ public class RouterMesh {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("网关Mesh开启状态，写入出错");
+            logger.error("路由器Mesh开启状态，写入出错");
         }finally {
             if ( writer != null ) {
                 try {
@@ -351,7 +351,7 @@ public class RouterMesh {
             //直接调用路由器mesh开启状态查询接口
             if(getRouterMeshOpen(macAddress)){
                 //写入一条数据
-                logger.info("mac为{}的路由器支持且开启mesh",macAddress);
+                //logger.info("mac为{}的路由器支持且开启mesh",macAddress);
                 String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                         "/aponline_copy/messagedb/"+macAddress+"/_update";
                 String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
@@ -362,21 +362,21 @@ public class RouterMesh {
             if (getRouterMeshSupport(macAddress)){
                 if(getRouterMeshOpen(macAddress)){
                     //写入一条数据
-                    logger.info("mac为{}的路由器支持且开启mesh",macAddress);
+                    //logger.info("mac为{}的路由器支持且开启mesh",macAddress);
                     String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                             "/aponline_copy/messagedb/"+macAddress+"/_update";
                     String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
                     HttpUtil.post(postUrl,state);
                 }else{
                     //写入一条数据
-                    logger.info("mac为{}的路由器支持但没有开启mesh",macAddress);
+                    //logger.info("mac为{}的路由器支持但没有开启mesh",macAddress);
                     String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                             "/aponline_copy/messagedb/"+macAddress+"/_update";
                     String state = "{\"doc\":{\"meshSupport\": 1}}";
                     HttpUtil.post(postUrl,state);
                 }
             }else {
-                logger.info("mac为{}的路由器不支持mesh",macAddress);
+                //logger.info("mac为{}的路由器不支持mesh",macAddress);
                 //给这一条数据添加不支持（不查）标志位。
                 String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                         "/aponline_copy/messagedb/"+macAddress+"/_update";
