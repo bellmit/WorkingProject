@@ -36,7 +36,7 @@ public class ScpTransfer {
     private static final Logger logger = LoggerFactory.getLogger(ScpTransfer.class);
 
     //上传单个文件
-    public void scpUploadFile(String localFile){
+    public void scpUploadFile(String localFile) throws Exception{
         //文件scp到数据服务器
         Connection conn = new Connection(dataServerIp,dataServerPort);
         logger.info("开始scp文件");

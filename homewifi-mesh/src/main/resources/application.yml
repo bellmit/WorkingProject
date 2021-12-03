@@ -2,7 +2,7 @@
 spring:
   # 资源信息
   profiles:
-    active: dev
+    active: test
 
 #日志相关
 logging:

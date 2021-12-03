@@ -5,26 +5,35 @@ mesh:
     gatewayUpdateDay: 1
   # 文件路径 示例（Linux配置 /home/mesh/uploadPath）
   fileUpdate:
-    localdir: F:/Java/IdeaProjects/tmp/mesh/uploadPath
+    localdir: /data/meshStatistics/uploadPath
 
 #日志文件存放路径配置
 logging:
   file:
-    path: F:/Java/IdeaProjects/tmp/mesh/meshLog
+    path: /data/meshStatistics/meshLog
+
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
 
 
 # 数据源配置
 spring:
   elasticsearch:
     cluster:
-      name: Test_es_cluster
-    address: localhost
+      name: es1
+    address: 192.168.111.31
     zen:
       discovery:
         port: 9300
     port: 9200
     index:
-      apIndexName: wifi_aponline
+      apIndexName: aponline
     type:
       apTypeName: messagedb
 

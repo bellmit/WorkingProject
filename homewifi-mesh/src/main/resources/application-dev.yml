@@ -1,8 +1,8 @@
 #项目相关配置
 mesh:
   time:
-    routerUpdateDay: 1
-    gatewayUpdateDay: 1
+    routerUpdateDay: 2
+    gatewayUpdateDay: 2
   # 文件路径 示例（Linux配置 /home/mesh/uploadPath）
   fileUpdate:
     localdir: F:/Java/IdeaProjects/tmp/mesh/uploadPath
@@ -11,6 +11,15 @@ mesh:
 logging:
   file:
     path: F:/Java/IdeaProjects/tmp/mesh/meshLog
+
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
 
 
 # 数据源配置
