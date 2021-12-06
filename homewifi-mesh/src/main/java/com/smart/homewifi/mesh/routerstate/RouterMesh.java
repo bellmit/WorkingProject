@@ -392,34 +392,39 @@ public class RouterMesh {
      * @return
      */
     public boolean getRouterMeshSupport(String macAddress){
-        String supportQueryUrl = "https://apweb1.189cube.com:8443/plugin/post.php?MAC=" +
-                macAddress+"&appid=1000000273534113&secret=4463d6ab2f0a4afc&PluginName&Version=1.0";
-        String supportQueryBody = "{\"type\": \"get_status\",\"get\": [{\"name\": \"capability\"}]}";
-        String responseString = HttpRetryUtils.postRetryQuery(supportQueryUrl, supportQueryBody);
-        //Todo:可使用第三方库JsonPath优化Json嵌套时获取特定的Key进行优化
-        if(!EmptyUtil.isEmpty(responseString)){
-            JSONObject responseJson = (JSONObject) JSONObject.parse(responseString);
-            String returnParameter = responseJson.getString("return_Parameter");
-            if(!EmptyUtil.isEmpty(returnParameter)){
-                JSONObject returnJson = (JSONObject) JSONObject.parse(Base64Utils.decode(returnParameter));
-                JSONObject statusJson = returnJson.getJSONObject("status");
-                if(statusJson != null){
-                    JSONObject capabilityJson = statusJson.getJSONObject("capability");
-                    if(capabilityJson != null){
-                        Integer supportMesh = capabilityJson.getInteger("supportMesh");
-                        if(supportMesh != null){
-                            //支持
-                            if(supportMesh == 1 || supportMesh == 2){
-                                return true;
-                            }
-                            //不支持
-                            if(supportMesh == 0){
-                                return false;
+        try {
+            String supportQueryUrl = "https://apweb1.189cube.com:8443/plugin/post.php?MAC=" +
+                    macAddress+"&appid=1000000273534113&secret=4463d6ab2f0a4afc&PluginName&Version=1.0";
+            String supportQueryBody = "{\"type\": \"get_status\",\"get\": [{\"name\": \"capability\"}]}";
+            String responseString = HttpRetryUtils.postRetryQuery(supportQueryUrl, supportQueryBody);
+            //Todo:可使用第三方库JsonPath优化Json嵌套时获取特定的Key进行优化
+            if(!EmptyUtil.isEmpty(responseString)){
+                JSONObject responseJson = (JSONObject) JSONObject.parse(responseString);
+                String returnParameter = responseJson.getString("return_Parameter");
+                if(!EmptyUtil.isEmpty(returnParameter)){
+                    JSONObject returnJson = (JSONObject) JSONObject.parse(Base64Utils.decode(returnParameter));
+                    JSONObject statusJson = returnJson.getJSONObject("status");
+                    if(statusJson != null){
+                        JSONObject capabilityJson = statusJson.getJSONObject("capability");
+                        if(capabilityJson != null){
+                            Integer supportMesh = capabilityJson.getInteger("supportMesh");
+                            if(supportMesh != null){
+                                //支持
+                                if(supportMesh == 1 || supportMesh == 2){
+                                    return true;
+                                }
+                                //不支持
+                                if(supportMesh == 0){
+                                    return false;
+                                }
                             }
                         }
                     }
                 }
             }
+        } catch (Exception e) {
+            logger.error("mac为{}的路由器查询mesh支持接口出错",macAddress);
+            e.printStackTrace();
         }
         return false;
     }
@@ -430,27 +435,32 @@ public class RouterMesh {
      * @return
      */
     public boolean getRouterMeshOpen(String macAddress){
-        String openQueryUrl = "https://apweb1.189cube.com:8443/plugin/post.php?MAC=" +
-                macAddress+"&appid=1000000273534113&secret=4463d6ab2f0a4afc&PluginName=&Version=1.0";
-        String openQueryBody = "{\"type\": \"ubus_call\"," +
-                "\"object\": \"ctcapd.wifi.mesh\",\"method\": \"get\",\"data\": {}}";
-        String responseString = HttpRetryUtils.getRetryQuery(openQueryUrl, openQueryBody);
-        if(!EmptyUtil.isEmpty(responseString)){
-            JSONObject responseJson = (JSONObject) JSONObject.parse(responseString);
-            String returnParameter = responseJson.getString("return_Parameter");
-            if(!EmptyUtil.isEmpty(returnParameter)){
-                JSONObject returnJson = (JSONObject) JSONObject.parse(Base64Utils.decode(returnParameter));
-                JSONObject dataJson = returnJson.getJSONObject("data");
-                if(dataJson != null){
-                    JSONObject ctcapdJson = dataJson.getJSONObject("ctcapd.wifi.mesh");
-                    if(ctcapdJson != null){
-                        String status = ctcapdJson.getString("status");
-                        if(!EmptyUtil.isEmpty(status) && "yes".equals(status) ){
-                            return true;
+        try {
+            String openQueryUrl = "https://apweb1.189cube.com:8443/plugin/post.php?MAC=" +
+                    macAddress+"&appid=1000000273534113&secret=4463d6ab2f0a4afc&PluginName=&Version=1.0";
+            String openQueryBody = "{\"type\": \"ubus_call\"," +
+                    "\"object\": \"ctcapd.wifi.mesh\",\"method\": \"get\",\"data\": {}}";
+            String responseString = HttpRetryUtils.getRetryQuery(openQueryUrl, openQueryBody);
+            if(!EmptyUtil.isEmpty(responseString)){
+                JSONObject responseJson = (JSONObject) JSONObject.parse(responseString);
+                String returnParameter = responseJson.getString("return_Parameter");
+                if(!EmptyUtil.isEmpty(returnParameter)){
+                    JSONObject returnJson = (JSONObject) JSONObject.parse(Base64Utils.decode(returnParameter));
+                    JSONObject dataJson = returnJson.getJSONObject("data");
+                    if(dataJson != null){
+                        JSONObject ctcapdJson = dataJson.getJSONObject("ctcapd.wifi.mesh");
+                        if(ctcapdJson != null){
+                            String status = ctcapdJson.getString("status");
+                            if(!EmptyUtil.isEmpty(status) && "yes".equals(status) ){
+                                return true;
+                            }
                         }
                     }
                 }
             }
+        } catch (Exception e) {
+            logger.error("mac为{}的路由器查询mesh开启接口出错",macAddress);
+            e.printStackTrace();
         }
         return false;
     }

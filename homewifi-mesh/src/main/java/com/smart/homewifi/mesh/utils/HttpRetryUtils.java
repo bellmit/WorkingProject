@@ -47,33 +47,23 @@ public class HttpRetryUtils {
      * @param str
      * @return
      */
-    public static String postRetryQuery(String url , String str) {
-        try {
-            HttpHeaders headers=new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            JSONObject queryRoot=(JSONObject)JSONObject.parse(str);
-            RestTemplate restTemplate=new RestTemplate();
-            restTemplate.setRequestFactory(clientHttpRequestFactory());
-            restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
-            org.springframework.http.HttpEntity<JSONObject> entity = new org.springframework.http.HttpEntity<>(queryRoot, headers);
-            return restTemplate.postForEntity(url, entity, JSONObject.class).getBody().toJSONString();
-        }catch (Exception ex){
-            ex.printStackTrace();
-            return null;
-        }
+    public static String postRetryQuery(String url, String str) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject queryRoot = (JSONObject) JSONObject.parse(str);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(clientHttpRequestFactory());
+        restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
+        org.springframework.http.HttpEntity<JSONObject> entity = new org.springframework.http.HttpEntity<>(queryRoot, headers);
+        return restTemplate.postForEntity(url, entity, JSONObject.class).getBody().toJSONString();
     }
 
-    public static String getRetryQuery(String url , String str) {
-        try {
-            JSONObject queryRoot=(JSONObject)JSONObject.parse(str);
-            RestTemplate restTemplate=new RestTemplate();
-            restTemplate.setRequestFactory(clientHttpRequestFactory());
-            restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
-            return restTemplate.getForEntity(url,JSONObject.class,queryRoot).getBody().toJSONString();
-        }catch (Exception ex){
-            ex.printStackTrace();
-            return null;
-        }
+    public static String getRetryQuery(String url, String str) {
+        JSONObject queryRoot = (JSONObject) JSONObject.parse(str);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(clientHttpRequestFactory());
+        restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
+        return restTemplate.getForEntity(url, JSONObject.class, queryRoot).getBody().toJSONString();
     }
 
     public static void main(String[] args) {
@@ -118,7 +108,7 @@ public class HttpRetryUtils {
             HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(
                     httpClient); // httpClient连接配置
             clientHttpRequestFactory.setConnectTimeout(10000); // 连接超时
-            clientHttpRequestFactory.setReadTimeout(5000); // 数据读取超时时间
+            clientHttpRequestFactory.setReadTimeout(10000); // 数据读取超时时间
             clientHttpRequestFactory.setConnectionRequestTimeout(5000); // 连接不够用的等待时间
             return clientHttpRequestFactory;
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {

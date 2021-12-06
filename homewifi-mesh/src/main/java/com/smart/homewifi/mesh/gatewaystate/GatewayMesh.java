@@ -341,40 +341,11 @@ public class GatewayMesh {
 
     public void recordMesh(String macAddress){
         //1、获取路由器插件名称和版本号
-        String plugeUrl = "https://nos9.189cube.com/device/listplugin?MAC=" +macAddress
-                +"&token&appid=1000000208455928&secret=f17ddb39a13ad0e7&Plugin_Name=eLinkAP&Version=null";
-        String plugeQueryBody = "{\"RPCMethod\": \"ListPlugin\",\"ID\": " +
-                "\"a2b15ce0-50da-11ec-8490-fa163ea2992d\",\"MAC\": \""+macAddress+"\"}";
-        String plugeResult = HttpRetryUtils.getRetryQuery(plugeUrl, plugeQueryBody);
-        if(!EmptyUtil.isEmpty(plugeResult)){
-            JSONObject plugeJson = (JSONObject) JSONObject.parse(plugeResult);
-            JSONArray plugeArrayList = plugeJson.getJSONArray("List");
-            if(plugeArrayList != null && plugeArrayList.size()>0){
-                for(int i = 0;i<plugeArrayList.size();i++){
-                    JSONObject jsonObject = plugeArrayList.getJSONObject(i);
-                    String pluginName = jsonObject.getString("Plugin_Name");
-                    if(!EmptyUtil.isEmpty(pluginName) && pluginName.contains("com.chinatelecom.all.smartgateway.inter_conndv3")){
-                        //2、根据mac、Plugin_Name、Version三个参数获取网关mesh状态
-                        getMeshState(macAddress,pluginName,jsonObject.getString("Version"));
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    public void getMeshState(String macAddress,String plugeName,String version){
-        //2、根据mac、Plugin_Name、Version三个参数获取网关mesh状态
-        String meshUrl = "https://nos9.189cube.com/plugin/post?appid=1000000273534113&secret=4463d6ab2f0a4afc" +
-                "&PluginName="+plugeName+"&Version="+version+"&MAC="+ macAddress;
-        String meshQueryBody = "{\"CmdType\": \"GetMeshStatus\",\"SequenceId\": \"76721\"}";
-        String meshResult = HttpRetryUtils.postRetryQuery(meshUrl,meshQueryBody);
-        //logger.info("mac为{}的网关nos9平台查询结果：{}",macAddress,meshResult);
-        if(!EmptyUtil.isEmpty(meshResult)){
-            JSONObject resultJson=(JSONObject) JSONObject.parse(meshResult);
-            String return_parameter = resultJson.getString("return_Parameter");
-            if(!EmptyUtil.isEmpty(return_parameter)){
-                JSONObject meshJson = (JSONObject) JSONObject.parse(Base64Utils.decode(return_parameter));
+        JSONObject plugeData = getPlugeData(macAddress);
+        if(plugeData != null){
+            //2、根据mac、Plugin_Name、Version三个参数获取网关mesh状态
+            JSONObject meshJson = getMeshState(macAddress, plugeData.getString("Plugin_Name"), plugeData.getString("Version"));
+            if(meshJson != null){
                 JSONObject gwMesh = meshJson.getJSONObject("gw");
                 Integer meshSupport = gwMesh.getInteger("support");
                 Integer meshOpen = gwMesh.getInteger("enable");
@@ -392,11 +363,65 @@ public class GatewayMesh {
                             "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
                     String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
                     HttpUtil.post(postUrl,state);
-                }else{
-                    //logger.info("查询结果为：{}",meshJson.toJSONString());
+                }else if(meshSupport == 1 && meshOpen == 0){
+                    String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
+                            "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
+                    String state = "{\"doc\":{\"meshSupport\": 1}}";
+                    HttpUtil.post(postUrl,state);
                 }
             }
         }
+    }
+
+    //1、获取路由器插件名称和版本号
+    public JSONObject getPlugeData(String macAddress){
+        try {
+            String plugeUrl = "https://nos9.189cube.com/device/listplugin?MAC=" +macAddress
+                    +"&token&appid=1000000208455928&secret=f17ddb39a13ad0e7&Plugin_Name=eLinkAP&Version=null";
+            String plugeQueryBody = "{\"RPCMethod\": \"ListPlugin\",\"ID\": " +
+                    "\"a2b15ce0-50da-11ec-8490-fa163ea2992d\",\"MAC\": \""+macAddress+"\"}";
+            String plugeResult = HttpRetryUtils.getRetryQuery(plugeUrl, plugeQueryBody);
+            if(!EmptyUtil.isEmpty(plugeResult)){
+                JSONObject plugeJson = (JSONObject) JSONObject.parse(plugeResult);
+                JSONArray plugeArrayList = plugeJson.getJSONArray("List");
+                if(plugeArrayList != null && plugeArrayList.size()>0){
+                    for(int i = 0;i<plugeArrayList.size();i++){
+                        JSONObject jsonObject = plugeArrayList.getJSONObject(i);
+                        String pluginName = jsonObject.getString("Plugin_Name");
+                        if(!EmptyUtil.isEmpty(pluginName) && pluginName.contains("com.chinatelecom.all.smartgateway.inter_conndv3")){
+                            return jsonObject;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("mac为{}的网关查询中间件版本接口出错",macAddress);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //2、根据mac、Plugin_Name、Version三个参数获取网关mesh状态
+    public JSONObject getMeshState(String macAddress,String plugeName,String version){
+        try {
+            String meshUrl = "https://nos9.189cube.com/plugin/post?appid=1000000273534113&secret=4463d6ab2f0a4afc" +
+                    "&PluginName="+plugeName+"&Version="+version+"&MAC="+ macAddress;
+            String meshQueryBody = "{\"CmdType\": \"GetMeshStatus\",\"SequenceId\": \"76721\"}";
+            String meshResult = HttpRetryUtils.postRetryQuery(meshUrl,meshQueryBody);
+            //logger.info("mac为{}的网关nos9平台查询结果：{}",macAddress,meshResult);
+            if(!EmptyUtil.isEmpty(meshResult)){
+                JSONObject resultJson=(JSONObject) JSONObject.parse(meshResult);
+                String return_parameter = resultJson.getString("return_Parameter");
+                if(!EmptyUtil.isEmpty(return_parameter)){
+                    JSONObject meshJson = (JSONObject) JSONObject.parse(Base64Utils.decode(return_parameter));
+                    return  meshJson;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("mac为{}的网关查询mesh状态接口出错",macAddress);
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
