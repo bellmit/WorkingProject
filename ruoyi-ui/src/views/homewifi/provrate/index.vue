@@ -16,7 +16,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="省份">
-        <el-select v-model="queryParams.wProvId" clearable placeholder="请选择省份" class="handle-select mr10">
+        <el-select v-model="queryParams.wProvId" filterable clearable placeholder="请选择省份" class="handle-select mr10">
           <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>

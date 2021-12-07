@@ -16,12 +16,12 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="省份">
-        <el-select v-model="queryParams.wProvId" clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
+        <el-select v-model="queryParams.wProvId" filterable clearable placeholder="请选择省份" class="handle-select mr10" @change="getCity()">
           <el-option v-for="item in provList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="地市">
-        <el-select v-model="queryParams.wCityId" clearable placeholder="请选择地市" class="handle-select mr10">
+        <el-select v-model="queryParams.wCityId" filterable clearable placeholder="请选择地市" class="handle-select mr10">
           <el-option v-for="item in cityList" :key="item.key" :label="item.value" :value="item.key"></el-option>
         </el-select>
       </el-form-item>

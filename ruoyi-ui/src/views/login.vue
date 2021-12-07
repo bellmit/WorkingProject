@@ -1,7 +1,30 @@
 <template>
   <div class="login">
+    <el-form style="margin-left: 6%;">
+      <h4 style="color: red">重要通知<br><br>
+
+        严格遵守用户个人信息保护相关规定。<br><br>
+
+        第一条 收集用户个人信息前须征得用户同意。<br><br>
+
+        第二条 不得收集使用与工作无关的用户个人信息。<br><br>
+
+        第三条 不得拍摄电脑终端屏幕上的用户个人信息。<br><br>
+
+        第四条 不在本地电脑终端存储用户个人信息。<br><br>
+
+        第五条 不得通过公网即时通信工具传递用户个人信息。<br><br>
+
+        第六条 不得将用户个人信息透露给无关人员。<br><br>
+
+        第七条 用户个人信息使用完毕后须遵照相关规定及时删除。<br><br>
+
+        第八条 批量导出用户个人信息需严格审批和记录。<br><br>
+
+        第九条 一人一账号，不得转让或共用。开展账号行为定期审核审计。</h4>
+    </el-form>
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">若依后台管理系统</h3>
+      <h3 class="title">全屋WiFi运营支撑系统</h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
@@ -47,9 +70,7 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div class="el-login-footer">
-      <span>Copyright © 2018-2021 ruoyi.vip All Rights Reserved.</span>
-    </div>
+
   </div>
 </template>
 
@@ -65,8 +86,8 @@ export default {
       codeUrl: "",
       cookiePassword: "",
       loginForm: {
-        username: "admin",
-        password: "admin123",
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: ""
@@ -151,7 +172,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  background-image: url("../assets/images/login-background-2.jpg");
   background-size: cover;
 }
 .title {
@@ -163,6 +184,7 @@ export default {
 .login-form {
   border-radius: 6px;
   background: #ffffff;
+  margin-left: 6%;
   width: 400px;
   padding: 25px 25px 5px 25px;
   .el-input {
