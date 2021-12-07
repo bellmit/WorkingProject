@@ -42,9 +42,6 @@ public class DataReportController extends BaseController
         List<DataReport> list = dataReportService.selectDataReportList(dataReport);
         return getDataTable(list);
 
-        //TODO：项目梳理、
-        //  准备上线测试：
-        //      学习项目部署过程、创建测试环境配置文件、完成测试环境部署、
     }
 
 

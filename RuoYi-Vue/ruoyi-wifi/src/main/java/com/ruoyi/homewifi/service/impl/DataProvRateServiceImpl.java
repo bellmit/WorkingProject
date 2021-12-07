@@ -50,7 +50,7 @@ public class DataProvRateServiceImpl implements IDataProvRateService
     public List<DataProvRate> selectDataProvRateList(ProvRateVo provRateVo)
     {
         //条件查询获得竣工报告统计结果
-        //System.out.println("Map:"+provRateVo.getParams().toString());
+        //使用PageHelper，正常查询时，返回的是Page的对象，导出时候，返回的就是普通的List对象
         List<LakeReportSumDo> lakeReportSumList = dataProvRateMapper.selectLakeReportSumList(provRateVo);
         if(lakeReportSumList != null && lakeReportSumList.size() != 0){
             return getDataProvRateList(provRateVo,lakeReportSumList);
@@ -68,6 +68,7 @@ public class DataProvRateServiceImpl implements IDataProvRateService
     public ArrayList<DataProvRate> getDataProvRateList(ProvRateVo provRateVo, List<LakeReportSumDo> lakeReportSumList){
         //ArrayList<DataProvRate> provRateList = new ArrayList<>();
         Page provRateList = new Page<DataProvRate>();
+        //logger.info("lakeReportSumList是Page类：{}",lakeReportSumList instanceof Page);
         provRateList.setTotal(((Page)lakeReportSumList).getTotal());
         for(LakeReportSumDo lakeReportSumDo:lakeReportSumList){
             LakeProvRateVo lakeProvRateVo = new LakeProvRateVo();

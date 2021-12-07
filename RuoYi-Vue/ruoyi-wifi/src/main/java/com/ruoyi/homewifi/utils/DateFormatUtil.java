@@ -243,7 +243,7 @@ public class DateFormatUtil {
 		if(calendar.get(Calendar.DAY_OF_MONTH) == 1){
 			calendar.setTime(date);  
 	        calendar.add(Calendar.MONTH, -1);
-	        date = calendar.getTime(); 
+	        date = calendar.getTime();
 	        SimpleDateFormat sdf = new SimpleDateFormat(format);
 			return sdf.format(date);
         }
@@ -260,5 +260,11 @@ public class DateFormatUtil {
 			e.printStackTrace();
 		}
 		return parse.getTime();
+	}
+
+
+	public static void main(String[] args) {
+		System.out.println("start："+getStartTime(0));
+		System.out.println("end："+getEndTime(0));
 	}
 }
