@@ -11,7 +11,8 @@ const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API,
   // baseURL: 'http://172.20.3.107:8080',
   // baseURL: 'http://192.168.201.110:8080/dev-api',
-  baseURL: 'https://guangxistarwifitest.189cube.com',
+  // baseURL: 'https://guangxistarwifitest.189cube.com',
+  baseURL: 'http://localhost:8080',
   // 超时
   timeout: 10000
 })
