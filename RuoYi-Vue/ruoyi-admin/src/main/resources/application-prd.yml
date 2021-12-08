@@ -1,3 +1,23 @@
+# 项目相关配置
+ruoyi:
+  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
+  profile: /data/fourRateStatistics/uploadPath
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+
 # 数据源配置
 spring:
   datasource:
@@ -6,9 +26,9 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://localhost:3307/house_wifi?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-        username: root
-        password: root2
+        url: jdbc:mysql://192.168.111.246:3306/home_wifi?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: start_rating_user
+        password: Ss89KilPo8U?
       # 从库数据源
       slave:
         # 从数据源开关/默认关闭
@@ -51,7 +71,7 @@ spring:
           # 慢SQL记录
           log-slow-sql: true
           slow-sql-millis: 1000
-          merge-sql: true
+          merge-sql: false
         wall:
           config:
             multi-statement-allow: true
@@ -59,11 +79,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: localhost
+    host: 192.168.111.27
     # 端口，默认为6379
     port: 6379
-    # 数据库索引
-    database: 0
+    # 数据库索引存放若依缓存数据和数据湖文件名
+    database: 7
+    # 数据库索引存放集团-丰联地区转换编码表
+    fl-database: 8
     # 密码
     password:
     # 连接超时时间
@@ -78,8 +100,15 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+    jedis:
+      pool:
+        # 连接池最大连接数
+        max-active: 8
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池中的最小空闲连接
+        min-idle: 0
 
-  #es配置
   #es配置
   elasticsearch:
     cluster:
@@ -93,3 +122,18 @@ spring:
       apIndexName: aponline
     type:
       apTypeName: messagedb
+
+  #sftp路径 下载排障标签的路径
+  datatransport:
+    sftpdir: /data/super/301/data/
+    localdir: /data/fourRateStatistics/lakeReportAndGit
+    sftp:
+      name: zhhjt
+      pass: zhhjt#123
+      ip: 10.251.16.137
+      port: 6122
+
+#日志文件存放路径配置
+logging:
+  file:
+    path: /data/fourRateStatistics/rateProject/logs

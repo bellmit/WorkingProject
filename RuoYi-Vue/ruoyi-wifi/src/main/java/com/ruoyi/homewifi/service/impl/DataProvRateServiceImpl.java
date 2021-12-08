@@ -1,5 +1,6 @@
 package com.ruoyi.homewifi.service.impl;
 
+import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.ruoyi.homewifi.vo.CityRateVo;
 import com.ruoyi.homewifi.vo.LakeCityRateVo;
 import com.ruoyi.homewifi.vo.LakeProvRateVo;
 import com.ruoyi.homewifi.vo.ProvRateVo;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,18 @@ public class DataProvRateServiceImpl implements IDataProvRateService
     private DataProvRateMapper dataProvRateMapper;
     @Autowired
     private ESSearch esSearch;
+
+
+    private Class<T> clazz;
+
+    // 使用反射技术得到T的真实类型
+    public Class getRealType(){
+        // 获取当前new的对象的泛型的父类类型
+        ParameterizedType pt = (ParameterizedType) this.getClass().getGenericSuperclass();
+        // 获取第一个类型参数的真实类型
+        this.clazz = (Class<T>) pt.getActualTypeArguments()[0];
+        return clazz;
+    }
 
     /**
      * 查询分省份四率统计列表
@@ -66,10 +80,14 @@ public class DataProvRateServiceImpl implements IDataProvRateService
      * 拼接数据湖礼包数据统计结果，返回完整四率统计数据
      */
     public ArrayList<DataProvRate> getDataProvRateList(ProvRateVo provRateVo, List<LakeReportSumDo> lakeReportSumList){
-        //ArrayList<DataProvRate> provRateList = new ArrayList<>();
-        Page provRateList = new Page<DataProvRate>();
         //logger.info("lakeReportSumList是Page类：{}",lakeReportSumList instanceof Page);
-        provRateList.setTotal(((Page)lakeReportSumList).getTotal());
+        ArrayList provRateList = null;
+        if(lakeReportSumList instanceof Page){
+            provRateList = new Page<DataProvRate>();
+            ((Page) provRateList).setTotal(((Page)lakeReportSumList).getTotal());
+        }else {
+            provRateList = new ArrayList<>();
+        }
         for(LakeReportSumDo lakeReportSumDo:lakeReportSumList){
             LakeProvRateVo lakeProvRateVo = new LakeProvRateVo();
             lakeProvRateVo.setStartDate(provRateVo.getStartDate());

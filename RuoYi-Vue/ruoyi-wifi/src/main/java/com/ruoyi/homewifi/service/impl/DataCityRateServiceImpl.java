@@ -68,7 +68,6 @@ public class DataCityRateServiceImpl implements IDataCityRateService
             cityRateList.setTotal(0);
             return cityRateList;
         }
-
     }
 
     /*@Override
@@ -85,8 +84,6 @@ public class DataCityRateServiceImpl implements IDataCityRateService
             Long total = ((Page)lakeReportSumList).getTotal();
             System.out.println(total);
         }
-
-
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
         rspData.setMsg("查询成功");
@@ -106,15 +103,20 @@ public class DataCityRateServiceImpl implements IDataCityRateService
      * 拼接数据湖礼包数据统计结果，返回完整四率统计数据
      */
     public ArrayList<DataCityRate> getDataCityRateList(CityRateVo cityRateVo,List<LakeReportSumDo> lakeReportSumList){
-        Page cityRateList = new Page();
-        cityRateList.setTotal(((Page)lakeReportSumList).getTotal());
+        //logger.info("lakeReportSumList是Page类：{}",lakeReportSumList instanceof Page);
+        ArrayList cityRateList = null;
+        if(lakeReportSumList instanceof Page){
+            cityRateList = new Page();
+            ((Page) cityRateList).setTotal(((Page)lakeReportSumList).getTotal());
+        }else {
+            cityRateList = new ArrayList<>();
+        }
         for(LakeReportSumDo lakeReportSumDo:lakeReportSumList){
             LakeCityRateVo lakeCityRateVo = new LakeCityRateVo();
             lakeCityRateVo.setStartDate(cityRateVo.getStartDate());
             lakeCityRateVo.setEndDate(cityRateVo.getEndDate());
             lakeCityRateVo.setLakeProvId(lakeReportSumDo.getDeptId());
             lakeCityRateVo.setLakeCityId(lakeReportSumDo.getLakeCityId());
-
             /*装载统计数据*/
             DataCityRate dataCityRate = new DataCityRate();
             //获取指定城市的礼包统计数据
