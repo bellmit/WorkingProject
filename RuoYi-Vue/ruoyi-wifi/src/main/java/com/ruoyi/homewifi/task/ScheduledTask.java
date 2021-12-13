@@ -8,6 +8,7 @@ import com.ruoyi.homewifi.dobj.LakeReportDo;
 import com.ruoyi.homewifi.mapper.DataCityRateMapper;
 import com.ruoyi.homewifi.redis.RedisUtils;
 import com.ruoyi.homewifi.utils.DateFormatUtil;
+import com.ruoyi.homewifi.utils.EmptyUtil;
 import com.ruoyi.homewifi.utils.FileZipUtile;
 import com.ruoyi.homewifi.utils.SftpUtil;
 import org.slf4j.Logger;
@@ -67,13 +68,13 @@ public class ScheduledTask {
 
 
     /**
-     * 排障标签数据解压入库
+     * 据湖下发的全屋wifi礼包数据&报告数据入Mysql
      */
     //@Scheduled(cron = "0 0 05 * * ?")  //每天5点
     //@Scheduled(fixedDelay=3000)
     public String readFileToEs() {
         try {
-            logger.info("{}号,存储数据湖下发数据，开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
+            logger.info("{}号,存储数据湖下发的全屋wifi礼包数据&报告数据，开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
             Long startTime = System.currentTimeMillis();
             pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
 
@@ -123,12 +124,11 @@ public class ScheduledTask {
             if (listFiles != null) {
                 for (int i = 0; i < listFiles.size(); i++) {
                     ChannelSftp.LsEntry ls = (ChannelSftp.LsEntry) listFiles.get(i);
-                    //包含 20190101 表表示潜客标签
-                    //验证时间  大于 今天4点 小于今天12点
+                    //验证时间  大于 昨天0点 小于昨天24点
                     Long fileTime = Long.valueOf(ls.getAttrs().getATime())*1000;
                     Long fileStartTime = DateFormatUtil.getStartTime(0);
                     Long fileEndTime = DateFormatUtil.getEndTime(0);
-                    if(ls != null && (ls.getFilename().contains("dataReport") || ls.getFilename().contains("dataGift"))){
+                    if(ls != null && (ls.getFilename().contains("swifi_reportinfo") || ls.getFilename().contains("swifi_offer"))){
                         if(fileTime>fileStartTime && fileTime<fileEndTime){
                             if(ls.getFilename().contains("gz")){
                                 if(RedisUtils.getFileName(ls.getFilename())!=null) {
@@ -164,9 +164,9 @@ public class ScheduledTask {
         File filename = new File(baseConfig.getLocaldir());
         if (filename.list().length != 0) {
             for (File f : filename.listFiles()) {
-                if(f.getName().contains("dataGift")){
+                if(f.getName().contains("swifi_offer")){
                     insertGiftData(f);
-                }else if(f.getName().contains("dataReport")){
+                }else if(f.getName().contains("swifi_reportinfo")){
                     insertReportData(f);
                 }
             }
@@ -214,16 +214,21 @@ public class ScheduledTask {
                                 continue;
                             }
                             String date = oneGift[0];
-                            java.sql.Date sealDate = new java.sql.Date(df.get().parse(date).getTime());
+                            //java.sql.Date sealDate = new java.sql.Date(df.get().parse(date).getTime());
                             LakeGiftDo lakeGiftDo = new LakeGiftDo();
-                            lakeGiftDo.setSealingDate(sealDate);
-                            lakeGiftDo.setDeptId(oneGift[1] == null?"":oneGift[1]);
-                            lakeGiftDo.setLakeCityId(oneGift[2] == null?"":oneGift[2]);
-                            lakeGiftDo.setLakeAreaId(oneGift[3] == null?"":oneGift[3]);
-                            lakeGiftDo.setGiftCode(oneGift[4] == null?"":oneGift[4]);
-                            lakeGiftDo.setGiftOrderId(oneGift[5] == null?"":oneGift[5]);
+                            lakeGiftDo.setSealingDate(EmptyUtil.isEmpty(oneGift[0]) ? null : new java.sql.Date(df.get().parse(date).getTime()));
+                            lakeGiftDo.setDeptId(EmptyUtil.isEmpty(oneGift[1]) ? null : oneGift[1]);
+                            lakeGiftDo.setLakeCityId(EmptyUtil.isEmpty(oneGift[2]) ? null : oneGift[2]);
+                            lakeGiftDo.setLakeAreaId(EmptyUtil.isEmpty(oneGift[3]) ? null : oneGift[3]);
+                            lakeGiftDo.setGiftCode(EmptyUtil.isEmpty(oneGift[4]) ? null : oneGift[4]);
+                            lakeGiftDo.setGiftOrderId(EmptyUtil.isEmpty(oneGift[5]) ? null : oneGift[5]);
                             lakeGiftList.add(lakeGiftDo);
                             Num++;
+                            //一个文件发一次的时候报错：jdbc.exceptions.PacketTooBigException: Packet for query is too large
+                            if(lakeGiftList.size() >= 10000){
+                                dataCityRateMapper.insertLakeGiftList(lakeGiftList);
+                                lakeGiftList.clear();
+                            }
                         }
                         br.close();
 
@@ -283,22 +288,27 @@ public class ScheduledTask {
                                 continue;
                             }
                             LakeReportDo lakeReportDo = new LakeReportDo();
-                            lakeReportDo.setLakeOrderid(oneReport[0]);
-                            lakeReportDo.setDayId(new java.sql.Date(df.get().parse(oneReport[1]).getTime()));
-                            lakeReportDo.setDeptId(oneReport[2]);
-                            lakeReportDo.setwProvId(oneReport[3]);
-                            lakeReportDo.setLakeCityId(oneReport[4]);
-                            lakeReportDo.setwCityId(oneReport[5]);
-                            lakeReportDo.setwAreaId(oneReport[6]);
-                            lakeReportDo.setSameArea("".equals(oneReport[7]) ? null:Integer.parseInt(oneReport[7]));
-                            lakeReportDo.setEffectiveReport("".equals(oneReport[8]) ? null:Integer.parseInt(oneReport[8]));
-                            lakeReportDo.setElinkChecked("".equals(oneReport[9]) ? null:Integer.parseInt(oneReport[9]));
-                            lakeReportDo.setWifiChecked("".equals(oneReport[10]) ? null:Integer.parseInt(oneReport[10]));
-                            lakeReportDo.setLakeShareChecked("".equals(oneReport[11]) ? null:Integer.parseInt(oneReport[11]));
-                            lakeReportDo.setLakeShareMethod("".equals(oneReport[12]) ? null:Integer.parseInt(oneReport[12]));
-                            lakeReportDo.setAaaPppoe("".equals(oneReport[13]) ? null:oneReport[13]);
+                            lakeReportDo.setLakeOrderid(EmptyUtil.isEmpty(oneReport[0]) ? null : oneReport[0]);
+                            lakeReportDo.setDayId(EmptyUtil.isEmpty(oneReport[1]) ? null : new java.sql.Date(df.get().parse(oneReport[1]).getTime()));
+                            lakeReportDo.setDeptId(EmptyUtil.isEmpty(oneReport[2]) ? null : oneReport[2]);
+                            lakeReportDo.setwProvId(EmptyUtil.isEmpty(oneReport[3]) ? null : oneReport[3]);
+                            lakeReportDo.setLakeCityId(EmptyUtil.isEmpty(oneReport[4]) ? null : oneReport[4]);
+                            lakeReportDo.setwCityId(EmptyUtil.isEmpty(oneReport[5]) ? null : oneReport[5]);
+                            lakeReportDo.setwAreaId(EmptyUtil.isEmpty(oneReport[6]) ? null : oneReport[6]);
+                            lakeReportDo.setSameArea(EmptyUtil.isEmpty(oneReport[7]) ? null:Integer.parseInt(oneReport[7]));
+                            lakeReportDo.setEffectiveReport(EmptyUtil.isEmpty(oneReport[8]) ? null:Integer.parseInt(oneReport[8]));
+                            lakeReportDo.setElinkChecked(EmptyUtil.isEmpty(oneReport[9]) ? null:Integer.parseInt(oneReport[9]));
+                            lakeReportDo.setWifiChecked(EmptyUtil.isEmpty(oneReport[10]) ? null:Integer.parseInt(oneReport[10]));
+                            lakeReportDo.setLakeShareChecked(EmptyUtil.isEmpty(oneReport[11]) ? null:Integer.parseInt(oneReport[11]));
+                            lakeReportDo.setLakeShareMethod(EmptyUtil.isEmpty(oneReport[12]) ? null:Integer.parseInt(oneReport[12]));
+                            lakeReportDo.setAaaPppoe(EmptyUtil.isEmpty(oneReport[13]) ? null:oneReport[13]);
                             lakeReportList.add(lakeReportDo);
                             Num++;
+                            //一个文件发一次的时候报错：jdbc.exceptions.PacketTooBigException: Packet for query is too large
+                            if(lakeReportList.size() >= 10000){
+                                dataCityRateMapper.insertLakeReportList(lakeReportList);
+                                lakeReportList.clear();
+                            }
                         }
                         br.close();
                     } catch (Exception ex) {
@@ -316,6 +326,8 @@ public class ScheduledTask {
             }
         });
     }
+
+    //TODO:小批量读取成功，但是前端读取超时
 
     /**
      * 解析本地数据文件并入库。

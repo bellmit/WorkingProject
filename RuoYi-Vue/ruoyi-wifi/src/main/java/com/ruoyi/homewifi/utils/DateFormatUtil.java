@@ -77,6 +77,11 @@ public class DateFormatUtil {
 		return d.getTime()/1000*1000;
 	}
 
+	/**
+	 * 获取前day天起始时间毫秒数
+	 * @param day
+	 * @return
+	 */
 	public static long getStartTime(Integer day) {
 		if(null == day){
 			day=0;
@@ -91,6 +96,11 @@ public class DateFormatUtil {
 		return d.getTime()/1000*1000;
 	}
 
+	/**
+	 * 获取前day天结束时间00-00-00毫秒数（也就是day-1天00点00分00秒对应的毫秒数）
+	 * @param day
+	 * @return
+	 */
 	public static long getEndTime(Integer day) {
 		if(null == day){
 			day=0;
@@ -98,7 +108,8 @@ public class DateFormatUtil {
 		Calendar c = Calendar.getInstance();
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.add(Calendar.DATE, -day);
-		c.set(Calendar.HOUR_OF_DAY, 8);
+		//c.set(Calendar.HOUR_OF_DAY, 8);  //表示到8点
+		c.set(Calendar.HOUR_OF_DAY,24);
 		c.set(Calendar.MINUTE, 0);
 		c.set(Calendar.SECOND, 0);
 		Date d = c.getTime();
@@ -264,7 +275,7 @@ public class DateFormatUtil {
 
 
 	public static void main(String[] args) {
-		System.out.println("start："+getStartTime(0));
-		System.out.println("end："+getEndTime(0));
+		System.out.println("start："+getStartTime(1));
+		System.out.println("end："+getEndTime(1));
 	}
 }

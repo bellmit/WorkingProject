@@ -139,7 +139,7 @@ spring:
   #sftp路径 下载排障标签的路径
   datatransport:
     sftpdir: /data/super/301/data/
-    localdir: F:/Java/IdeaProjects/tmp/homewifi
+    localdir: F:/Java/IdeaProjects/tmp/homewifi/
     sftp:
       name: zhhjt
       pass: zhhjt#123
