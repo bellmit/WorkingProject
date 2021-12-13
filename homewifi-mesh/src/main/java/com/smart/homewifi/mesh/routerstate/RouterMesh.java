@@ -50,7 +50,7 @@ public class RouterMesh {
     private final static String EOL = System.getProperty("line.separator");
 
 
-    public void getRouterMesh() throws InterruptedException {
+    public void getRouterMesh() {
         ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(baseConfig.getCorePoolSize(), baseConfig.getCorePoolSize()+10,
                 2, TimeUnit.SECONDS, new LinkedBlockingQueue<>(5000));
         //上传标志位
@@ -84,6 +84,7 @@ public class RouterMesh {
                     }
                     scrollId = "";
                     jsonView = scrollRouterMac(scrollId);
+                    logger.info("reindex结束后，查询本地库获取在线路由器mac {}条",jsonView.getNumber());
                     scrollId = jsonView.getScrollId();
                 }
                 //logger.info("for循环Scroll查询结果");
@@ -102,7 +103,7 @@ public class RouterMesh {
                     });
                     Long sleepNum = 0l;
                     while (poolExecutor.getQueue().size() >= 100 || poolExecutor.getActiveCount() >= 5){
-                        Thread.sleep(1000);  //只要上一个文件的电话号码list没跑完就将主线程阻塞在这里，不回去读取下一个mac
+                        Thread.sleep(1000);
                         sleepNum++;
                         if(sleepNum%600==0){
                             Date gettingDate = new Date();
@@ -110,7 +111,7 @@ public class RouterMesh {
                         }
                     }
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -219,7 +220,13 @@ public class RouterMesh {
     public boolean checkTask(String taskId){
         String url = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+"/_tasks/"+taskId;
         JSONObject reindexResult = HttpUtil.get(url);
-        return (Boolean) reindexResult.get("completed");
+        Boolean completed = (Boolean) reindexResult.get("completed");
+        if(completed){
+            JSONObject reindexStatus = reindexResult.getJSONObject("task").getJSONObject("status");
+            logger.info("本次从动态库补充网关数据：total:{}, created:{}",
+                    reindexStatus.getString("total"),reindexStatus.getString("created"));
+        }
+        return completed;
     }
 
     /**

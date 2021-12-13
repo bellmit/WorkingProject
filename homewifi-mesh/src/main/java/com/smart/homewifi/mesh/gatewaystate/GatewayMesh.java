@@ -49,7 +49,7 @@ public class GatewayMesh {
     private static final Logger logger = LoggerFactory.getLogger(GatewayMesh.class);
     private final static String EOL = System.getProperty("line.separator");
 
-    public void getGatewayMesh() throws InterruptedException {
+    public void getGatewayMesh(){
         ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(baseConfig.getCorePoolSize(), baseConfig.getCorePoolSize()+10,
                 2, TimeUnit.SECONDS, new LinkedBlockingQueue<>(5000));
         //上传标志位
@@ -83,6 +83,7 @@ public class GatewayMesh {
                     }
                     scrollId = "";
                     jsonView = scrollGatewayMac(scrollId);
+                    logger.info("reindex结束后，查询本地库获取在线网关mac {}条",jsonView.getNumber());
                     scrollId = jsonView.getScrollId();
                 }
                 //logger.info("for循环Scroll查询结果");
@@ -109,7 +110,7 @@ public class GatewayMesh {
                         }
                     }
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -217,7 +218,13 @@ public class GatewayMesh {
     public boolean checkTask(String taskId){
         String url = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+"/_tasks/"+taskId;
         JSONObject reindexResult = HttpUtil.get(url);
-        return (Boolean) reindexResult.get("completed");
+        Boolean completed = (Boolean) reindexResult.get("completed");
+        if(completed){
+            JSONObject reindexStatus = reindexResult.getJSONObject("task").getJSONObject("status");
+            logger.info("本次从动态库补充网关数据：total:{}, created:{}",
+                    reindexStatus.getString("total"),reindexStatus.getString("created"));
+        }
+        return completed;
     }
 
     /**
@@ -346,6 +353,7 @@ public class GatewayMesh {
             //2、根据mac、Plugin_Name、Version三个参数获取网关mesh状态
             JSONObject meshJson = getMeshState(macAddress, plugeData.getString("Plugin_Name"), plugeData.getString("Version"));
             if(meshJson != null){
+                //logger.info("mac为{}的网关查询结果为：{}",macAddress,meshJson.toJSONString());
                 JSONObject gwMesh = meshJson.getJSONObject("gw");
                 Integer meshSupport = gwMesh.getInteger("support");
                 Integer meshOpen = gwMesh.getInteger("enable");

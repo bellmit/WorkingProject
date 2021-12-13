@@ -24,13 +24,13 @@ public class Starter implements ApplicationRunner {
 
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args){
         Runnable runnable1 = new Runnable() {  //创建新的线程
             @Override
             public void run() {
                 try {
                     routerMesh.getRouterMesh();
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -40,14 +40,14 @@ public class Starter implements ApplicationRunner {
             public void run() {
                 try {
                     gatewayMesh.getGatewayMesh();
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
         Thread thread1 = new Thread(runnable1);
-        Thread thread2 = new Thread(runnable2);
+        //Thread thread2 = new Thread(runnable2);
         thread1.start(); //启动线程
-        thread2.start();
+        //thread2.start();
     }
 }
