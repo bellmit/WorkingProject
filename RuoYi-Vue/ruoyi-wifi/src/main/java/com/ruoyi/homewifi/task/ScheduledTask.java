@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -175,28 +176,28 @@ public class ScheduledTask {
         }
     }
 
-    public void insertGiftData(File f){
+    public void insertGiftData(File f) {
         logger.info("数据湖礼包数据入库");
         pool.execute(new Runnable() {
             @Override
             public void run() {
                 //读取文件 存es
                 File file = new File(f.toString());
-                if(file==null){
+                if (file == null) {
                     logger.info("读取文件为空!!");
                     return;
-                }else {
-                    logger.info("文件大小:{}B,{}KB,{}MB",  file.length(), file.length() / 1024, file.length() / 1048576, file.length() / 1073741824);
+                } else {
+                    logger.info("文件大小:{}B,{}KB,{}MB", file.length(), file.length() / 1024, file.length() / 1048576, file.length() / 1073741824);
                 }
 
                 BufferedReader br = null;
                 try {
                     br = new BufferedReader(new FileReader(file));
-                }catch (FileNotFoundException ex) {
+                } catch (FileNotFoundException ex) {
                     br = null;
                     logger.error("读取文件出错,没有此文件:{}", f);
                     return;
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     logger.error("读取文件出错!!");
                     ex.printStackTrace();
                     return;
@@ -205,71 +206,74 @@ public class ScheduledTask {
                 int Num = 0;
                 int errNum = 0;
                 ArrayList<LakeGiftDo> lakeGiftList = new ArrayList<>();
-                if(br != null){
-                    try {
+                try {
+                    if (br != null) {
+
                         while ((line = br.readLine()) != null) {
-                            String[] oneGift = line.split("\u0005",-1);
-                            if(oneGift.length<6){
-                                errNum++;
-                                continue;
-                            }
-                            String date = oneGift[0];
-                            //java.sql.Date sealDate = new java.sql.Date(df.get().parse(date).getTime());
-                            LakeGiftDo lakeGiftDo = new LakeGiftDo();
-                            lakeGiftDo.setSealingDate(EmptyUtil.isEmpty(oneGift[0]) ? null : new java.sql.Date(df.get().parse(date).getTime()));
-                            lakeGiftDo.setDeptId(EmptyUtil.isEmpty(oneGift[1]) ? null : oneGift[1]);
-                            lakeGiftDo.setLakeCityId(EmptyUtil.isEmpty(oneGift[2]) ? null : oneGift[2]);
-                            lakeGiftDo.setLakeAreaId(EmptyUtil.isEmpty(oneGift[3]) ? null : oneGift[3]);
-                            lakeGiftDo.setGiftCode(EmptyUtil.isEmpty(oneGift[4]) ? null : oneGift[4]);
-                            lakeGiftDo.setGiftOrderId(EmptyUtil.isEmpty(oneGift[5]) ? null : oneGift[5]);
-                            lakeGiftList.add(lakeGiftDo);
-                            Num++;
-                            //一个文件发一次的时候报错：jdbc.exceptions.PacketTooBigException: Packet for query is too large
-                            if(lakeGiftList.size() >= 10000){
-                                dataCityRateMapper.insertLakeGiftList(lakeGiftList);
-                                lakeGiftList.clear();
+                            try {
+                                String[] oneGift = line.split("\u0005", -1);
+                                if (oneGift.length < 6) {
+                                    errNum++;
+                                    continue;
+                                }
+                                String date = oneGift[0];
+                                //java.sql.Date sealDate = new java.sql.Date(df.get().parse(date).getTime());
+                                LakeGiftDo lakeGiftDo = new LakeGiftDo();
+                                lakeGiftDo.setSealingDate(EmptyUtil.isEmpty(oneGift[0]) ? null : new java.sql.Date(df.get().parse(date).getTime()));
+                                lakeGiftDo.setDeptId(EmptyUtil.isEmpty(oneGift[1]) ? null : oneGift[1]);
+                                lakeGiftDo.setLakeCityId(EmptyUtil.isEmpty(oneGift[2]) ? null : oneGift[2]);
+                                lakeGiftDo.setLakeAreaId(EmptyUtil.isEmpty(oneGift[3]) ? null : oneGift[3]);
+                                lakeGiftDo.setGiftCode(EmptyUtil.isEmpty(oneGift[4]) ? null : oneGift[4]);
+                                lakeGiftDo.setGiftOrderId(EmptyUtil.isEmpty(oneGift[5]) ? null : oneGift[5]);
+                                lakeGiftList.add(lakeGiftDo);
+                                Num++;
+                                //一个文件发一次的时候报错：jdbc.exceptions.PacketTooBigException: Packet for query is too large
+                                if (lakeGiftList.size() >= 1000) {
+                                    dataCityRateMapper.insertLakeGiftList(lakeGiftList);
+                                    lakeGiftList.clear();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
                         br.close();
-
-                    } catch (Exception ex) {
-                        logger.error("按行读取文件错误,错误:{}", ex);
+                        //mysql入库
+                        if (!lakeGiftList.isEmpty()) {
+                            dataCityRateMapper.insertLakeGiftList(lakeGiftList);
+                        }
+                        logger.info("{},文件读取成功!!本次添加成功{}条,文件单行数据长度出错{}条", f.toString(), Num, errNum);
                     }
-                    //mysql入库
-                    if(!lakeGiftList.isEmpty()){
-                        dataCityRateMapper.insertLakeGiftList(lakeGiftList);
-                    }
-
-                    logger.info("{},文件读取成功!!本次添加成功{}条,文件单行数据长度出错{}条",f.toString(),Num,errNum);
+                    //添加完成删除文件
+                    boolean deleteResult = file.delete();
+                    logger.info("删除{}文件,{}", file.getName(), deleteResult);
+                } catch (Exception ex) {
+                    logger.error("按行读取文件错误,错误:{}", ex);
                 }
-                //添加完成删除文件
-                boolean deleteResult = file.delete();
-                logger.info("删除{}文件,{}",file.getName(),deleteResult);
             }
         });
     }
 
-    public void insertReportData(File f){
+    public void insertReportData(File f) {
         logger.info("数据湖报告数据入库");
         pool.execute(new Runnable() {
             @Override
             public void run() {
                 //读取文件 存es
                 File file = new File(f.toString());
-                if(file==null){
+                if (file == null) {
                     logger.info("读取文件为空!!");
                     return;
-                }else {
-                    logger.info("文件大小:{}B,{}KB,{}MB",  file.length(), file.length() / 1024, file.length() / 1048576, file.length() / 1073741824);
+                } else {
+                    logger.info("文件大小:{}B,{}KB,{}MB", file.length(), file.length() / 1024, file.length() / 1048576, file.length() / 1073741824);
                 }
                 BufferedReader br = null;
                 try {
                     br = new BufferedReader(new FileReader(file));
-                }catch (FileNotFoundException ex) {
+                } catch (FileNotFoundException ex) {
                     br = null;
                     logger.error("读取文件出错,没有此文件:{}", f);
                     return;
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     logger.error("读取文件出错!!");
                     ex.printStackTrace();
                     return;
@@ -278,51 +282,55 @@ public class ScheduledTask {
                 int Num = 0;
                 int errNum = 0;
                 ArrayList<LakeReportDo> lakeReportList = new ArrayList<>();
-                if(br != null){
-                    try {
+                try {
+                    if (br != null) {
                         while ((line = br.readLine()) != null) {
-                            String[] oneReport = line.split("\u0005",-1);
-                            if(oneReport.length<14){
-                                logger.info(Arrays.toString(oneReport));
-                                errNum++;
-                                continue;
-                            }
-                            LakeReportDo lakeReportDo = new LakeReportDo();
-                            lakeReportDo.setLakeOrderid(EmptyUtil.isEmpty(oneReport[0]) ? null : oneReport[0]);
-                            lakeReportDo.setDayId(EmptyUtil.isEmpty(oneReport[1]) ? null : new java.sql.Date(df.get().parse(oneReport[1]).getTime()));
-                            lakeReportDo.setDeptId(EmptyUtil.isEmpty(oneReport[2]) ? null : oneReport[2]);
-                            lakeReportDo.setwProvId(EmptyUtil.isEmpty(oneReport[3]) ? null : oneReport[3]);
-                            lakeReportDo.setLakeCityId(EmptyUtil.isEmpty(oneReport[4]) ? null : oneReport[4]);
-                            lakeReportDo.setwCityId(EmptyUtil.isEmpty(oneReport[5]) ? null : oneReport[5]);
-                            lakeReportDo.setwAreaId(EmptyUtil.isEmpty(oneReport[6]) ? null : oneReport[6]);
-                            lakeReportDo.setSameArea(EmptyUtil.isEmpty(oneReport[7]) ? null:Integer.parseInt(oneReport[7]));
-                            lakeReportDo.setEffectiveReport(EmptyUtil.isEmpty(oneReport[8]) ? null:Integer.parseInt(oneReport[8]));
-                            lakeReportDo.setElinkChecked(EmptyUtil.isEmpty(oneReport[9]) ? null:Integer.parseInt(oneReport[9]));
-                            lakeReportDo.setWifiChecked(EmptyUtil.isEmpty(oneReport[10]) ? null:Integer.parseInt(oneReport[10]));
-                            lakeReportDo.setLakeShareChecked(EmptyUtil.isEmpty(oneReport[11]) ? null:Integer.parseInt(oneReport[11]));
-                            lakeReportDo.setLakeShareMethod(EmptyUtil.isEmpty(oneReport[12]) ? null:Integer.parseInt(oneReport[12]));
-                            lakeReportDo.setAaaPppoe(EmptyUtil.isEmpty(oneReport[13]) ? null:oneReport[13]);
-                            lakeReportList.add(lakeReportDo);
-                            Num++;
-                            //一个文件发一次的时候报错：jdbc.exceptions.PacketTooBigException: Packet for query is too large
-                            if(lakeReportList.size() >= 10000){
-                                dataCityRateMapper.insertLakeReportList(lakeReportList);
-                                lakeReportList.clear();
+                            try {
+                                String[] oneReport = line.split("\u0005", -1);
+                                if (oneReport.length < 14) {
+                                    logger.info(Arrays.toString(oneReport));
+                                    errNum++;
+                                    continue;
+                                }
+                                LakeReportDo lakeReportDo = new LakeReportDo();
+                                lakeReportDo.setLakeOrderid(EmptyUtil.isEmpty(oneReport[0]) ? null : oneReport[0]);
+                                lakeReportDo.setDayId(EmptyUtil.isEmpty(oneReport[1]) ? null : new java.sql.Date(df.get().parse(oneReport[1]).getTime()));
+                                lakeReportDo.setDeptId(EmptyUtil.isEmpty(oneReport[2]) ? null : oneReport[2]);
+                                lakeReportDo.setwProvId(EmptyUtil.isEmpty(oneReport[3]) ? null : oneReport[3]);
+                                lakeReportDo.setLakeCityId(EmptyUtil.isEmpty(oneReport[4]) ? null : oneReport[4]);
+                                lakeReportDo.setwCityId(EmptyUtil.isEmpty(oneReport[5]) ? null : oneReport[5]);
+                                lakeReportDo.setwAreaId(EmptyUtil.isEmpty(oneReport[6]) ? null : oneReport[6]);
+                                lakeReportDo.setSameArea(EmptyUtil.isEmpty(oneReport[7]) ? null : Integer.parseInt(oneReport[7]));
+                                lakeReportDo.setEffectiveReport(EmptyUtil.isEmpty(oneReport[8]) ? null : Integer.parseInt(oneReport[8]));
+                                lakeReportDo.setElinkChecked(EmptyUtil.isEmpty(oneReport[9]) ? null : Integer.parseInt(oneReport[9]));
+                                lakeReportDo.setWifiChecked(EmptyUtil.isEmpty(oneReport[10]) ? null : Integer.parseInt(oneReport[10]));
+                                lakeReportDo.setLakeShareChecked(EmptyUtil.isEmpty(oneReport[11]) ? null : Integer.parseInt(oneReport[11]));
+                                lakeReportDo.setLakeShareMethod(EmptyUtil.isEmpty(oneReport[12]) ? null : Integer.parseInt(oneReport[12]));
+                                lakeReportDo.setAaaPppoe(EmptyUtil.isEmpty(oneReport[13]) ? null : oneReport[13]);
+                                lakeReportList.add(lakeReportDo);
+                                Num++;
+                                //一个文件发一次的时候报错：jdbc.exceptions.PacketTooBigException: Packet for query is too large
+                                if (lakeReportList.size() >= 1000) {
+                                    dataCityRateMapper.insertLakeReportList(lakeReportList);
+                                    lakeReportList.clear();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
                         br.close();
-                    } catch (Exception ex) {
-                        logger.error("按行读取文件错误,错误:{}", ex);
+                        //mysql入库
+                        if (!lakeReportList.isEmpty()) {
+                            dataCityRateMapper.insertLakeReportList(lakeReportList);
+                        }
+                        logger.info("{},文件读取成功!!本次添加成功{}条,文件单行数据长度出错{}条", f.toString(), Num, errNum);
                     }
-                    //mysql入库
-                    if(!lakeReportList.isEmpty()){
-                        dataCityRateMapper.insertLakeReportList(lakeReportList);
-                    }
-                    logger.info("{},文件读取成功!!本次添加成功{}条,文件单行数据长度出错{}条",f.toString(),Num,errNum);
+                    //添加完成删除文件
+                    boolean deleteResult = file.delete();
+                    logger.info("删除{}文件,{}", file.getName(), deleteResult);
+                } catch (Exception ex) {
+                    logger.error("按行读取文件错误,错误:{}", ex);
                 }
-                //添加完成删除文件
-                boolean deleteResult = file.delete();
-                logger.info("删除{}文件,{}",file.getName(),deleteResult);
             }
         });
     }
