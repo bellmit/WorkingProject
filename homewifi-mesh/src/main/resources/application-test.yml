@@ -16,7 +16,7 @@ logging:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 8085
   servlet:
     # 应用的访问路径
     context-path: /
@@ -33,9 +33,11 @@ spring:
         port: 9300
     port: 9200
     index:
-      apIndexName: aponline
+      apIndexName: aponline_copy
+      gwIndexName: gatewayOnline_copy
     type:
       apTypeName: messagedb
+      gwTypeName: messagedb
 
   #sftp路径
   datatransport:

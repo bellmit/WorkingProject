@@ -71,11 +71,19 @@ public class HttpRetryUtils {
                 "&MAC=C8F6C80314C0&PluginName=com.chinatelecom.all.smartgateway.inter_conndv3_mt7526&Version=3.3.04","{\"CmdType\": \"GetMeshStatus\",\"SequenceId\": \"76721\"}");
         System.out.println(result);*/
 
-        String getResult = getRetryQuery("https://nos9.189cube.com/device/listplugin?" +
+        /*String getResult = getRetryQuery("https://nos9.189cube.com/device/listplugin?" +
                 "MAC=C8F6C80314C0&token&appid=1000000208455928&secret=f17ddb39a13ad0e7&" +
                 "Plugin_Name=eLinkAP&Version=null","{\"RPCMethod\": \"ListPlugin\"," +
-                "\"ID\": \"a2b15ce0-50da-11ec-8490-fa163ea2992d\",\"MAC\": \"C8F6C80314C0\"}");
-        System.out.println("getResult"+getResult);
+                "\"ID\": \"a2b15ce0-50da-11ec-8490-fa163ea2992d\",\"MAC\": \"C8F6C80314C0\"}");*/
+
+        String getResult = postRetryQuery("https://apweb1.189cube.com:8443/plugin/post.php?MAC=584120BEE224&appid=1000000273534113" +
+                "&secret=4463d6ab2f0a4afc&PluginName=&Version=1.0","{\n" +
+                "    \"type\": \"ubus_call\",\n" +
+                "    \"object\": \"ctcapd.wifi.mesh\",\n" +
+                "    \"method\": \"get\",\n" +
+                "    \"data\": {}\n" +
+                "}");
+        System.out.println("getResult:"+getResult);
     }
 
 

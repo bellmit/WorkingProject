@@ -27,4 +27,9 @@ public class EsConfig {
     private String apIndex;
     @Value("${spring.elasticsearch.type.apTypeName}")
     private String apType;
+    @Value("${spring.elasticsearch.index.gwIndexName}")
+    private String gwIndex;
+    @Value("${spring.elasticsearch.type.gwTypeName}")
+    private String gwType;
+
 }

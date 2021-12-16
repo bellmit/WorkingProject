@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.util.concurrent.RateLimiter;
 import com.smart.homewifi.mesh.config.BaseConfig;
 import com.smart.homewifi.mesh.config.EsConfig;
+import com.smart.homewifi.mesh.es.ElasticSearchOperations;
 import com.smart.homewifi.mesh.es.EsUtils;
 import com.smart.homewifi.mesh.es.JsonView;
 import com.smart.homewifi.mesh.scp.ScpTransfer;
@@ -59,6 +60,7 @@ public class RouterMesh {
         String scrollId = null;
         //单次scroll查询结果
         JsonView jsonView = null;
+        //批量写入ES库
         while(true){
             try {
                 if(TimeUtils.isDayOfMonth(20)){
@@ -96,7 +98,7 @@ public class RouterMesh {
                     poolExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            //todo：后期优化：1、使用bulk写入；2、使用接口校验是否在线；3、申请并使用自己的appid；4、指定获取插件名请求的请求体中id随机
+                            //todo：后期优化：2、使用接口校验是否在线；3、申请并使用自己的appid；4、指定获取插件名请求的请求体中id随机
                             //开启多线程调用接口查询mesh状态
                             recordMesh(jsonObject);
                         }
@@ -268,7 +270,7 @@ public class RouterMesh {
             mustString.add(newJSONObject("exists",newJSONObject("field", "meshOpen")));
             boolString.put("must", mustString);
             queryRoot.put("query",newJSONObject("bool",boolString));
-            queryRoot.put("_source", new String[]{"mac"});
+            queryRoot.put("_source", new String[]{"mac","meshOpen"});
         }else{
             url+="/_search/scroll?scroll=10m&scroll_id="+scrollId;
         }
@@ -331,8 +333,9 @@ public class RouterMesh {
         try {
             writer = new BufferedWriter(new FileWriter(file,true));
             for ( JSONObject esObject: list ) {
-                String openMeshMac = (String)esObject.get("mac");
-                writer.write(openMeshMac + EOL);//按行写文件，后面追加行分隔符EOL
+                String openMeshMac = esObject.getString("mac");
+                String meshSupport = esObject.getString("meshSupport");
+                writer.write(openMeshMac+"\u0005"+meshSupport+ EOL);//按行写文件，后面追加行分隔符EOL
             }
             //关闭流
             writer.close();
@@ -354,41 +357,66 @@ public class RouterMesh {
         //1、获取路由器插件名称和版本号
         String macAddress = jsonObject.getString("mac");
         Integer meshSupport = jsonObject.getInteger("meshSupport");
-        if(meshSupport != null && meshSupport==1){
+        if(meshSupport != null){
             //直接调用路由器mesh开启状态查询接口
-            if(getRouterMeshOpen(macAddress)){
+            boolean routerMeshOpen = getRouterMeshOpen(macAddress);
+            if(routerMeshOpen && meshSupport==1){
                 //写入一条数据
-                //logger.info("mac为{}的路由器支持且开启mesh",macAddress);
-                String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
+                /*String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                         "/aponline_copy/messagedb/"+macAddress+"/_update";
                 String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
-                HttpUtil.post(postUrl,state);
+                HttpUtil.post(postUrl,state);*/
+
+                //使用批量写入
+                logger.info("已支持的mac为{}的路由器支持且开启mesh",macAddress);
+                JSONObject readJson = new JSONObject();
+                readJson.put("meshOpen",1);
+                ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
+            }else if (routerMeshOpen && meshSupport==2){
+                logger.info("已支持的mac为{}的路由器支持且开启easyMesh",macAddress);
+                JSONObject readJson = new JSONObject();
+                readJson.put("meshOpen",1);
+                ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
             }
         }else{
+            Integer routerMeshSupport = getRouterMeshSupport(macAddress);
             //调用路由器mesh支持状态查询接口
-            if (getRouterMeshSupport(macAddress)){
-                if(getRouterMeshOpen(macAddress)){
-                    //写入一条数据
-                    //logger.info("mac为{}的路由器支持且开启mesh",macAddress);
-                    String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
-                            "/aponline_copy/messagedb/"+macAddress+"/_update";
-                    String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
-                    HttpUtil.post(postUrl,state);
+            if (routerMeshSupport != null){
+                boolean routerMeshOpen = getRouterMeshOpen(macAddress);
+                if(routerMeshOpen){
+                    if(routerMeshSupport == 1){
+                        logger.info("未查询的mac为{}的路由器支持且开启mesh",macAddress);
+                        JSONObject readJson = new JSONObject();
+                        readJson.put("meshSupport",1);
+                        readJson.put("meshOpen",1);
+                        ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
+                    }else if(routerMeshSupport == 2){
+                        logger.info("未查询的mac为{}的路由器支持且开启easyMesh",macAddress);
+                        JSONObject readJson = new JSONObject();
+                        readJson.put("meshSupport",2);
+                        readJson.put("meshOpen",1);
+                        ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
+                    }
                 }else{
-                    //写入一条数据
-                    //logger.info("mac为{}的路由器支持但没有开启mesh",macAddress);
-                    String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
-                            "/aponline_copy/messagedb/"+macAddress+"/_update";
-                    String state = "{\"doc\":{\"meshSupport\": 1}}";
-                    HttpUtil.post(postUrl,state);
+                    if(routerMeshSupport == 0){
+                        logger.info("未查询的mac为{}的路由器不支持mesh",macAddress);
+                        JSONObject readJson = new JSONObject();
+                        readJson.put("meshSupport",0);
+                        ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
+                    }else if(routerMeshSupport == 1){
+                        logger.info("未查询的mac为{}的路由器支持未开启mesh",macAddress);
+                        JSONObject readJson = new JSONObject();
+                        readJson.put("meshSupport",1);
+                        ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
+                    }else if(routerMeshSupport == 2){
+                        logger.info("未查询的mac为{}的路由器支持未开启easyMesh",macAddress);
+                        JSONObject readJson = new JSONObject();
+                        readJson.put("meshSupport",2);
+                        ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
+                    }
                 }
             }else {
-                //logger.info("mac为{}的路由器不支持mesh",macAddress);
-                //给这一条数据添加不支持（不查）标志位。
-                String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
-                        "/aponline_copy/messagedb/"+macAddress+"/_update";
-                String state = "{\"doc\":{\"meshSupport\": 0}}";
-                HttpUtil.post(postUrl,state);
+                logger.info("mac为{}的路由器mesh支持状态查询失败",macAddress);
             }
         }
     }
@@ -398,7 +426,7 @@ public class RouterMesh {
      * @param macAddress
      * @return
      */
-    public boolean getRouterMeshSupport(String macAddress){
+    public Integer getRouterMeshSupport(String macAddress){
         try {
             String supportQueryUrl = "https://apweb1.189cube.com:8443/plugin/post.php?MAC=" +
                     macAddress+"&appid=1000000273534113&secret=4463d6ab2f0a4afc&PluginName&Version=1.0";
@@ -417,12 +445,12 @@ public class RouterMesh {
                             Integer supportMesh = capabilityJson.getInteger("supportMesh");
                             if(supportMesh != null){
                                 //支持
-                                if(supportMesh == 1 || supportMesh == 2){
-                                    return true;
-                                }
-                                //不支持
-                                if(supportMesh == 0){
-                                    return false;
+                                if(supportMesh == 1){
+                                    return 1;
+                                }else if(supportMesh == 2){
+                                    return 2;
+                                }else if(supportMesh == 0){
+                                    return 0;
                                 }
                             }
                         }
@@ -433,7 +461,7 @@ public class RouterMesh {
             logger.error("mac为{}的路由器查询mesh支持接口出错",macAddress);
             e.printStackTrace();
         }
-        return false;
+        return 0;
     }
 
     /**
@@ -447,7 +475,7 @@ public class RouterMesh {
                     macAddress+"&appid=1000000273534113&secret=4463d6ab2f0a4afc&PluginName=&Version=1.0";
             String openQueryBody = "{\"type\": \"ubus_call\"," +
                     "\"object\": \"ctcapd.wifi.mesh\",\"method\": \"get\",\"data\": {}}";
-            String responseString = HttpRetryUtils.getRetryQuery(openQueryUrl, openQueryBody);
+            String responseString = HttpRetryUtils.postRetryQuery(openQueryUrl, openQueryBody);
             if(!EmptyUtil.isEmpty(responseString)){
                 JSONObject responseJson = (JSONObject) JSONObject.parse(responseString);
                 String returnParameter = responseJson.getString("return_Parameter");
