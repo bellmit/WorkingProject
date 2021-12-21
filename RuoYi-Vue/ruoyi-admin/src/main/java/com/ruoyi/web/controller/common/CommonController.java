@@ -40,6 +40,7 @@ public class CommonController
     @GetMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request)
     {
+        log.info("{}文件通用下载请求到达",fileName);
         try
         {
             if (!FileUtils.checkAllowDownload(fileName))

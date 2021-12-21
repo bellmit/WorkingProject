@@ -48,8 +48,21 @@ public class DataReportServiceImpl implements IDataReportService
      * 万维地区编码转文字
      */
     public List transforList(List<DataReport> list){
-        Page resultList = new Page<DataReport>();
-        resultList.setTotal(((Page)list).getTotal());
+
+
+        /*Page resultList = new Page<DataReport>();
+        resultList.setTotal(((Page)list).getTotal());*/
+
+
+        ArrayList resultList = null;
+        if(list instanceof Page){
+            resultList = new Page<DataReport>();
+            ((Page) resultList).setTotal(((Page)list).getTotal());
+        }else {
+            resultList = new ArrayList<>();
+        }
+
+
         for(DataReport dr:list){
             String provCode = dr.getProvName();
             String cityCode = dr.getCityName();

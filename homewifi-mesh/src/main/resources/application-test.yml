@@ -50,4 +50,4 @@ spring:
 
   threads:
     pool:
-      corePoolSize: 10
+      corePoolSize: 30
