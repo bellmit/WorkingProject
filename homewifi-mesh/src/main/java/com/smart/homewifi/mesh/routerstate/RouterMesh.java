@@ -104,10 +104,10 @@ public class RouterMesh {
                             recordMesh(jsonObject);
                         }
                     });
-                    while (poolExecutor.getQueue().size() >= 1000 && poolExecutor.getActiveCount() >= 30){
+                    while (poolExecutor.getQueue().size() >= 1000){
                         Thread.sleep(1000);
-                            logger.info("查询路由器mac:{}休眠1秒后线程队列排队{}个,正在执行线程数{}条",macAddress,
-                                    poolExecutor.getQueue().size(),poolExecutor.getActiveCount());
+                        logger.info("查询路由器mac:{}休眠1秒后线程队列排队{}个,正在执行线程数{}条",macAddress,
+                                poolExecutor.getQueue().size(),poolExecutor.getActiveCount());
                     }
                 }
             } catch (Exception e) {
@@ -299,7 +299,7 @@ public class RouterMesh {
                 jsonView.getList().add(data);
             }
             jsonView.setScrollId(scrollId);
-            jsonView.setNumber(new Long((long)jsonHits.size()));
+            jsonView.setNumber((long)jsonHits.size());
             return jsonView;
         } catch (RestClientException e) {
             e.printStackTrace();
@@ -351,7 +351,6 @@ public class RouterMesh {
     }
 
     public void recordMesh(JSONObject jsonObject){
-        //1、获取路由器插件名称和版本号
         String macAddress = jsonObject.getString("mac");
         Long addTime = jsonObject.getLong("ADD_TIME");
         Integer meshSupport = jsonObject.getInteger("meshSupport");
@@ -379,7 +378,7 @@ public class RouterMesh {
                 JSONObject readJson = new JSONObject();
                 readJson.put("mac",macAddress);
                 readJson.put("ADD_TIME",addTime);
-                readJson.put("meshSupport",1);
+                readJson.put("meshSupport",2);
                 readJson.put("meshOpen",1);
                 ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
             }else if(!routerMeshOpen){
@@ -394,7 +393,7 @@ public class RouterMesh {
                 //logger.info("调用两个接口查询{}，耗时{}ms",macAddress,System.currentTimeMillis()-startTime);
                 if(routerMeshOpen){
                     if(routerMeshSupport == 1){
-                        logger.info("未查询的mac为{}的路由器支持且开启mesh",macAddress);
+                        //logger.info("未查询的mac为{}的路由器支持且开启mesh",macAddress);
                         JSONObject readJson = new JSONObject();
                         readJson.put("mac",macAddress);
                         readJson.put("ADD_TIME",addTime);
@@ -402,7 +401,7 @@ public class RouterMesh {
                         readJson.put("meshOpen",1);
                         ElasticSearchOperations.bulkGwOnlineUpdate(readJson,esConfig.getApIndex(),esConfig.getApType(),macAddress);
                     }else if(routerMeshSupport == 2){
-                        logger.info("未查询的mac为{}的路由器支持且开启easyMesh",macAddress);
+                        //logger.info("未查询的mac为{}的路由器支持且开启easyMesh",macAddress);
                         JSONObject readJson = new JSONObject();
                         readJson.put("mac",macAddress);
                         readJson.put("ADD_TIME",addTime);

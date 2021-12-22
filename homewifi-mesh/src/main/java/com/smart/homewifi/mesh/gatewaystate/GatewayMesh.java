@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.util.concurrent.RateLimiter;
 import com.smart.homewifi.mesh.config.BaseConfig;
 import com.smart.homewifi.mesh.config.EsConfig;
+import com.smart.homewifi.mesh.es.ElasticSearchOperations;
 import com.smart.homewifi.mesh.es.EsUtils;
 import com.smart.homewifi.mesh.es.JsonView;
 import com.smart.homewifi.mesh.scp.ScpTransfer;
@@ -95,19 +96,15 @@ public class GatewayMesh {
                     poolExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            //todo：后期优化：1、使用bulk写入；2、使用接口校验是否在线；3、申请并使用自己的appid；4、指定获取插件名请求的请求体中id随机
+                            //todo：后期优化：2、使用接口校验是否在线；3、申请并使用自己的appid；4、指定获取插件名请求的请求体中id随机
                             //开启多线程调用接口查询mesh状态
-                           recordMesh(macAddress);
+                           recordMesh(jsonObject);
                         }
                     });
-                    Long sleepNum = 0l;
-                    while (poolExecutor.getQueue().size() >= 100 || poolExecutor.getActiveCount() >= 5){
-                        Thread.sleep(1000);  //只要上一个文件的电话号码list没跑完就将主线程阻塞在这里，不回去读取下一个mac
-                        sleepNum++;
-                        if(sleepNum%600==0){
-                            Date gettingDate = new Date();
-                            logger.info("{},查询网关mac:{},睡了{}分钟",dateFormat.format(gettingDate),macAddress,sleepNum/60);
-                        }
+                    while (poolExecutor.getQueue().size() >= 1000){
+                        Thread.sleep(1000);
+                        logger.info("查询网关mac:{}休眠1秒后线程队列排队{}个,正在执行线程数{}条",macAddress,
+                                poolExecutor.getQueue().size(),poolExecutor.getActiveCount());
                     }
                 }
             } catch (Exception e) {
@@ -299,7 +296,7 @@ public class GatewayMesh {
                 jsonView.getList().add(data);
             }
             jsonView.setScrollId(scrollId);
-            jsonView.setNumber(new Long((long)jsonHits.size()));
+            jsonView.setNumber((long)jsonHits.size());
             return jsonView;
         } catch (RestClientException e) {
             e.printStackTrace();
@@ -346,8 +343,10 @@ public class GatewayMesh {
         }
     }
 
-    public void recordMesh(String macAddress){
-        //1、获取路由器插件名称和版本号
+    public void recordMesh(JSONObject jsonObject){
+        String macAddress = jsonObject.getString("MAC_ADDRESS");
+        String accessTime = jsonObject.getString("ACCESS_TIME");
+        //1、获取网关插件名称和版本号
         JSONObject plugeData = getPlugeData(macAddress);
         if(plugeData != null){
             //2、根据mac、Plugin_Name、Version三个参数获取网关mesh状态
@@ -358,24 +357,32 @@ public class GatewayMesh {
                 Integer meshSupport = gwMesh.getInteger("support");
                 Integer meshOpen = gwMesh.getInteger("enable");
                 if(meshSupport == 0){
-                    //logger.info("mac为{}的网关不支持mesh",macAddress);
+                    logger.info("mac为{}的网关不支持mesh",macAddress);
                     //给这一条数据添加不支持（不查）标志位。
-                    String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
+                    /*String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                             "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
                     String state = "{\"doc\":{\"meshSupport\": 0}}";
-                    HttpUtil.post(postUrl,state);
+                    HttpUtil.post(postUrl,state);*/
+                    JSONObject resultJson = new JSONObject();
+                    resultJson.put("MAC_ADDRESS",macAddress);
+                    resultJson.put("ACCESS_TIME",accessTime);
+                    resultJson.put("meshSupport",0);
+                    ElasticSearchOperations.bulkGwOnlineUpdate(resultJson,esConfig.getGwIndex(),esConfig.getGwType(),macAddress);
                 }else if(meshSupport == 1 && meshOpen == 1){
-                    //写入一条数据（后期优化：可采用Bulk写入，但是担心不同线程ElasticSearchOperations能否共享）
-                    //logger.info("mac为{}的网关支持且开启mesh",macAddress);
-                    String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
-                            "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
-                    String state = "{\"doc\":{\"meshSupport\": 1,\"meshOpen\": 1}}";
-                    HttpUtil.post(postUrl,state);
+                    logger.info("mac为{}的网关支持且开启mesh",macAddress);
+                    JSONObject resultJson = new JSONObject();
+                    resultJson.put("MAC_ADDRESS",macAddress);
+                    resultJson.put("ACCESS_TIME",accessTime);
+                    resultJson.put("meshSupport",1);
+                    resultJson.put("meshOpen",1);
+                    ElasticSearchOperations.bulkGwOnlineUpdate(resultJson,esConfig.getGwIndex(),esConfig.getGwType(),macAddress);
                 }else if(meshSupport == 1 && meshOpen == 0){
-                    String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
-                            "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
-                    String state = "{\"doc\":{\"meshSupport\": 1}}";
-                    HttpUtil.post(postUrl,state);
+                    logger.info("mac为{}的网关支持未开启mesh",macAddress);
+                    JSONObject resultJson = new JSONObject();
+                    resultJson.put("MAC_ADDRESS",macAddress);
+                    resultJson.put("ACCESS_TIME",accessTime);
+                    resultJson.put("meshSupport",1);
+                    ElasticSearchOperations.bulkGwOnlineUpdate(resultJson,esConfig.getGwIndex(),esConfig.getGwType(),macAddress);
                 }
             }
         }
