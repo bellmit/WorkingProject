@@ -79,7 +79,6 @@ public class GatewayMesh {
                     logger.info("{}，本轮本地库网关mac查询结束，开始reindex从线上gatewayonline动态库补充数据",dateFormat.format(reindexDate));
                     String taskId = reindexNewGateway();
                     while(!checkTask(taskId)){
-                        logger.info("reindex未完成就休眠6秒");
                         Thread.sleep(6000);
                     }
                     scrollId = "";
@@ -87,10 +86,8 @@ public class GatewayMesh {
                     logger.info("reindex结束后，查询本地库获取在线网关mac {}条",jsonView.getNumber());
                     scrollId = jsonView.getScrollId();
                 }
-                //logger.info("for循环Scroll查询结果");
                 for (JSONObject jsonObject :jsonView.getList()){
                     String macAddress = jsonObject.getString("MAC_ADDRESS");
-                    //logger.info("开始查询mac为{}的网关",macAddress);
                     //以阻塞形式运行，每10ms产生一个令牌，即允许每秒发送100个数据。
                     rateLimiter.acquire(1);
                     poolExecutor.execute(new Runnable() {
@@ -220,8 +217,6 @@ public class GatewayMesh {
             JSONObject reindexStatus = reindexResult.getJSONObject("task").getJSONObject("status");
             logger.info("本次补充/删除网关数据：total:{}, created:{}",
                     reindexStatus.getString("total"),reindexStatus.getString("created"));
-        }else{
-            logger.info("网关reindex未完成");
         }
         return completed;
     }
@@ -413,7 +408,7 @@ public class GatewayMesh {
             }
         } catch (Exception e) {
             logger.error("mac为{}的网关查询中间件版本接口出错",macAddress);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
