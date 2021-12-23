@@ -81,9 +81,9 @@ public class RouterMesh {
                     Date reindexDate = new Date();
                     logger.info("{}，本轮本地库路由器mac查询结束，开始reindex从线上aponline动态库补充数据",dateFormat.format(reindexDate));
                     String taskId = reindexNewRouter();
-                    if(!checkTask(taskId)){
+                    while(!checkTask(taskId)){
                         //reindex未完成就sleep;
-                        Thread.sleep(60000);
+                        Thread.sleep(6000);
                     }
                     scrollId = "";
                     jsonView = scrollRouterMac(scrollId);
@@ -155,14 +155,14 @@ public class RouterMesh {
             routerMeshFile.delete();
             //5、删除原表所有数据、上传标志位置1
             String deleteaskId = deleteAllData();
-            if(!checkTask(deleteaskId)){
+            while(!checkTask(deleteaskId)){
                 //reindex未完成就sleep;
                 Thread.sleep(10000);
             }
             //6、reindex一张新表
             logger.info("上传结束，删除原表数据，reindex新表数据");
             String reindexTaskId = reindexNewRouter();
-            if(!checkTask(reindexTaskId)){
+            while(!checkTask(reindexTaskId)){
                 //reindex未完成就sleep;
                 Thread.sleep(60000);
             }
@@ -214,7 +214,7 @@ public class RouterMesh {
     }
 
     /**
-     * 查看reindex是否完成
+     * 查看单个任务是否执行结束
      */
     public boolean checkTask(String taskId){
         String url = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+"/_tasks/"+taskId;
@@ -222,7 +222,7 @@ public class RouterMesh {
         Boolean completed = (Boolean) reindexResult.get("completed");
         if(completed){
             JSONObject reindexStatus = reindexResult.getJSONObject("task").getJSONObject("status");
-            logger.info("本次从动态库补充网关数据：total:{}, created:{}",
+            logger.info("本次从补充/删除路由器数据：total:{}, created:{}",
                     reindexStatus.getString("total"),reindexStatus.getString("created"));
         }
         return completed;

@@ -34,7 +34,7 @@ spring:
     port: 9200
     index:
       apIndexName: aponline_copy
-      gwIndexName: gatewayOnline_copy
+      gwIndexName: gatewayonline_copy
     type:
       apTypeName: messagedb
       gwTypeName: messagedb
@@ -50,4 +50,4 @@ spring:
 
   threads:
     pool:
-      corePoolSize: 30
+      corePoolSize: 40

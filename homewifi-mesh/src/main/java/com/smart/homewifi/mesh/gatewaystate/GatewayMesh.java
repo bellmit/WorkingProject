@@ -78,9 +78,9 @@ public class GatewayMesh {
                     Date reindexDate = new Date();
                     logger.info("{}，本轮本地库网关mac查询结束，开始reindex从线上gatewayonline动态库补充数据",dateFormat.format(reindexDate));
                     String taskId = reindexNewGateway();
-                    if(!checkTask(taskId)){
-                        //reindex未完成就sleep;
-                        Thread.sleep(60000);
+                    while(!checkTask(taskId)){
+                        logger.info("reindex未完成就休眠6秒");
+                        Thread.sleep(6000);
                     }
                     scrollId = "";
                     jsonView = scrollGatewayMac(scrollId);
@@ -153,16 +153,16 @@ public class GatewayMesh {
             gatewayMeshFile.delete();
             //5、删除原表所有数据、上传标志位置1
             String deleteaskId = deleteAllData();
-            if(!checkTask(deleteaskId)){
+            while(!checkTask(deleteaskId)){
                 //reindex未完成就sleep;
                 Thread.sleep(10000);
             }
             //6、reindex一张新表
             logger.info("上传结束，删除原表数据，reindex新表数据");
             String reindexTaskId = reindexNewGateway();
-            if(!checkTask(reindexTaskId)){
+            while(!checkTask(reindexTaskId)){
                 //reindex未完成就sleep;
-                Thread.sleep(60000);
+                Thread.sleep(6000);
             }
         } catch (Exception e) {
             logger.error("{} 网关mesh状态文件上传出错",dateFormat.format(updateDate));
@@ -210,7 +210,7 @@ public class GatewayMesh {
     }
 
     /**
-     * 查看reindex是否完成
+     * 查看单个任务是否执行结束
      */
     public boolean checkTask(String taskId){
         String url = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+"/_tasks/"+taskId;
@@ -218,8 +218,10 @@ public class GatewayMesh {
         Boolean completed = (Boolean) reindexResult.get("completed");
         if(completed){
             JSONObject reindexStatus = reindexResult.getJSONObject("task").getJSONObject("status");
-            logger.info("本次从动态库补充网关数据：total:{}, created:{}",
+            logger.info("本次补充/删除网关数据：total:{}, created:{}",
                     reindexStatus.getString("total"),reindexStatus.getString("created"));
+        }else{
+            logger.info("网关reindex未完成");
         }
         return completed;
     }
@@ -357,7 +359,7 @@ public class GatewayMesh {
                 Integer meshSupport = gwMesh.getInteger("support");
                 Integer meshOpen = gwMesh.getInteger("enable");
                 if(meshSupport == 0){
-                    logger.info("mac为{}的网关不支持mesh",macAddress);
+                    //logger.info("mac为{}的网关不支持mesh",macAddress);
                     //给这一条数据添加不支持（不查）标志位。
                     /*String postUrl = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                             "/gatewayonline_copy/messagedb/"+macAddress+"/_update";
@@ -377,7 +379,7 @@ public class GatewayMesh {
                     resultJson.put("meshOpen",1);
                     ElasticSearchOperations.bulkGwOnlineUpdate(resultJson,esConfig.getGwIndex(),esConfig.getGwType(),macAddress);
                 }else if(meshSupport == 1 && meshOpen == 0){
-                    logger.info("mac为{}的网关支持未开启mesh",macAddress);
+                    //logger.info("mac为{}的网关支持未开启mesh",macAddress);
                     JSONObject resultJson = new JSONObject();
                     resultJson.put("MAC_ADDRESS",macAddress);
                     resultJson.put("ACCESS_TIME",accessTime);
@@ -441,10 +443,12 @@ public class GatewayMesh {
 
 
     public static void main(String[] args) throws InterruptedException {
-        System.out.println(Base64Utils.decode("eyJDbWRUeXBlIjo" +
-                "iR2V0TWVzaFN0YXR1cyIsIlNlcXVlbmNlSWQiOiI3NjcyMSIsImd3Ijp" +
-                "7InN1cHBvcnQiOjEsImVuYWJsZSI6MCwibWFjIjoiOTg5QUI5MDYxODgwIn" +
-                "0sImFwIjpbeyJzdXBwb3J0IjowLCJlbmFibGUiOjAsIm1hYyI6IjU0NDYxN0ExMTI5NCJ9XSwiU3RhdHVzIjowfQ"));
-
+        JSONObject reindexResult= HttpUtil.get("http://localhost:9200/_tasks/FIZqbuIqT_SJa-Ai-65uVA:7743");
+        Boolean completed = (Boolean) reindexResult.get("completed");
+        if(completed){
+            JSONObject reindexStatus = reindexResult.getJSONObject("task").getJSONObject("status");
+            logger.info("本次从动态库补充网关数据：total:{}, created:{}",
+                    reindexStatus.getString("total"),reindexStatus.getString("created"));
+        }
     }
 }

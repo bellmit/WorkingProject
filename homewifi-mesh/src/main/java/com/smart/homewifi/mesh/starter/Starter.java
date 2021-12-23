@@ -45,9 +45,9 @@ public class Starter implements ApplicationRunner {
                 }
             }
         };
-        Thread thread1 = new Thread(runnable1);
-        //Thread thread2 = new Thread(runnable2);
-        thread1.start(); //启动线程
-        //thread2.start();
+        //Thread thread1 = new Thread(runnable1);
+        Thread thread2 = new Thread(runnable2);
+        //thread1.start(); //启动线程
+        thread2.start();
     }
 }
