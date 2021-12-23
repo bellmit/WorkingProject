@@ -138,7 +138,7 @@ public class ScheduledTask {
                                 }
                                 sftp.downloadFile(baseConfig.getSftpdir(), ls.getFilename(), baseConfig.getLocaldir() + ls.getFilename());
                                 //下载完成不删除sftp文件
-                                //sftp.delete(baseConfig.getSftpdir(), ls.getFilename());
+                                sftp.delete(baseConfig.getSftpdir(), ls.getFilename());
                                 //String filename = baseConfig.getLocaldir() + ls.getFilename();
                                 RedisUtils.saveFileName(ls.getFilename());
                                 logger.info("{}文件下载成功!!!",ls.getFilename());
