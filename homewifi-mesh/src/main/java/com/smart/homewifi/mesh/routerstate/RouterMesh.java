@@ -480,7 +480,7 @@ public class RouterMesh {
             }
         } catch (Exception e) {
             logger.error("mac为{}的路由器查询mesh支持接口出错",macAddress);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return 0;
     }
@@ -516,7 +516,7 @@ public class RouterMesh {
             }
         } catch (Exception e) {
             logger.error("mac为{}的路由器查询mesh开启接口出错",macAddress);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return false;
     }

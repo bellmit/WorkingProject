@@ -433,7 +433,7 @@ public class GatewayMesh {
             }
         } catch (Exception e) {
             logger.error("mac为{}的网关查询mesh状态接口出错",macAddress);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
