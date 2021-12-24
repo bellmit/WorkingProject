@@ -34,8 +34,10 @@ spring:
     port: 9200
     index:
       apIndexName: wifi_aponline
+      gwIndexName: gatewayonline_copy
     type:
       apTypeName: messagedb
+      gwTypeName: messagedb
 
   #sftp路径
   datatransport:

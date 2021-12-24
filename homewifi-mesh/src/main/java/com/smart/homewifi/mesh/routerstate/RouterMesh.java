@@ -10,6 +10,7 @@ import com.smart.homewifi.mesh.es.EsUtils;
 import com.smart.homewifi.mesh.es.JsonView;
 import com.smart.homewifi.mesh.scp.ScpTransfer;
 import com.smart.homewifi.mesh.utils.*;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,6 +179,7 @@ public class RouterMesh {
      */
     public String reindexNewRouter(){
         String reindexString  = "{\n" +
+                "    \"conflicts\":\"proceed\",\n" +
                 "    \"source\": {\n" +
                 "        \"index\": \"aponline\",\n" +
                 "        \"size\": 10000,\n" +
@@ -206,6 +208,7 @@ public class RouterMesh {
      */
     public String deleteAllData(){
         JSONObject queryRoot = new JSONObject();
+        queryRoot.put("conflicts","proceed");
         queryRoot.put("query",newJSONObject("match_all",new JSONObject()));
         String url = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                 "/aponline_copy/_delete_by_query?refresh&slices=5&wait_for_completion=false";

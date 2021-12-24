@@ -172,6 +172,7 @@ public class GatewayMesh {
      */
     public String reindexNewGateway(){
         String reindexString  = "{\n" +
+                "    \"conflicts\":\"proceed\",\n" +
                 "    \"source\": {\n" +
                 "        \"index\": \"gatewayonline\",\n" +
                 "        \"size\": 10000,\n" +
@@ -199,6 +200,7 @@ public class GatewayMesh {
      */
     public String deleteAllData(){
         JSONObject queryRoot = new JSONObject();
+        queryRoot.put("conflicts","proceed");
         queryRoot.put("query",newJSONObject("match_all",new JSONObject()));
         String url = "http://"+esConfig.getEsAddress()+":"+esConfig.getEsPort()+
                 "/gatewayonline_copy/_delete_by_query?refresh&slices=5&wait_for_completion=false";
