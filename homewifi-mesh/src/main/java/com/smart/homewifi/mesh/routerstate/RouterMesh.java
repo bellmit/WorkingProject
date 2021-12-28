@@ -74,7 +74,6 @@ public class RouterMesh {
                     uploadFile();
                     updloadFlag = 1;
                 }
-                //使用scroll条件查询时间排序
                 jsonView = scrollRouterMac(scrollId);
                 logger.info("查询本地库获取在线路由器mac {}条",jsonView.getNumber());
                 scrollId = jsonView.getScrollId();
@@ -121,11 +120,11 @@ public class RouterMesh {
      * 每月一号没有上传文件的情况下就上传
      */
     public void uploadFile(){
-        Date updateDate = new Date();
+        Date updLoadDate = new Date();
         try {
             String scrollId = null;
             boolean flag = true;
-            logger.info("{}路由器mesh每月定时上传任务开始执行",dateFormat.format(updateDate));
+            logger.info("{}路由器mesh每月定时上传任务开始执行",dateFormat.format(updLoadDate));
             String filePath = baseConfig.getLocaldir()+"/Router_Mesh_State_"+ CalendarUtils.getDate()
                     +"_"+CalendarUtils.getLastMonth()+".txt";
             File routerMeshFile = new File(filePath);
@@ -168,7 +167,7 @@ public class RouterMesh {
                 Thread.sleep(60000);
             }
         } catch (Exception e) {
-            logger.error("{} 路由器mesh状态文件上传出错",dateFormat.format(updateDate));
+            logger.error("{} 路由器mesh状态文件上传出错",dateFormat.format(updLoadDate));
             e.printStackTrace();
         }
     }
@@ -311,9 +310,6 @@ public class RouterMesh {
         }
     }
 
-    /**
-     *
-     */
     public static  <V> Map newJSONObject(String key, V value){
         JSONObject jsonObject =new JSONObject();
         try {

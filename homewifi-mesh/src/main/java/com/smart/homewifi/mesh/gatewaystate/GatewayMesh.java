@@ -114,11 +114,11 @@ public class GatewayMesh {
      * 每月一号没有上传文件的情况下就上传
      */
     public void uploadFile(){
-        Date updateDate = new Date();
+        Date upLoadDate = new Date();
         try {
             String scrollId = null;
             boolean flag = true;
-            logger.info("{}网关mesh每月定时上传任务开始执行",dateFormat.format(updateDate));
+            logger.info("{}网关mesh每月定时上传任务开始执行",dateFormat.format(upLoadDate));
             String filePath = baseConfig.getLocaldir()+"/GATEWAY_Mesh_State_"+ CalendarUtils.getDate()
                     +"_"+CalendarUtils.getLastMonth()+".txt";
             File gatewayMeshFile = new File(filePath);
@@ -162,7 +162,7 @@ public class GatewayMesh {
                 Thread.sleep(6000);
             }
         } catch (Exception e) {
-            logger.error("{} 网关mesh状态文件上传出错",dateFormat.format(updateDate));
+            logger.error("{} 网关mesh状态文件上传出错",dateFormat.format(upLoadDate));
             e.printStackTrace();
         }
     }
