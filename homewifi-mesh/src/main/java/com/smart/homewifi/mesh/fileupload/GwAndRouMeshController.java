@@ -1,7 +1,6 @@
 package com.smart.homewifi.mesh.fileupload;
 
 import com.smart.homewifi.mesh.config.BaseConfig;
-import com.smart.homewifi.mesh.config.EsConfig;
 import com.smart.homewifi.mesh.es.JsonView;
 import com.smart.homewifi.mesh.gatewaystate.GatewayMesh;
 import com.smart.homewifi.mesh.routerstate.RouterMesh;
