@@ -75,7 +75,7 @@ public class ScheduledTask {
     //@Scheduled(fixedDelay=3000)
     public String readFileToEs() {
         try {
-            logger.info("{}号,存储数据湖下发的全屋wifi礼包数据&报告数据，开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
+            logger.info("存储数据湖下发的{}号全屋wifi礼包数据&报告数据，开始执行!!!", DateFormatUtil.getLastDayDate(new Date(), "yyyyMMdd"));
             Long startTime = System.currentTimeMillis();
             pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
 
